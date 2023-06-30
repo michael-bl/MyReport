@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/btnSincronizarLocal"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:text="@string/sincroLocal"
+        app:icon="@drawable/descargar" />
+
+    <Button
+        android:id="@+id/btnSincronizarRemoto"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:text="@string/sincroRemoto"
+        app:icon="@drawable/subir" />
+
+    <Button
+        android:id="@+id/btnEliminarBaseDatos"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:text="@string/modoAlmacenamiento"
+        app:icon="@drawable/configuracion" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

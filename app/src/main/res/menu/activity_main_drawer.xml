@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="all">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@mipmap/ic_launcher_foreground"
+            android:title="@string/menu_home" />
+
+        <item
+            android:id="@+id/nav_usuario"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/usuario" />
+
+        <item
+            android:id="@+id/nav_reporte"
+            android:icon="?attr/actionModePasteDrawable"
+            android:title="@string/reporte" />
+
+        <item
+            android:id="@+id/nav_sincronizar"
+            android:icon="@android:drawable/stat_notify_sync"
+            android:title="@string/sincronizar" />
+
+        <item
+            android:id="@+id/nav_compartir"
+            android:icon="?attr/actionModeShareDrawable"
+            android:title="@string/compartir" />
+
+        <item
+            android:id="@+id/nav_configuracion"
+            android:icon="@drawable/configuracion"
+            android:title="@string/configuracion" />
+    </group>
+</menu>
