@@ -71,9 +71,9 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         long resultado = -1;
-                        String[] cedulas = {"503610263", "37", "38", "39", "40", "41", "207980186", "206200609", "206050068", "206030844"};
-                        String[] password = {"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Manfred", "Dayana", "Cristian", "Harold"};
-                        String[] depto = {"Oficinas", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Planta", "Planta", "Planta", "Planta"};
+                        String[] cedulas = {"503610263", "37", "38", "39", "40", "41", "207980186", "206200609", "206050068", "206030844", "206040225"};
+                        String[] password = {"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Manfred", "Dayana", "Cristian", "Harold","Felix"};
+                        String[] depto = {"Oficinas", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Planta", "Planta", "Planta", "Planta", "Cosecha"};
 
 
                         for (int i = 0; i <= cedulas.length - 1; i++) {

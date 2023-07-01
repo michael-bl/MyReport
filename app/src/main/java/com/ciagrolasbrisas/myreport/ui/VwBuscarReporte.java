@@ -26,6 +26,8 @@ import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -109,38 +111,33 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 
                 btnShare.setOnClickListener(view -> {
                         try {
-                                ExcelGenerator crearExcel = new ExcelGenerator();
-                                crearExcel.generarExcell(listaCuellosBotella, this);
-                                String rutaArchivo = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/"+ "rpt_cuellobotella.xlsx";
-                                File archivoExcel = new File(rutaArchivo);
-                                if (archivoExcel.exists()){
-                                        Toast.makeText(this, "Archivo 'rpt_cuellobotella' guardado 'DOWNLOADS/DESCARGAS' ", Toast.LENGTH_LONG).show();
-                                }
-
-                                /*     // validar la version del android del dispositivo
-                                // menores a api 29 con la linea siguiente
-                                // ruta que devuelve el siguiente metodo /storage/emulated/0/Download/rpt_cuellobotella.xlsx
-                                //String rutaArchivo = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/"+ "rpt_cuellobotella.xlsx";
-                                String rutaArchivo = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() ;
-                                // Igual o superior a 29 con la linea siguiente
-                                // getExternalFilesDir() averiguar mas acerca de este metodo
-
-                                File archivoExcel = new File(rutaArchivo);
-                                if (archivoExcel.exists()) {
-                                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                        intent.setType("application/vnd.ms-excel");
-                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                        intent.putExtra(Intent.EXTRA_STREAM, archivoExcel);
-                                        if (intent.resolveActivity(getPackageManager()) != null) {
-                                                startActivity(Intent.createChooser(intent, "Seleccione el adjunto a enviar"));
-                                        } else {
-                                                Toast.makeText(this, "No hay aplicaciones instaladas que puedan manejar la acción SEND", Toast.LENGTH_LONG).show();
+                                if (!VwLogin.dniUsuario.equals( "206040225")){
+                                        ExcelGenerator crearExcel = new ExcelGenerator();
+                                        crearExcel.generarExcell(listaCuellosBotella, this);
+                                        String rutaArchivo = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/"+ "rpt_cuellobotella.xlsx";
+                                        File archivoExcel = new File(rutaArchivo);
+                                        if (archivoExcel.exists()){
+                                                Toast.makeText(this, "Archivo 'rpt_cuellobotella' guardado 'DOWNLOADS/DESCARGAS' ", Toast.LENGTH_LONG).show();
                                         }
-                                }
-                                else {
-                                        Toast.makeText(this, "El archivo no existe o no se puede acceder a él", Toast.LENGTH_LONG).show();
-                                }*/
+                                } else {
+                                        ArrayList<JSONObject> json_array = new ArrayList<>();
+                                        for (MdCuelloBotella cb: listaCuellosBotella){
+                                                JSONObject datos_json = new JSONObject();
+                                                datos_json.put("Encargado", cb.getDniEncargado());
+                                                datos_json.put("Fecha", cb.getFecha());
+                                                datos_json.put("Motivo", cb.getMotivo());
+                                                datos_json.put("Lote", cb.getLote());
+                                                datos_json.put("Sección", cb.getSeccion());
+                                                datos_json.put("Hora_Inicio", cb.getHora_inicio());
+                                                datos_json.put("Hora_Final", cb.getHora_final());
+                                                json_array.add(datos_json);
+                                        }
 
+                                        Intent intent = new Intent(Intent.ACTION_SEND);
+                                        intent.setType("text/plain");
+                                        intent.putExtra(Intent.EXTRA_TEXT, json_array.toString());
+                                        startActivity(intent);
+                                }
                         } catch (Exception e) {
                                 Toast.makeText(this, "Error de ejecución: " + e, Toast.LENGTH_LONG).show();
                         }

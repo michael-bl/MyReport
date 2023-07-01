@@ -41,6 +41,7 @@
     <string name="hora_inicio">Hora Inicio</string>
     <string name="traslucidez">Traslucidez</string>
     <string name="sincronizar">Sincronizar</string>
+    <string name="peso_caja">Peso de Caja</string>
     <string name="grupo_forza">Grupo Forza</string>
     <string name="tipo_reporte">Tipo Reporte</string>
     <string name="masacciones">Más Acciones</string>
