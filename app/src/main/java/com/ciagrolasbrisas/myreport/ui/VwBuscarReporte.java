@@ -120,6 +120,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                 Toast.makeText(this, "Archivo 'rpt_cuellobotella' guardado 'DOWNLOADS/DESCARGAS' ", Toast.LENGTH_LONG).show();
                                         }
                                 } else {
+                                        // este bloque se ejecuta unicamente cuando el usuario sea Felix Martínez
                                         ArrayList<JSONObject> json_array = new ArrayList<>();
                                         for (MdCuelloBotella cb: listaCuellosBotella){
                                                 JSONObject datos_json = new JSONObject();
@@ -142,7 +143,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                 Toast.makeText(this, "Error de ejecución: " + e, Toast.LENGTH_LONG).show();
                         }
 
-                        Intent intent = new Intent(getApplicationContext(), VwMain.class);
+                       Intent intent = new Intent(getApplicationContext(), VwMain.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();

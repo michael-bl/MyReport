@@ -42,6 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/ciclo"
+                    android:textAlignment="center"
                     android:minHeight="48dp" />
 
                 <View
@@ -68,6 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/mdLote"
+                    android:textAlignment="center"
                     android:minHeight="48dp" />
 
                 <View
@@ -94,6 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/seccion"
+                    android:textAlignment="center"
                     android:minHeight="48dp" />
 
                 <View
@@ -120,6 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/tipo_muestreo"
+                    android:textAlignment="center"
                     android:minHeight="48dp" />
 
                 <View
@@ -140,6 +144,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/semanas_a_cosecha"
+                    android:textAlignment="center"
                     android:minHeight="48dp" />
 
                 <View

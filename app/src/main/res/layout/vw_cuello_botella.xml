@@ -119,6 +119,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:contentDescription="@string/motivo"
+                            android:textAlignment="center"
                             android:minHeight="48dp" />
 
                         <View

@@ -28,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/ciclo"
+            android:textAlignment="center"
             android:minHeight="48dp" />
 
         <View
@@ -54,6 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/ciclo"
+            android:textAlignment="center"
             android:minHeight="48dp" />
         <View
             android:layout_width="fill_parent"
@@ -79,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/ciclo"
+            android:textAlignment="center"
             android:minHeight="48dp" />
 
         <View
@@ -104,6 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/ciclo"
+            android:textAlignment="center"
             android:minHeight="48dp" />
         <View
             android:layout_width="fill_parent"
