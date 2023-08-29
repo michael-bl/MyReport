@@ -35,6 +35,15 @@
         android:text="@string/ticket_cosecha" />
 
     <Button
+        android:id="@+id/btnRptPesoCaja"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/peso_caja" />
+
+    <Button
         android:id="@+id/btnRptPremas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

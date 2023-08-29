@@ -17,12 +17,14 @@ import com.ciagrolasbrisas.myreport.model.MdMuestra;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class DatabaseController {
         private DatabaseHelper dbHelper;
         private SQLiteDatabase sqLiteDatabase;
-        private static int codigo;
+        private static int code;
+        public static String nombreUsuario;
 
         public DatabaseController() {
         }
@@ -71,9 +73,10 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         long resultado = -1;
-                        String[] cedulas = {"503610263", "37", "38", "39", "40", "41", "207980186", "206200609", "206050068", "206030844", "206040225"};
-                        String[] password = {"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Manfred", "Dayana", "Cristian", "Harold","Felix"};
-                        String[] depto = {"Oficinas", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Planta", "Planta", "Planta", "Planta", "Cosecha"};
+                        /*String[] cedulas = {"503610263", "37", "38", "39", "40", "41", "503970765", "206200609",  "206040225"};
+                        String[] password = {"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Claudia", "Dayana", "Felix"};
+                        String[] nombre = {"Michael Busto L", "Cuadrilla 37", "Cuadrilla 38", "Cuadrilla 39", "Cuadrilla 40", "Cuadrilla 41", "Planta", "Planta", "Cosecha"};
+                        String[] depto = {"Oficinas", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Claudia Barrios P", "Dayana Ruiz H",  "Cosecha"};
 
 
                         for (int i = 0; i <= cedulas.length - 1; i++) {
@@ -81,9 +84,27 @@ public class DatabaseController {
                                 values.put("code", (i + 1));
                                 values.put("dni", cedulas[i]);
                                 values.put("password", password[i]);
+                                values.put("nombre", nombre[i]);
                                 values.put("departamento", depto[i]);
                                 resultado = sqLiteDatabase.insert("usuario", null, values);
+                        }*/
+
+                        HashMap<String, String[]> datosUsuarios = new HashMap<>();
+                        datosUsuarios.put("cedulas", new String[]{"503610263", "37", "38", "39", "40", "41", "503970765", "206200609",  "206040225"});
+                        datosUsuarios.put("password", new String[]{"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Claudia", "Dayana", "Felix"});
+                        datosUsuarios.put("nombre", new String[]{"Michael Busto L", "Cuadrilla 37", "Cuadrilla 38", "Cuadrilla 39", "Cuadrilla 40", "Cuadrilla 41", "Planta", "Planta", "Cosecha"});
+                        datosUsuarios.put("depto", new String[]{"Admin", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Claudia Barrios P", "Dayana Ruiz H",  "Cosecha"});
+
+                        for (int i = 0; i < datosUsuarios.get("cedulas").length; i++) {
+                                ContentValues values = new ContentValues();
+                                values.put("code", (i + 1));
+                                values.put("dni", datosUsuarios.get("cedulas")[i]);
+                                values.put("password", datosUsuarios.get("password")[i]);
+                                values.put("nombre", datosUsuarios.get("nombre")[i]);
+                                values.put("departamento", datosUsuarios.get("depto")[i]);
+                                resultado = sqLiteDatabase.insert("usuario", null, values);
                         }
+
                         if (resultado == -1) {
                                 Log.i("MyReport", "DataBaseHelper/Error al guardar lista de usuarios por defecto.");
                         }
@@ -101,7 +122,7 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         long resultado = -1;
-                        String[] nombre = {"ALEXANDERS-GENERICO", "KEELINGS", "WALMART", "TICO FARM", "CAPA-GENERICO", "COUNTRY FRESH", "VERITA", "JALARAM", "CHIQUITA", "LAS BRISAS", "MICHELLE"};
+                        String[] nombre = {"ALEXANDER-GENERICO", "KEELINGS", "WALMART", "TICO FARM", "CAPA-GENERICO", "COUNTRY FRESH", "VERITA", "JALARAM", "CHIQUITA", "LAS BRISAS", "MICHELLE"};
 
                         for (int i = 0; i <= nombre.length - 1; i++) {
                                 ContentValues values = new ContentValues();
@@ -238,30 +259,30 @@ public class DatabaseController {
                 sqLiteDatabase.beginTransaction();
                 Cursor cursor = sqLiteDatabase.rawQuery("select * from premaduracion SQLITE_SEQUENSE", null);
                 if (cursor.moveToFirst()) {
-                        codigo = cursor.getInt(0) + 1;
+                        code = cursor.getInt(0) + 1;
                         sqLiteDatabase.endTransaction();
                 } else {
                         sqLiteDatabase.endTransaction();
                         return 1;
                 }
                 cursor.close();
-                return codigo;
+                return code;
         }
 
         private int consecutivoCuelloBotella() {
                 try (Cursor cursor = sqLiteDatabase.rawQuery("select cb.code from cuellobotella as cb order by cb.code desc limit 1", null)) {
                         if (cursor.moveToFirst())
-                                codigo = cursor.getInt(0) + 1;
+                                code = cursor.getInt(0) + 1;
                         else return 1;
                 }
-                return codigo;
+                return code;
         }
 
         private int consecutivoForza(Context context) {
                 try {
                         @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select * from forza SQLITE_SEQUENSE", null);
                         if (cursor.moveToFirst()) {
-                                codigo = cursor.getInt(0) + 1;
+                                code = cursor.getInt(0) + 1;
                                 sqLiteDatabase.endTransaction();
                         } else {
                                 sqLiteDatabase.endTransaction();
@@ -270,7 +291,7 @@ public class DatabaseController {
                 } catch (SQLiteException sqle) {
                         Toast.makeText(context, "DataBaseHelper/Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
-                return codigo;
+                return code;
         }
 
         public boolean existJornada(Context context, String fecha, String dni_encargado, String motivo) {
@@ -293,8 +314,13 @@ public class DatabaseController {
         public boolean loginUser(Context context, @NonNull MdUsuario usuario) {
                 dbHelper = new DatabaseHelper(context);
                 sqLiteDatabase = dbHelper.getReadableDatabase();
-                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select * from usuario where dni = ? and password = ?", new String[]{usuario.getId(), usuario.getPass()});
-                return cursor.moveToFirst();
+                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select us.nombre from usuario as us where dni = ? and password = ?", new String[]{usuario.getId(), usuario.getPass()});
+                if (cursor.moveToFirst()) {
+                        nombreUsuario = cursor.getString(0);
+                        return  true;
+                }
+
+                return false;
         }
 
         public ArrayList<MdCuelloBotella> selectCuelloBotellaIncompleto(Context context) {

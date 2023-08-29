@@ -18,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "code INTEGER NOT NULL UNIQUE," +
                 "dni VARCHAR(9)," +
                 "password TEXT(15)," +
+                "nombre TEXT(30)," +
                 "departamento TEXT(30)," +
                 " PRIMARY KEY (dni));";
 

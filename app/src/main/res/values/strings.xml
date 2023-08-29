@@ -18,10 +18,13 @@
     <string name="hasta">Hasta</string>
     <string name="fecha">Fecha</string>
     <string name="menu">Menú</string>
+    <string name="desde">Desde</string>
     <string name="mdLote">Lote</string>
     <string name="nuevo">Nuevo</string>
-    <string name="desde">Desde</string>
+    <string name="calibre">Calibre</string>
     <string name="cedula">Cédula</string>
+    <string name="detalle">Detalle</string>
+    <string name="cliente">Cliente</string>
     <string name="buscar"> Buscar</string>
     <string name="motivo">Motivo</string>
     <string name="usuario">Usuario</string>

@@ -16,6 +16,7 @@ import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.ui.VwCuelloBotella;
 import com.ciagrolasbrisas.myreport.ui.VwHorasEfectivas;
 import com.ciagrolasbrisas.myreport.ui.VwListarCuelloBotella;
+import com.ciagrolasbrisas.myreport.ui.VwPesosPlanta;
 import com.ciagrolasbrisas.myreport.ui.VwPremas1;
 import com.ciagrolasbrisas.myreport.ui.VwTicketCosecha;
 
@@ -45,6 +46,7 @@ public class DialogTipoReporte {
         final Button btnRptPremas = view.findViewById(R.id.btnRptPremas);
         final Button btnRptCuelloBotella = view.findViewById(R.id.btnRptCuelloBotella);
         final Button btnRptTikectCosecha = view.findViewById(R.id.btnRptTicketCosecha);
+        final Button btnRptPesoCaja = view.findViewById(R.id.btnRptPesoCaja);
         MdCuelloBotella mdCuelloBotella = new MdCuelloBotella();
 
         btnRptHorasEfectivas.setOnClickListener(v -> {
@@ -83,6 +85,13 @@ public class DialogTipoReporte {
                     break;
             }
 
+        });
+
+        btnRptPesoCaja.setOnClickListener(v -> {
+            intent = new Intent(context, VwPesosPlanta.class);
+            bundle = new Bundle();
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
 
         btnRptTikectCosecha.setOnClickListener(v->

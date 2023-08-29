@@ -11,7 +11,7 @@ public interface ApiRoutes {
 
     // Inicio de sesion
     @GET("login/{user}/{pass}")
-        //Call<List<MdUsuario>> login(@Path("user") String user, @Path("pass") String pass);
+    //Call<List<MdUsuario>> login(@Path("user") String user, @Path("pass") String pass);
 
     // Retorna lista de clientes
         //@GET("usuarios")

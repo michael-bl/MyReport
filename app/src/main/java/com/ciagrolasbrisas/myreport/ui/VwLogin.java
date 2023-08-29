@@ -26,6 +26,7 @@ public class VwLogin extends AppCompatActivity {
     private DatabaseController dbController;
     public static String dniUsuario;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

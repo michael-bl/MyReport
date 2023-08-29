@@ -5,10 +5,24 @@
     android:layout_height="match_parent"
     tools:context=".ui.VwPesosPlanta">
 
+    <TextView
+        android:id="@+id/tvNombreUsuarioPC"
+        android:layout_width="188dp"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="208dp"
+        android:textColorHint="@color/teal_700"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="43dp"
         tools:ignore="UselessParent">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -16,6 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical">
+
 
             <View
                 android:layout_width="fill_parent"
@@ -60,7 +75,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tvRomaneroPC"
+                android:id="@+id/tvUsuarioPC"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -77,11 +92,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/motivo"
+                android:text="@string/cliente"
                 android:textSize="16sp" />
 
             <Spinner
-                android:id="@+id/spMotivoCB"
+                android:id="@+id/spClientePC"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/motivo"
@@ -94,6 +109,27 @@
                 android:layout_marginTop="4dp"
                 android:background="@color/design_default_color_on_secondary" />
 
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/calibre"
+                android:textSize="16sp" />
+
+            <Spinner
+                android:id="@+id/spCalibrePC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/motivo"
+                android:textAlignment="center"
+                android:minHeight="48dp" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/design_default_color_on_secondary" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -106,8 +142,25 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:hint="@string/peso_caja"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:maxLength="5"
+                    android:maxLines="1"
+                    android:textColorHint="#616161" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtDetallePC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:hint="@string/detalle"
+                    android:inputType="text"
+                    android:maxLength="40"
                     android:maxLines="1"
                     android:textColorHint="#616161" />
             </com.google.android.material.textfield.TextInputLayout>
