@@ -11,11 +11,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.ciagrolasbrisas.myreport.controller.GetConsecutive;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdLote;
 import com.ciagrolasbrisas.myreport.model.MdMuestra;
+import com.ciagrolasbrisas.myreport.model.MdPesoCaja;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,6 +27,7 @@ public class DatabaseController {
         private DatabaseHelper dbHelper;
         private SQLiteDatabase sqLiteDatabase;
         private static int code;
+        private GetConsecutive getConsecutive;
         public static String nombreUsuario;
 
         public DatabaseController() {
@@ -45,7 +49,7 @@ public class DatabaseController {
         }
 
         /*---------------------------------------------------Crear Registros por Default----------------------------------------------------------------------------------------------*/
-        public void insertDafaultCuelloBotella(Context context) {
+        public void insertDefaultCuelloBotella(Context context) {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         long resultado = -1;
@@ -68,26 +72,11 @@ public class DatabaseController {
                 }
         }
 
-        public void insertDafaultUsuario(Context context) {
+        public void insertDefaultUsuario(Context context) {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         long resultado = -1;
-                        /*String[] cedulas = {"503610263", "37", "38", "39", "40", "41", "503970765", "206200609",  "206040225"};
-                        String[] password = {"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Claudia", "Dayana", "Felix"};
-                        String[] nombre = {"Michael Busto L", "Cuadrilla 37", "Cuadrilla 38", "Cuadrilla 39", "Cuadrilla 40", "Cuadrilla 41", "Planta", "Planta", "Cosecha"};
-                        String[] depto = {"Oficinas", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Claudia Barrios P", "Dayana Ruiz H",  "Cosecha"};
-
-
-                        for (int i = 0; i <= cedulas.length - 1; i++) {
-                                ContentValues values = new ContentValues();
-                                values.put("code", (i + 1));
-                                values.put("dni", cedulas[i]);
-                                values.put("password", password[i]);
-                                values.put("nombre", nombre[i]);
-                                values.put("departamento", depto[i]);
-                                resultado = sqLiteDatabase.insert("usuario", null, values);
-                        }*/
 
                         HashMap<String, String[]> datosUsuarios = new HashMap<>();
                         datosUsuarios.put("cedulas", new String[]{"503610263", "37", "38", "39", "40", "41", "503970765", "206200609",  "206040225"});
@@ -117,7 +106,7 @@ public class DatabaseController {
         }
 
 
-        public void insertDafaultCliente(Context context) {
+        public void insertDefaultCliente(Context context) {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
@@ -141,7 +130,7 @@ public class DatabaseController {
 
         }
 
-        public void insertDafaultCalibre(Context context) {
+        public void insertDefaultCalibre(Context context) {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
@@ -173,8 +162,9 @@ public class DatabaseController {
                         sqLiteDatabase.beginTransaction();
                         ContentValues values = new ContentValues();
                         MdLote mdLote = muestreo.getLote();
+                        int code = getConsecutive.funGetConsecutive(context,"cuellobotella");
 
-                        values.put("id_muestreo", consecutivoPremaduracion());
+                        values.put("id_muestreo", code);
                         values.put("grupo_forza", mdLote.getGrupoForza());
                         values.put("fecha_muestreo", muestreo.getFecha());
                         values.put("ciclo", mdLote.getCiclo());
@@ -205,7 +195,7 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
-                        int code = consecutivoCuelloBotella();
+                        int code = getConsecutive.funGetConsecutive(context,"cuellobotella");
 
                         values.put("code", code);
                         values.put("fecha", muestra.getFecha());
@@ -235,7 +225,7 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
-                        //int code = consecutivoCuelloBotella();
+                        //int code = getConsecutive.funGetConsecutive("usuario");
                         values.put("code", usuario.getId());
                         values.put("dni", usuario.getNombre());
                         values.put("password", usuario.getPass());
@@ -254,6 +244,38 @@ public class DatabaseController {
                 }
         }
 
+        public void nuevoPesoCaja(Context context, MdPesoCaja pesoCaja) {
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        getConsecutive = new GetConsecutive();
+                        int code = getConsecutive.funGetConsecutive(context,"pesocaja");
+
+                        values.put("code", code);
+                        values.put("fecha", pesoCaja.getFecha());
+                        values.put("dni_encargado", pesoCaja.getDni_encargado());
+                        values.put("cliente", pesoCaja.getCliente());
+                        values.put("calibre", pesoCaja.getCalibre());
+                        values.put("peso", pesoCaja.getPeso());
+                        values.put("observacion", pesoCaja.getPeso());
+                        values.put("hora_captura", pesoCaja.getPeso());
+
+                        long resultado = sqLiteDatabase.insert("pesocaja", null, values);
+
+                        if (resultado != -1) {
+                                Toast.makeText(context, "DataBaseHelper/Peso guardado exitosamente!", Toast.LENGTH_LONG).show();
+                        } else {
+                                Toast.makeText(context, "DataBaseHelper/Error al guardar: " + resultado, Toast.LENGTH_LONG).show();
+                        }
+                } catch (SQLiteException sqle) {
+                        Toast.makeText(context, "DataBaseHelper/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                } catch (NullPointerException npe) {
+                        Log.i("MyReport", "DataBaseHelper/Error: " + npe.getMessage());
+                        Toast.makeText(context, "DataBaseHelper/Error: " + npe, Toast.LENGTH_LONG).show();
+                }
+        }
+
         /*---------------------------------------------------Obtener el consecutivo----------------------------------------------------------------------------------------------------*/
         private int consecutivoPremaduracion() {
                 sqLiteDatabase.beginTransaction();
@@ -266,31 +288,6 @@ public class DatabaseController {
                         return 1;
                 }
                 cursor.close();
-                return code;
-        }
-
-        private int consecutivoCuelloBotella() {
-                try (Cursor cursor = sqLiteDatabase.rawQuery("select cb.code from cuellobotella as cb order by cb.code desc limit 1", null)) {
-                        if (cursor.moveToFirst())
-                                code = cursor.getInt(0) + 1;
-                        else return 1;
-                }
-                return code;
-        }
-
-        private int consecutivoForza(Context context) {
-                try {
-                        @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select * from forza SQLITE_SEQUENSE", null);
-                        if (cursor.moveToFirst()) {
-                                code = cursor.getInt(0) + 1;
-                                sqLiteDatabase.endTransaction();
-                        } else {
-                                sqLiteDatabase.endTransaction();
-                                return 1;
-                        }
-                } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseHelper/Error: " + sqle, Toast.LENGTH_LONG).show();
-                }
                 return code;
         }
 
@@ -412,6 +409,52 @@ public class DatabaseController {
                         cursor.close();
                 }
                 return respuesta;
+        }
+
+        public ArrayList<String> selectClientesCajas(Context context) {
+                ArrayList<String> listaClientes = new ArrayList<>();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+                        Cursor cursor;
+                        cursor = sqLiteDatabase.rawQuery("select cl.code, cl.nombre \n" +
+                                "from cliente as cl", null);
+
+                        if (cursor.moveToFirst()) {
+                                do {
+                                        listaClientes.add(cursor.getString(0)+ "-" + cursor.getString(1));
+                                } while (cursor.moveToNext());
+                                cursor.close();
+                        } else {
+                                Toast.makeText(context, "DataBaseHelper/Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
+                        }
+                } catch (SQLiteException sqle) {
+                        Toast.makeText(context, "DataBaseHelper/Error: " + sqle, Toast.LENGTH_LONG).show();
+                }
+                return listaClientes;
+        }
+
+        public ArrayList<String> selectCalibres(Context context) {
+                ArrayList<String> listaCalibres = new ArrayList<>();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+                        Cursor cursor;
+                        cursor = sqLiteDatabase.rawQuery("select cl.code, cl.calibre \n" +
+                                "from calibre as cl", null);
+
+                        if (cursor.moveToFirst()) {
+                                do {
+                                        listaCalibres.add(cursor.getString(1));
+                                } while (cursor.moveToNext());
+                                cursor.close();
+                        } else {
+                                Toast.makeText(context, "DataBaseHelper/Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
+                        }
+                } catch (SQLiteException sqle) {
+                        Toast.makeText(context, "DataBaseHelper/Error: " + sqle, Toast.LENGTH_LONG).show();
+                }
+                return listaCalibres;
         }
 
         /*---------------------------------------------------Actualizar registros-----------------------------------------------------------------------------------------------------------*/

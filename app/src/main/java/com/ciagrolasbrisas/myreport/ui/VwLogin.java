@@ -71,10 +71,10 @@ public class VwLogin extends AppCompatActivity {
         try {
             String resultadoConsulta = dbController.crearDbLocal(this);
                 if (resultadoConsulta.equals("2")) {
-                    dbController.insertDafaultCuelloBotella(this);
-                    dbController.insertDafaultUsuario(this);
-                    dbController.insertDafaultCliente(this);
-                    dbController.insertDafaultCalibre(this);
+                    dbController.insertDefaultCuelloBotella(this);
+                    dbController.insertDefaultUsuario(this);
+                    dbController.insertDefaultCliente(this);
+                    dbController.insertDefaultCalibre(this);
                     Toast.makeText(this, "Base datos creada correctamente!", Toast.LENGTH_LONG).show();
                 }
         } catch (SQLiteException sqle) {
