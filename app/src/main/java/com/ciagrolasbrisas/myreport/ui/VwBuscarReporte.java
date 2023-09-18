@@ -24,6 +24,7 @@ import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
+import com.ciagrolasbrisas.myreport.model.MdPesoCaja;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONObject;
@@ -33,7 +34,8 @@ import java.util.ArrayList;
 
 public class VwBuscarReporte extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
         private Button btnBuscar, btnFechaDesde, btnFechaHasta;
-        private ArrayList<MdCuelloBotella> listaCuellosBotella;
+        private ArrayList<MdCuelloBotella> listaCuelloBotella;
+        private ArrayList<MdPesoCaja> listaPesoCaja;
         private DatabaseController dbController;
         private ArrayList<String> stringArrayList;
         private TextView tvtFecha1, tvtFecha2;
@@ -62,7 +64,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                 btnFechaHasta = findViewById(R.id.btnFecha2);
                 btnShare = findViewById(R.id.fabShare);
                 chekRangoFecha = findViewById(R.id.checkBoxRangoFecha);
-                listaCuellosBotella = new ArrayList<>();
+                listaCuelloBotella = new ArrayList<>();
                 llenarSpinnerTiposReporte();
 
                 chekRangoFecha.setOnClickListener(view ->{
@@ -96,7 +98,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                 switch (opcion) {
                                         case "1":
                                                 dbController = new DatabaseController();
-                                                listaCuellosBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, chekRangoFecha.isChecked());
+                                                listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, chekRangoFecha.isChecked());
                                                 llenarListViewCuelloBotella();
                                                 break;
                                         case "2":
@@ -104,6 +106,11 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                 break;
                                         case "3":
                                                 Toast.makeText(this, "VwBuscarReporte.class/Opción en desarrollo", Toast.LENGTH_LONG).show();
+                                                break;
+                                        case "4":
+                                                dbController = new DatabaseController();
+                                                listaPesoCaja = dbController.selectPesoCaja(this, fechaDesde, fechaHasta, chekRangoFecha.isChecked());
+                                                llenarListViewCuelloBotella();
                                                 break;
                                 }
                         }
@@ -113,7 +120,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                         try {
                                 if (!VwLogin.dniUsuario.equals( "206040225")){
                                         ExcelGenerator crearExcel = new ExcelGenerator();
-                                        crearExcel.generarExcell(listaCuellosBotella, this);
+                                        crearExcel.generarExcell(listaCuelloBotella, this);
                                         String rutaArchivo = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/"+ "rpt_cuellobotella.xlsx";
                                         File archivoExcel = new File(rutaArchivo);
                                         if (archivoExcel.exists()){
@@ -122,7 +129,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                 } else {
                                         // este bloque se ejecuta unicamente cuando el usuario sea Felix Martínez
                                         ArrayList<JSONObject> json_array = new ArrayList<>();
-                                        for (MdCuelloBotella cb: listaCuellosBotella){
+                                        for (MdCuelloBotella cb: listaCuelloBotella){
                                                 JSONObject datos_json = new JSONObject();
                                                 datos_json.put("Encargado", cb.getDniEncargado());
                                                 datos_json.put("Fecha", cb.getFecha());
@@ -151,7 +158,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         }
 
         private void llenarSpinnerTiposReporte() {
-                String tiposReporte[] = {"1-Cuello Botella Cosecha", "2-Carretas Cosecha", "3-Premaduraciones" };
+                String tiposReporte[] = {"1-Cuello Botella Cosecha", "2-Carretas Cosecha", "3-Premaduraciones", "4-Pesos de Cajas" };
                 ArrayAdapter adapter;
 
                 try {
@@ -165,7 +172,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         private void llenarListViewCuelloBotella() {
                 try {
                         stringArrayList = new ArrayList<>();
-                        for (MdCuelloBotella cb: listaCuellosBotella) {
+                        for (MdCuelloBotella cb: listaCuelloBotella) {
                                 stringArrayList.add(cb.getMotivo() +"   "+ cb.getHora_inicio() +"   "+ cb.getHora_final());
                         }
 

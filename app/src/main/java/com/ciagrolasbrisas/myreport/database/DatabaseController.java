@@ -17,6 +17,7 @@ import com.ciagrolasbrisas.myreport.model.MdLote;
 import com.ciagrolasbrisas.myreport.model.MdMuestra;
 import com.ciagrolasbrisas.myreport.model.MdPesoCaja;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
+import com.ciagrolasbrisas.myreport.ui.VwBuscarReporte;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -455,6 +456,48 @@ public class DatabaseController {
                         Toast.makeText(context, "DataBaseHelper/Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaCalibres;
+        }
+
+
+        public ArrayList<MdPesoCaja> selectPesoCaja(Context context,  String fecha_desde, String fecha_hasta, boolean esFechaUnica) {
+                ArrayList<MdPesoCaja> listaPesoCaja = new ArrayList<>();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+                        Cursor cursor;
+                        if (esFechaUnica) {
+                                cursor = sqLiteDatabase.rawQuery("select ps.code, ps.fecha, ps.dni_encargado, ps.cliente, ps.calibre, ps.peso, ps.observacion \n" +
+                                        "from pesocaja as ps \n" +
+                                        "inner join motivocb as mt    \n" +
+                                        "on cb.motivo = mt.code  \n" +
+                                        "where cb.fecha = ?", new String[]{fecha_desde});
+                        } else {
+                                cursor = sqLiteDatabase.rawQuery("select ps.code, ps.fecha, ps.dni_encargado, ps.cliente, ps.calibre, ps.peso, ps.observacion \n" +
+                                        "from cuellobotella as cb \n" +
+                                        "inner join motivocb as mt    \n" +
+                                        "on cb.motivo = mt.code  \n" +
+                                        "where cb.fecha >= ? and cb.fecha <= ?", new String[]{fecha_desde, fecha_hasta});
+                        }
+                        if (cursor.moveToFirst()) {
+                                do {
+                                        MdPesoCaja mdpesoCaja = new MdPesoCaja();
+                                        mdpesoCaja.setCode(cursor.getString(0));
+                                        mdpesoCaja.setFecha(cursor.getString(1));
+                                        mdpesoCaja.setDni_encargado(cursor.getString(2));
+                                        mdpesoCaja.setCliente(cursor.getString(3));
+                                        mdpesoCaja.setCalibre(cursor.getString(4));
+                                        mdpesoCaja.setPeso(cursor.getString(5));
+                                        mdpesoCaja.setObservacion(cursor.getString(6));
+                                        listaPesoCaja.add(mdpesoCaja);
+                                } while (cursor.moveToNext());
+                                cursor.close();
+                        } else {
+                                Toast.makeText(context, "DataBaseHelper/Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
+                        }
+                } catch (SQLiteException sqle) {
+                        Toast.makeText(context, "DataBaseHelper/Error: " + sqle, Toast.LENGTH_LONG).show();
+                }
+                return listaPesoCaja;
         }
 
         /*---------------------------------------------------Actualizar registros-----------------------------------------------------------------------------------------------------------*/
