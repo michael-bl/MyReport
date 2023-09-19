@@ -1,20 +1,12 @@
 package com.ciagrolasbrisas.myreport.controller;
 
-import android.Manifest;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 
@@ -26,11 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -40,7 +28,7 @@ public class ExcelGenerator {
         public ExcelGenerator(){}
 
         @RequiresApi(api = Build.VERSION_CODES.Q)
-        public void generarExcell(ArrayList<MdCuelloBotella> listCuelloBotella, Context context){
+        public void generarExcell(@NonNull ArrayList<MdCuelloBotella> listCuelloBotella, Context context){
                 if(listCuelloBotella.size()!=0){
                         // Nuevo libro de Excel
                         Workbook workbook = new XSSFWorkbook();
@@ -77,6 +65,7 @@ public class ExcelGenerator {
                                 Row row = sheet.createRow(numeroRenglon++);
                                 Object[] arregloObjetos = data.get(key);
                                 int numeroCelda = 0;
+                                assert arregloObjetos != null;
                                 for (Object obj : arregloObjetos) {
                                         Cell cell = row.createCell(numeroCelda++);
                                         if (obj instanceof String) {

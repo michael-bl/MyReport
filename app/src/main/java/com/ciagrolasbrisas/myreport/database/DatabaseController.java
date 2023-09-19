@@ -140,7 +140,7 @@ public class DatabaseController {
 
                         for (int i = 0; i <= nombre.length - 1; i++) {
                                 ContentValues values = new ContentValues();
-                                values.put("code", (i + 1));
+                               //values.put("code", (i + 1));
                                 values.put("calibre", nombre[i]);
                                 resultado = sqLiteDatabase.insert("calibre", null, values);
                         }
@@ -259,8 +259,8 @@ public class DatabaseController {
                         values.put("cliente", pesoCaja.getCliente());
                         values.put("calibre", pesoCaja.getCalibre());
                         values.put("peso", pesoCaja.getPeso());
-                        values.put("observacion", pesoCaja.getPeso());
-                        values.put("hora_captura", pesoCaja.getPeso());
+                        values.put("observacion", pesoCaja.getObservacion());
+                        values.put("hora_captura", pesoCaja.getHora_captura());
 
                         long resultado = sqLiteDatabase.insert("pesocaja", null, values);
 
@@ -277,21 +277,7 @@ public class DatabaseController {
                 }
         }
 
-        /*---------------------------------------------------Obtener el consecutivo----------------------------------------------------------------------------------------------------*/
-        private int consecutivoPremaduracion() {
-                sqLiteDatabase.beginTransaction();
-                Cursor cursor = sqLiteDatabase.rawQuery("select * from premaduracion SQLITE_SEQUENSE", null);
-                if (cursor.moveToFirst()) {
-                        code = cursor.getInt(0) + 1;
-                        sqLiteDatabase.endTransaction();
-                } else {
-                        sqLiteDatabase.endTransaction();
-                        return 1;
-                }
-                cursor.close();
-                return code;
-        }
-
+        /*---------------------------------------------------Verifica existencia de jornada especifica-------------------------------------------------------------------------*/
         public boolean existJornada(Context context, String fecha, String dni_encargado, String motivo) {
                 try {
                         dbHelper = new DatabaseHelper(context);
@@ -441,12 +427,10 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor;
-                        cursor = sqLiteDatabase.rawQuery("select cl.code, cl.calibre \n" +
-                                "from calibre as cl", null);
-
+                        cursor = sqLiteDatabase.rawQuery("select cl.calibre from calibre as cl", null);
                         if (cursor.moveToFirst()) {
                                 do {
-                                        listaCalibres.add(cursor.getString(1));
+                                        listaCalibres.add(cursor.getString(0));
                                 } while (cursor.moveToNext());
                                 cursor.close();
                         } else {
@@ -466,28 +450,27 @@ public class DatabaseController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor;
                         if (esFechaUnica) {
-                                cursor = sqLiteDatabase.rawQuery("select pc.code, pc.fecha, pc.dni_encargado, pc.cliente, pc.calibre, pc.peso, pc.observacion \n" +
-                                        "from pesocaja as ps \n" +
-                                        "inner join usuario as us    \n" +
-                                        "on pc.dni_encargado = us.dni  \n" +
-                                        "where cb.fecha = ?", new String[]{fecha_desde});
+                                cursor = sqLiteDatabase.rawQuery("select pc.fecha as 'Fecha', pc.peso as 'Peso Caja', ci.nombre as 'Cliente', pc.calibre as 'Calibre', us.nombre as 'Usuario', pc.observacion as 'Detalle' \n" +
+                                        "from pesocaja as pc \n" +
+                                        "inner join usuario as us on pc.dni_encargado = us.dni \n" +
+                                        "inner join cliente as ci on pc.cliente = ci.code \n" +
+                                        "where pc.fecha = ?", new String[]{fecha_desde});
                         } else {
-                                cursor = sqLiteDatabase.rawQuery("select pc.code, pc.fecha, pc.dni_encargado, pc.cliente, pc.calibre, pc.peso, pc.observacion \n" +
-                                        "from pesocaja as ps \n" +
-                                        "inner join usuario as us    \n" +
-                                        "on pc.dni_encargado = us.dni  \n" +
-                                        "where cb.fecha >= ? and cb.fecha <= ?", new String[]{fecha_desde, fecha_hasta});
+                                cursor = sqLiteDatabase.rawQuery("select pc.fecha as 'Fecha', pc.peso as 'Peso Caja', ci.nombre as 'Cliente', pc.calibre as 'Calibre', us.nombre as 'Usuario', pc.observacion as 'Detalle' \n" +
+                                        "from pesocaja as pc \n" +
+                                        "inner join usuario as us on pc.dni_encargado = us.dni \n" +
+                                        "inner join cliente as ci on pc.cliente = ci.code \n" +
+                                        "where pc.fecha >= ? and pc.fecha <= ?", new String[]{fecha_desde, fecha_hasta});
                         }
                         if (cursor.moveToFirst()) {
                                 do {
                                         MdPesoCaja mdpesoCaja = new MdPesoCaja();
-                                        mdpesoCaja.setCode(cursor.getString(0));
-                                        mdpesoCaja.setFecha(cursor.getString(1));
-                                        mdpesoCaja.setDni_encargado(cursor.getString(2));
-                                        mdpesoCaja.setCliente(cursor.getString(3));
-                                        mdpesoCaja.setCalibre(cursor.getString(4));
-                                        mdpesoCaja.setPeso(cursor.getString(5));
-                                        mdpesoCaja.setObservacion(cursor.getString(6));
+                                        mdpesoCaja.setFecha(cursor.getString(0));
+                                        mdpesoCaja.setDni_encargado(cursor.getString(4));
+                                        mdpesoCaja.setCliente(cursor.getString(2));
+                                        mdpesoCaja.setCalibre(cursor.getString(3));
+                                        mdpesoCaja.setPeso(cursor.getString(1));
+                                        mdpesoCaja.setObservacion(cursor.getString(5));
                                         listaPesoCaja.add(mdpesoCaja);
                                 } while (cursor.moveToNext());
                                 cursor.close();

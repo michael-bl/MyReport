@@ -39,7 +39,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         private DatabaseController dbController;
         private ArrayList<String> stringArrayList;
         private TextView tvtFecha1, tvtFecha2;
-        private String fechaDesde, fechaHasta;
+        private String fechaDesde, fechaHasta, opcion;
         private FloatingActionButton btnShare;
         private SelectionAdapter myAdapter;
         private CheckBox chekRangoFecha;
@@ -90,7 +90,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                          tipoReporte = spTipoReporte.getItemAtPosition(spTipoReporte.getSelectedItemPosition()).toString();
                          fechaDesde = tvtFecha1.getText().toString().trim();
                          fechaHasta = tvtFecha2.getText().toString().trim();
-                         String opcion = tipoReporte.substring(0,1);
+                         opcion = tipoReporte.substring(0,1);
 
                         existDb = new ExistSqliteDatabase();
                         if (existDb.ExistSqliteDatabase()) {
@@ -99,7 +99,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                         case "1":
                                                 dbController = new DatabaseController();
                                                 listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, chekRangoFecha.isChecked());
-                                                llenarListViewCuelloBotella();
+                                                llenarListViewReporte(1);
                                                 break;
                                         case "2":
                                                 Toast.makeText(this, "VwBuscarReporte.class/Opción en desarrollo!", Toast.LENGTH_LONG).show();
@@ -110,7 +110,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                         case "4":
                                                 dbController = new DatabaseController();
                                                 listaPesoCaja = dbController.selectPesoCaja(this, fechaDesde, fechaHasta, chekRangoFecha.isChecked());
-                                                llenarListViewCuelloBotella();
+                                                llenarListViewReporte(4);
                                                 break;
                                 }
                         }
@@ -150,7 +150,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                 Toast.makeText(this, "Error de ejecución: " + e, Toast.LENGTH_LONG).show();
                         }
 
-                       Intent intent = new Intent(getApplicationContext(), VwMain.class);
+                        Intent intent = new Intent(getApplicationContext(), VwMain.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
@@ -169,12 +169,24 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                 }
         }
 
-        private void llenarListViewCuelloBotella() {
+        private void llenarListViewReporte(int opcion) {
                 try {
                         stringArrayList = new ArrayList<>();
-                        for (MdCuelloBotella cb: listaCuelloBotella) {
-                                stringArrayList.add(cb.getMotivo() +"   "+ cb.getHora_inicio() +"   "+ cb.getHora_final());
+                        switch (opcion){
+                                case 1:
+                                        for (MdCuelloBotella cb: listaCuelloBotella) {
+                                                stringArrayList.add(cb.getMotivo() +"   "+ cb.getHora_inicio() +"   "+ cb.getHora_final());
+                                        }
+                                break;
+                                        // 2
+                                        //3
+                                case 4:
+                                        for (MdPesoCaja pc: listaPesoCaja) {
+                                                stringArrayList.add(pc.getFecha() +"   "+ pc.getPeso() +"   "+ pc.getCliente()+"   "+ pc.getCalibre()+"   "+ pc.getDni_encargado()+"   "+ pc.getObservacion());
+                                        }
+                                        break;
                         }
+
 
                         lvReports = findViewById(R.id.lvDatosReporte);
                         myAdapter = new SelectionAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, stringArrayList);

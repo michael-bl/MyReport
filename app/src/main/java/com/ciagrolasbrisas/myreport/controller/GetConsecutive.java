@@ -20,7 +20,9 @@ public class GetConsecutive {
         try {
             Cursor cursor = sqLiteDatabase.rawQuery(String.format("select * from %s SQLITE_SEQUENSE", nombreTabla), null);
             if (cursor.moveToFirst()) {
-                code = cursor.getInt(0) + 1;
+                do{
+                    code = cursor.getInt(0) + 1;
+                } while (cursor.moveToNext());
             } else {
                 return 1;
             }

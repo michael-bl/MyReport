@@ -90,7 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " peso VARCHAR(5)," +
                 " observacion VARCHAR(30)," +
                 " hora_captura VARCHAR(8)," +
-                " PRIMARY KEY (code, fecha, dni_encargado));";
+                " PRIMARY KEY (code, fecha, dni_encargado, hora_captura));";
 
         private final String tblCliente = "CREATE TABLE cliente (" +
                 " code INTEGER NOT NULL UNIQUE," +
@@ -98,9 +98,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " PRIMARY KEY (code));";
 
         private final String tblCalibre = "CREATE TABLE calibre  (" +
-                " code INTEGER NOT NULL UNIQUE," +
-                " calibre VARCHAR(12)," +
-                " PRIMARY KEY (code));";
+                " calibre VARCHAR(12) NOT NULL UNIQUE," +
+                " PRIMARY KEY (calibre));";
 
         public DatabaseHelper(@Nullable Context context) {
                 super(context, databaseName, null, databaseVersion);
