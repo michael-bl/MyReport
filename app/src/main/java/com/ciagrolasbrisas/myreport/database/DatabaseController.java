@@ -466,16 +466,16 @@ public class DatabaseController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor;
                         if (esFechaUnica) {
-                                cursor = sqLiteDatabase.rawQuery("select ps.code, ps.fecha, ps.dni_encargado, ps.cliente, ps.calibre, ps.peso, ps.observacion \n" +
+                                cursor = sqLiteDatabase.rawQuery("select pc.code, pc.fecha, pc.dni_encargado, pc.cliente, pc.calibre, pc.peso, pc.observacion \n" +
                                         "from pesocaja as ps \n" +
-                                        "inner join motivocb as mt    \n" +
-                                        "on cb.motivo = mt.code  \n" +
+                                        "inner join usuario as us    \n" +
+                                        "on pc.dni_encargado = us.dni  \n" +
                                         "where cb.fecha = ?", new String[]{fecha_desde});
                         } else {
-                                cursor = sqLiteDatabase.rawQuery("select ps.code, ps.fecha, ps.dni_encargado, ps.cliente, ps.calibre, ps.peso, ps.observacion \n" +
-                                        "from cuellobotella as cb \n" +
-                                        "inner join motivocb as mt    \n" +
-                                        "on cb.motivo = mt.code  \n" +
+                                cursor = sqLiteDatabase.rawQuery("select pc.code, pc.fecha, pc.dni_encargado, pc.cliente, pc.calibre, pc.peso, pc.observacion \n" +
+                                        "from pesocaja as ps \n" +
+                                        "inner join usuario as us    \n" +
+                                        "on pc.dni_encargado = us.dni  \n" +
                                         "where cb.fecha >= ? and cb.fecha <= ?", new String[]{fecha_desde, fecha_hasta});
                         }
                         if (cursor.moveToFirst()) {
