@@ -46,7 +46,7 @@ public class VwPesosPlanta extends AppCompatActivity {
                 btnGuardar.setOnClickListener(view -> {
                         // capturar datos de la UI para el modelo
                         MdPesoCaja pesoCaja = new MdPesoCaja();
-                        pesoCaja.setPeso(txtPesoCaja.getText().toString());
+                        pesoCaja.setPeso(txtPesoCaja.getText().toString().replace(".", ","));
                         pesoCaja.setFecha(tvFechaSistema.getText().toString());
                         pesoCaja.setDni_encargado(tvDniUsuario.getText().toString());
 

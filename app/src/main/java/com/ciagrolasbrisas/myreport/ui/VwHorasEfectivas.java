@@ -58,11 +58,19 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
 
         @Override
         public void onDateSet(DatePicker datePicker, int anio, int mes, int dia) {
-                if (dia < 10) if (mes < 10)
-                        stringFecha = "0" + dia + "/" + "0" + (mes+1) + "/" + anio;
-                else stringFecha = "0" + dia + "/" + (mes+1) + "/" + anio;
-                else if (mes < 10) stringFecha = dia + "/" + "0" + (mes+1) + "/" + anio;
-                else stringFecha = dia + "/" + (mes+1) + "/" + anio;
+                if (dia < 10) {
+                        if (mes <9) {
+                                stringFecha = "0" + dia + "/0" + (mes+1) + "/" + anio;
+                        } else {
+                                stringFecha = "0" + dia + "/" + (mes+1) + "/" + anio;
+                        }
+                } else {
+                        if (mes <9) {
+                                stringFecha = dia + "/0" + (mes+1) + "/" + anio;
+                        } else {
+                                stringFecha = dia + "/" + (mes+1) + "/" + anio;
+                        }
+                }
 
                 tvFechaHsEfectivas.setText(stringFecha);
         }
