@@ -1,21 +1,30 @@
 package com.ciagrolasbrisas.myreport.controller;
 
+import com.ciagrolasbrisas.myreport.model.MdUsuario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.List;
+
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ApiRoutes {
 
     // Inicio de sesion
-    @GET("login/{user}/{pass}")
-    //Call<List<MdUsuario>> login(@Path("user") String user, @Path("pass") String pass);
+    @FormUrlEncoded
+    @POST("conexion.php/{PrmtUser}/{PrmtPass}")
+    Call<List<MdUsuario>> login(@Field("PrmtUser") String a, @Field("PrmtPass") String b);
 
-    // Retorna lista de clientes
-        //@GET("usuarios")
-    Call<JsonArray> getUsuarios();
+
+    @FormUrlEncoded
+    @POST("reporte_x_encargado.php/{id_manager}/{date}")
+    Call<List<MdUsuario>> reporteXencargado(@Field("id_manager") String a, @Field("date") String b);
 
     // Agrega nuevo, actualiza o desactiva usuario
     @GET("accionusuario/{id}/{fk_localidad}/{nombre}/{pass}/{telefono}/{email}/{direccion}/{accion}/{estado}")
@@ -29,9 +38,6 @@ public interface ApiRoutes {
                                    @Path("accion") int h,
                                    @Path("estado") int i);
 
-    // Retorna lista de clientes
-        //@GET("clientes")
-        //Call<List<Cliente>> getClientes();
 
     // Agrega nuevo, actualiza o desactiva cliente
     @GET("accioncliente/{id}/{fk_localidad}/{nombre}/{telefono}/{email}/{direccion}/{accion}/{estado}")

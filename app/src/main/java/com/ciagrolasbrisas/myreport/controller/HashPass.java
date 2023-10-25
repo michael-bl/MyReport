@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 public class HashPass {
 public HashPass(){
 }
-    public String convertSHA256(String password) {
+    public static String convertSHA256(String password) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-256");

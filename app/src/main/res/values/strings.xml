@@ -56,9 +56,9 @@
     <string name="tipo_muestreo">Tipo Muestreo</string>
     <string name="horas_efectivas">Horas Efectivas</string>
     <string name="rango_fechas">Filtrar fecha única</string>
+    <string name="mensaje">IT Department-Keelings</string>
     <string name="ticket_cosecha">Reporte Carretas</string>
     <string name="sincroRemoto">Sincronizar Remoto</string>
-    <string name="mensaje">IT Department Development</string>
     <string name="semanas_a_cosecha">Semanas a Cosecha</string>
     <string name="modoAlmacenamiento">Modo Almacenamiento</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>

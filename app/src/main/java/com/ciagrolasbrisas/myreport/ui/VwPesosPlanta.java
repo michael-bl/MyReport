@@ -90,7 +90,7 @@ public class VwPesosPlanta extends AppCompatActivity {
                 tvFechaSistema .setText(fecha.getFecha());
 
                 //asignacion del codigo de usuario
-                tvDniUsuario.setText(VwLogin.dniUsuario);
+                tvDniUsuario.setText(VwLogin.dniUser);
 
                 // llenar spinner Cliente
                 llenarSpinnerCliente();

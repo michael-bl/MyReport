@@ -61,7 +61,7 @@ public class ExcelGenerator {
                                 case "MdCuelloBotella":
 
                                         try {
-                                                if (!VwLogin.dniUsuario.equals( "206040225")){
+                                                if (!VwLogin.dniUser.equals( "206040225")){
 
                                                         listCuelloBotella = (ArrayList<MdCuelloBotella>) list;
                                                         String[] headersCuelloB = {"Encargado", "Fecha", "Motivo", "Lote", "Sección", "Hora Inicio", "Hora Final"};
@@ -200,7 +200,7 @@ public class ExcelGenerator {
                 }
         }
 
-        private void makeHeader(String[] headersCuelloB) {
+        private void makeHeader(@NonNull String[] headersCuelloB) {
                 // Genera celdas para cada columna del header
                 for (int i = 0; i < headersCuelloB.length; i++) {
                         headerCell = headerRow.createCell(i);

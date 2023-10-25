@@ -276,6 +276,23 @@ public class DatabaseController {
                 }
         }
 
+        /*---------------------------------------------------Verifica existencia de usuarios-------------------------------------------------------------------------------------------*/
+        public boolean existUsersData(Context context){
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario ", null);
+                        if(cursor.moveToFirst()){
+                                return !cursor.getString(0).equals("0");
+                        } else {
+                                return  false;
+                        }
+                }  catch (IllegalArgumentException e) {
+                        i("MyReport: DataBaseController", e.getMessage());
+                        return false;
+                }
+        }
+
         /*---------------------------------------------------Verifica existencia de jornada especifica-------------------------------------------------------------------------*/
         public boolean existJornada(Context context, String fecha, String dni_encargado, String motivo) {
                 try {
@@ -302,7 +319,6 @@ public class DatabaseController {
                         nombreUsuario = cursor.getString(0);
                         return  true;
                 }
-
                 return false;
         }
 

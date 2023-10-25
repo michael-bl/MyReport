@@ -87,7 +87,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
 
                                 totalCuelloBotella(listacb);
 
-                                jornada = dbController.horasEfectivas(this, stringFecha, VwLogin.dniUsuario);
+                                jornada = dbController.horasEfectivas(this, stringFecha, VwLogin.dniUser);
 
                                 if (!jornada.equals("")) {
                                         DateTimeFormatter formato_hora = DateTimeFormatter.ofPattern("HH:mm:ss");

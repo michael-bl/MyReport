@@ -15,14 +15,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout4"
-        app:layout_constraintVertical_bias="0.186" />
+        app:layout_constraintVertical_bias="0.118" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="310dp"
+        android:layout_marginTop="270dp"
         android:layout_marginEnd="20dp"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="@string/usuario"
-            android:inputType="number"
+            android:inputType="text"
             android:maxLength="12"
             android:nextFocusDown="@id/txtLoginPass"
             android:textColorHint="#616161" />
@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="378dp"
+        android:layout_marginTop="338dp"
         android:layout_marginEnd="20dp"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,14 +70,14 @@
         android:id="@+id/imageViewLogo"
         android:layout_width="370dp"
         android:layout_height="184dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="40dp"
+        android:contentDescription="TODO"
         android:scaleType="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logos_combinados"
-        android:contentDescription="TODO" />
+        app:srcCompat="@drawable/logo_keelings" />
 
     <TextView
         android:id="@+id/tvMensaje"
@@ -86,6 +86,18 @@
         android:layout_marginBottom="16dp"
         android:text="@string/mensaje"
         android:textColor="@color/purple_500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/switchModoLocal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="192dp"
+        android:minHeight="48dp"
+        android:text="Modo local"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

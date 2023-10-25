@@ -18,7 +18,6 @@ import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Objects;
 
 public class VwCuelloBotella extends AppCompatActivity {
@@ -57,7 +56,7 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 if (txtDniEncargado.getText().equals("")) {
                         // dniUsuario = variable estatica llenada en VwLogin
-                        txtDniEncargado.setText(VwLogin.dniUsuario);
+                        txtDniEncargado.setText(VwLogin.dniUser);
                 }
 
                 capturarFechaDelSistema();
