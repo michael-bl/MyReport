@@ -1,12 +1,17 @@
 package com.ciagrolasbrisas.myreport.controller;
 
+import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -25,6 +30,17 @@ public interface ApiRoutes {
     @FormUrlEncoded
     @POST("reporte_x_encargado.php/{id_manager}/{date}")
     Call<List<MdUsuario>> reporteXencargado(@Field("id_manager") String a, @Field("date") String b);
+
+
+    // Agrega nuevo cuello de botella de cosecha
+    @Headers({ "Content-Type: application/json"})
+    @POST("new_cuellobotcos.php")
+    Call<JsonObject> newCuelloBotellaCosecha(@Body String reporte);
+
+
+
+
+
 
     // Agrega nuevo, actualiza o desactiva usuario
     @GET("accionusuario/{id}/{fk_localidad}/{nombre}/{pass}/{telefono}/{email}/{direccion}/{accion}/{estado}")

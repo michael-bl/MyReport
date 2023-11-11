@@ -1,9 +1,14 @@
 package com.ciagrolasbrisas.myreport.ui;
 
+import static com.ciagrolasbrisas.myreport.ui.VwLogin.dniUser;
+import static com.ciagrolasbrisas.myreport.ui.VwLogin.localMode;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -11,14 +16,39 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ciagrolasbrisas.myreport.R;
+import com.ciagrolasbrisas.myreport.controller.ApiUtils;
+import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
+import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VwCuelloBotella extends AppCompatActivity {
         private Button btnHoraInicio, btnHoraFinal, btnGuardarReporte;
@@ -26,14 +56,25 @@ public class VwCuelloBotella extends AppCompatActivity {
         private TextInputEditText txtLote, txtSeccion;
         private TextView tvHoraInicial, tvHoraFinal;
         private MdCuelloBotella objCuelloBotella;
+        private List<MdCuelloBotella> listCuelloBotella;
         private DatabaseController dbController;
         private String horaSeleccionada;
         private Spinner spinnerMotivo;
+        private LogGenerator logGenerator;
+        private String date, time;
+        private boolean responseState = false;
+
+        private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.vw_cuello_botella);
+
+                GetStringDate stringDate = new GetStringDate();
+                GetStringTime stringTime = new GetStringTime();
+                date = stringDate.getFecha();
+                time = stringTime.getHora();
 
                 txtDniEncargado = findViewById(R.id.tvDniEncargado);
 
@@ -48,15 +89,13 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 Bundle bundle = getIntent().getExtras();
                 if (bundle != null) {
-                        // Extrayendo el extra de tipo cadena
-                        objCuelloBotella = (MdCuelloBotella) bundle.getSerializable("cuellobotella");
+                        objCuelloBotella = (MdCuelloBotella) bundle.getSerializable("cuellobotella");  // Extrayendo el extra de tipo cadena
                         if (Objects.requireNonNull(objCuelloBotella).getAccion() == 1 || Objects.requireNonNull(objCuelloBotella).getAccion() == 2)
                                 mostrarDatosEnInterfaz(objCuelloBotella);
                 }
 
                 if (txtDniEncargado.getText().equals("")) {
-                        // dniUsuario = variable estatica llenada en VwLogin
-                        txtDniEncargado.setText(VwLogin.dniUser);
+                        txtDniEncargado.setText(dniUser);  // dniUsuario = variable estatica llenada en VwLogin
                 }
 
                 capturarFechaDelSistema();
@@ -74,15 +113,26 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 llenarSpinnerMotivo();
 
+
                 btnGuardarReporte = findViewById(R.id.btnGuardarCB);
                 btnGuardarReporte.setOnClickListener(view -> {
-                        if(guardarReporteDbLocal()){
-                                Intent intent = new Intent(getApplicationContext(), VwMain.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(intent);
-                                finish();
+
+                        if (localMode) {
+                                if (guardarRptEnDbLocal()) {
+                                        lanzarActividad();
+                                }
+                        } else {
+                                saveOnServer(); // guarda el reporte en el servidor remoto
+                                lanzarActividad();
                         }
                 });
+        }
+
+        private void lanzarActividad() {
+                Intent intent = new Intent(getApplicationContext(), VwMain.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
         }
 
         private void mostrarDatosEnInterfaz(MdCuelloBotella objCuelloBotella) {
@@ -99,32 +149,113 @@ public class VwCuelloBotella extends AppCompatActivity {
                 }
         }
 
-        private boolean guardarReporteDbLocal() {
-                try {
-                        dbController = new DatabaseController();
-                        objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
-                        objCuelloBotella.setDniEncargado(txtDniEncargado.getText().toString());
-                        objCuelloBotella.setLote(txtLote.getText().toString());
-                        objCuelloBotella.setSeccion(txtSeccion.getText().toString());
-                        objCuelloBotella.setHora_inicio(tvHoraInicial.getText().toString());
 
-                        if(!objCuelloBotella.getLote().equals("") || !objCuelloBotella.getSeccion().equals("") || !objCuelloBotella.getHora_inicio().equals("")){
-                                if (objCuelloBotella.getAccion() == 0 && tvHoraFinal.getText().length()==0) {
+        private void saveOnServer() {
+                logGenerator = new LogGenerator();
+                OkHttpClient client = new OkHttpClient();
+                llenarReporteCb();
+
+                if (!objCuelloBotella.getLote().equals("") || !objCuelloBotella.getSeccion().equals("") || !objCuelloBotella.getHora_inicio().equals("")) {
+                        if (objCuelloBotella.getAccion() == 0 && tvHoraFinal.getText().length() == 0) {
+                                objCuelloBotella.setHora_final("00:00:00");
+                        } else {
+                                objCuelloBotella.setHora_final(tvHoraFinal.getText().toString());
+                        }
+                        String limpiarCode = spinnerMotivo.getItemAtPosition(spinnerMotivo.getSelectedItemPosition()).toString().substring(0, 2);
+                        if (limpiarCode.contains("-"))
+                                limpiarCode = limpiarCode.substring(0, 1);
+                        objCuelloBotella.setMotivo(limpiarCode);
+
+                        if (objCuelloBotella.getAccion() == 0) {
+
+                                ConnectivityService con = new ConnectivityService();
+                                if (con.stateConnection(this)) {
+
+                                        listCuelloBotella = new ArrayList<>();
+                                        listCuelloBotella.add(objCuelloBotella);
+                                        Map<String, Object> finalJson = new HashMap<>();
+                                        finalJson.put("reporte", listCuelloBotella);
+
+                                        String json = new Gson().toJson(finalJson);
+
+                                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+
+                                        Request request = new Request.Builder()
+                                                .url("https://reportes.ciagrolasbrisas.com/new_cuellobotcos.php")
+                                                .post(requestBody)
+                                                .build();
+
+                                        // Usar un ExecutorService para ejecutar la tarea en segundo plano
+                                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                                        executor.execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        try {
+                                                                okhttp3.Response response = client.newCall(request).execute();
+
+                                                                if (response.isSuccessful()) {
+                                                                        final String responseBody = response.body().string();
+                                                                        // Manejar la respuesta
+                                                                        mainHandler.post(new Runnable() {
+                                                                                @Override
+                                                                                public void run() {
+                                                                                        Toast.makeText(VwCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                        });
+                                                                } else {
+                                                                        // Imprimir error en la respuesta
+                                                                        mainHandler.post(new Runnable() {
+                                                                                @Override
+                                                                                public void run() {
+                                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
+                                                                                        Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                        });
+                                                                }
+                                                        } catch (IOException e) {
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + e.getMessage()); // agregamos el error al archivo Logs.txt
+                                                                e.printStackTrace();
+                                                        }
+                                                }
+                                        });
+
+                                        // Apagar el ExecutorService después de su uso
+                                        executor.shutdown();
+
+                                } else {
+                                        Toast.makeText(this, "El dispositivo no puede accesar a la red en este momento!", Toast.LENGTH_SHORT).show();
+                                }
+                        } else {
+                                dbController.updateCuelloBotella(this, objCuelloBotella); // cambiar luego la actualizacion a remoto
+                        }
+                } else {
+                        Toast.makeText(this, "Advertencia: existen campos vacios!", Toast.LENGTH_LONG).show();
+                }
+
+        }
+
+        private boolean guardarRptEnDbLocal() {
+                try {
+
+                        llenarReporteCb();  // Cargamos la informacion en el objeto
+
+                        if (!objCuelloBotella.getLote().equals("") || !objCuelloBotella.getSeccion().equals("") || !objCuelloBotella.getHora_inicio().equals("")) {
+                                if (objCuelloBotella.getAccion() == 0 && tvHoraFinal.getText().length() == 0) {
                                         objCuelloBotella.setHora_final("00:00:00");
-                                }else {
+                                } else {
                                         objCuelloBotella.setHora_final(tvHoraFinal.getText().toString());
                                 }
                                 String limpiarCode = spinnerMotivo.getItemAtPosition(spinnerMotivo.getSelectedItemPosition()).toString().substring(0, 2);
                                 if (limpiarCode.contains("-"))
-                                        limpiarCode = limpiarCode.substring(0,1);
+                                        limpiarCode = limpiarCode.substring(0, 1);
                                 objCuelloBotella.setMotivo(limpiarCode);
 
                                 if (objCuelloBotella.getAccion() == 0) {
-                                        if(objCuelloBotella.getMotivo().equals("12")){
-                                                if(!dbController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getDniEncargado(), objCuelloBotella.getMotivo())){
+                                        if (objCuelloBotella.getMotivo().equals("12")) {
+                                                if (!dbController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getDniEncargado(), objCuelloBotella.getMotivo())) {
                                                         dbController.nuevoRptCuelloBotella(this, objCuelloBotella);
                                                 } else {
-                                                        Toast.makeText(this, "Ya existe un reporte de jornada, verifique!" , Toast.LENGTH_LONG).show();
+                                                        Toast.makeText(this, "Ya existe un reporte de jornada, verifique!", Toast.LENGTH_LONG).show();
                                                 }
                                         } else {
                                                 dbController.nuevoRptCuelloBotella(this, objCuelloBotella);
@@ -134,7 +265,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                                 }
                                 return true;
                         } else {
-                                Toast.makeText(this, "Advertencia: existen campos vacios!" , Toast.LENGTH_LONG).show();
+                                Toast.makeText(this, "Advertencia: existen campos vacios!", Toast.LENGTH_LONG).show();
                         }
                 } catch (NullPointerException npe) {
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
@@ -142,7 +273,16 @@ public class VwCuelloBotella extends AppCompatActivity {
                 return false;
         }
 
-        private void capturarFechaDelSistema(){
+        private void llenarReporteCb() {
+                dbController = new DatabaseController();
+                objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
+                objCuelloBotella.setDniEncargado(txtDniEncargado.getText().toString());
+                objCuelloBotella.setLote(txtLote.getText().toString());
+                objCuelloBotella.setSeccion(txtSeccion.getText().toString());
+                objCuelloBotella.setHora_inicio(tvHoraInicial.getText().toString());
+        }
+
+        private void capturarFechaDelSistema() {
                 GetStringDate fecha = new GetStringDate();
                 tvFechaSistema.setText(fecha.getFecha());
         }
@@ -181,7 +321,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listaMotivos);
                         int position = 0;
 
-                        if (objCuelloBotella.getAccion() == 0){
+                        if (objCuelloBotella.getAccion() == 0) {
                                 this.spinnerMotivo.setAdapter(adapter);
                         } else {
                                 String motivo = objCuelloBotella.getMotivo().substring(0, 2);

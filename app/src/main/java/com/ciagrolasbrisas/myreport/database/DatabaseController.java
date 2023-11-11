@@ -225,10 +225,12 @@ public class DatabaseController {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
-                        //int code = getConsecutive.funGetConsecutive("usuario");
-                        values.put("code", usuario.getId());
-                        values.put("dni", usuario.getNombre());
+                        int code = getConsecutive.funGetConsecutive(context, "usuario");
+                        values.put("code", code);
+                        values.put("dni", usuario.getId());
                         values.put("password", usuario.getPass());
+                        values.put("nombre",usuario.getNombre());
+                        values.put("departamento",usuario.getDepartamento());
 
                         long resultado = sqLiteDatabase.insert("usuario", null, values);
 

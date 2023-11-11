@@ -39,12 +39,21 @@ public class ExcelGenerator {
 
         private ArrayList<MdCuelloBotella> listCuelloBotella;
         private ArrayList<MdPesoCaja> listPesoCaja;
+        private LogGenerator logGenerator;
+        private String date, time;
 
         public ExcelGenerator() {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.Q)
         public <T> void generarExcell(Context context, @NonNull List<T> list) {
+
+                //GetStringDate stringDate = new GetStringDate();
+                //GetStringTime stringTime = new GetStringTime();
+                date = new GetStringDate().getFecha();
+                time = new GetStringTime().getHora();
+
+                logGenerator = new LogGenerator();
 
                 if (list.size() != 0) {
 
@@ -101,6 +110,7 @@ public class ExcelGenerator {
                                                 }
                                         } catch (Exception e) {
                                                 Toast.makeText(context, "ExcelGenerator: error de ejecución: " + e, Toast.LENGTH_LONG).show();
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + e.getMessage()); // agregamos el error al archivo Logs.txt
                                         }
 
                                         break;
@@ -144,6 +154,7 @@ public class ExcelGenerator {
                         Toast.makeText(cont, "El archivo de Excel ha sido generado exitosamente.", Toast.LENGTH_LONG).show();
 
                 } catch (Exception e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + e.getMessage()); // agregamos el error al archivo Logs.txt
                         Toast.makeText(cont, "Error al crear el archivo: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }

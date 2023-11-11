@@ -32,7 +32,7 @@ public class MdUsuario implements Serializable {
 
     @SerializedName("departamento")
     @Expose
-    private int departamento;
+    private String departamento;
 
     public String getId() {
         return id;
@@ -74,11 +74,11 @@ public class MdUsuario implements Serializable {
         this.accion = accion;
     }
 
-    public int getDepartamento() {
+    public String getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(int departamento) {
+    public void setDepartamento(String departamento) {
         this.departamento = departamento;
     }
 }

@@ -28,6 +28,7 @@ import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,11 +54,38 @@ public class VwLogin extends AppCompatActivity {
 
                 stLocalMode = findViewById(R.id.switchModoLocal);
 
-                localMode = stLocalMode.isSelected();
+                localMode = stLocalMode.isChecked();
 
                 logGenerator = new LogGenerator();
 
+                checkAndRequestPermissions();
+
+                txtId = findViewById(R.id.txtLoginUser);
+                txtPass = findViewById(R.id.txtLoginPass);
+                Button btnLogin = findViewById(R.id.btnLogin);
+                btnLogin.setOnClickListener(v -> loginLocalOremoto());
+        }
+
+        private void checkAndRequestPermissions() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        String[] permissions = new String[]{
+                                Manifest.permission.INTERNET,
+                                Manifest.permission.ACCESS_NETWORK_STATE,
+                                Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                        };
+                        List<String> permissionsToRequest = new ArrayList<>();
+                        for (String permission : permissions) {
+                                if (ContextCompat.checkSelfPermission(this, permission)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                                        permissionsToRequest.add(permission);
+                                }
+                        }
+                        if (!permissionsToRequest.isEmpty()) {
+                                ActivityCompat.requestPermissions(this,
+                                        permissionsToRequest.toArray(new String[0]), 7);
+                        }
                         if (!Environment.isExternalStorageManager()) {
                                 Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                                 startActivity(intent);
@@ -66,24 +94,8 @@ public class VwLogin extends AppCompatActivity {
                         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                         }
-
                         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                        }
-                }
-
-                txtId = findViewById(R.id.txtLoginUser);
-                txtPass = findViewById(R.id.txtLoginPass);
-                Button botonLogin = findViewById(R.id.btnLogin);
-                botonLogin.setOnClickListener(v -> loginLocalOremoto());
-        }
-
-        @Override
-        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-                if (requestCode == 1) {
-                        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
                         }
                 }
         }
@@ -101,8 +113,7 @@ public class VwLogin extends AppCompatActivity {
                         }
                 } catch (SQLiteException sqle) {
                         Toast.makeText(this, "Error en consulta: " + sqle, Toast.LENGTH_LONG).show();
-                        // agregamos el error al archivo Logs.txt
-                        logGenerator.generateLogFile(date + ": " + time + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + sqle.getMessage()); // agregamos el error al archivo Logs.txt
                 }
         }
 
@@ -166,6 +177,8 @@ public class VwLogin extends AppCompatActivity {
                                                                         for (int i = 0; i < response.size(); i++) {
 
                                                                                 if (usuario.getId().equals(response.get(i).getId()) && usuario.getPass().equals(response.get(i).getPass())) {
+
+                                                                                        usuario.setNombre(response.get(i).getNombre());
 
                                                                                         dbController.nuevoUsuario(VwLogin.this, usuario); // Guardar datos de usuario en tabla local
 
