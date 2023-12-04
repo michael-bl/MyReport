@@ -90,7 +90,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                 Bundle bundle = getIntent().getExtras();
                 if (bundle != null) {
                         objCuelloBotella = (MdCuelloBotella) bundle.getSerializable("cuellobotella");  // Extrayendo el extra de tipo cadena
-                        if (Objects.requireNonNull(objCuelloBotella).getAccion() == 1 || Objects.requireNonNull(objCuelloBotella).getAccion() == 2)
+                        if (Objects.requireNonNull(objCuelloBotella).getAccion() == 1 || Objects.requireNonNull(objCuelloBotella).getAccion() == 2) // Actualizar o eliminar reporte
                                 mostrarDatosEnInterfaz(objCuelloBotella);
                 }
 
@@ -196,20 +196,12 @@ public class VwCuelloBotella extends AppCompatActivity {
                                                                 if (response.isSuccessful()) {
                                                                         final String responseBody = response.body().string();
                                                                         // Manejar la respuesta
-                                                                        mainHandler.post(new Runnable() {
-                                                                                @Override
-                                                                                public void run() {
-                                                                                        Toast.makeText(VwCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show();
-                                                                                }
-                                                                        });
+                                                                        mainHandler.post(() -> Toast.makeText(VwCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show());
                                                                 } else {
                                                                         // Imprimir error en la respuesta
-                                                                        mainHandler.post(new Runnable() {
-                                                                                @Override
-                                                                                public void run() {
-                                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
-                                                                                        Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
-                                                                                }
+                                                                        mainHandler.post(() -> {
+                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
+                                                                                Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
                                                                         });
                                                                 }
                                                         } catch (IOException e) {
