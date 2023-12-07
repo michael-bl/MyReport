@@ -6,6 +6,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -22,12 +24,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ciagrolasbrisas.myreport.R;
+import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
+import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
+import com.google.gson.Gson;
 
+import org.etsi.uri.x01903.v13.impl.IdentifierTypeImpl;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class VwListarCuelloBotella extends AppCompatActivity {
         private ArrayList<MdCuelloBotella> listMdCuelloBotella;
@@ -45,11 +60,17 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         private Bundle bundle;
         private Intent intent;
         private View view;
+        private String date, time;
+        private boolean localMode;
+        private LogGenerator logGenerator;
+        private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.vw_listar_cuellobotella);
+
+                 localMode = VwLogin.localMode;
 
                 mdCuelloBotella = new MdCuelloBotella();
                 Button btnSiguente = findViewById(R.id.btnSiguienteCB);
@@ -59,10 +80,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 bundle = new Bundle();
                 intent = new Intent(this, VwCuelloBotella.class);
 
-                existDb = new ExistSqliteDatabase();
-                if (existDb.ExistSqliteDatabase()) {
-                        selectCuelloBotellaSinCerrarDbLocal();
-                }
+                getCuellosPendientes();
 
                 btnSiguente.setOnClickListener(v -> {
                         try {
@@ -75,6 +93,63 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                         }
                 });
+        }
+
+        private void getCuellosPendientes() {
+
+                if (!localMode) {
+                        selectCuelloBotellaSinCerrarDbRemota();
+                } else  {
+                        existDb = new ExistSqliteDatabase();
+                        if (existDb.ExistSqliteDatabase()) {
+                                selectCuelloBotellaSinCerrarDbLocal();
+                        }
+                }
+        }
+
+        private void selectCuelloBotellaSinCerrarDbRemota() {
+                logGenerator = new LogGenerator();
+                OkHttpClient client = new OkHttpClient();
+                ConnectivityService con = new ConnectivityService();
+
+                if (con.stateConnection(this)) {
+                        String json = new Gson().toJson("encargado:" + VwLogin.dniUser);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+
+                        Request request = new Request.Builder()
+                                .url("https://reportes.ciagrolasbrisas.com/new_cuellobotcos.php")
+                                .post(requestBody)
+                                .build();
+
+                        // Usar un ExecutorService para ejecutar la tarea en segundo plano
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                        executor.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                        try {
+                                                okhttp3.Response response = client.newCall(request).execute();
+
+                                                if (response.isSuccessful()) {
+                                                        final String responseBody = response.body().string();
+                                                        // Manejar la respuesta
+                                                        mainHandler.post(() -> Toast.makeText(VwListarCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show());
+                                                } else {
+                                                        // Imprimir error en la respuesta
+                                                        mainHandler.post(() -> {
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
+                                                                Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                        });
+                                                }
+                                        } catch (IOException e) {
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + e.getMessage()); // agregamos el error al archivo Logs.txt
+                                                e.printStackTrace();
+                                        }
+                                }
+                        });
+
+                        // Apagar el ExecutorService después de su uso
+                        executor.shutdown();
+                }
         }
 
         private void selectCuelloBotellaSinCerrarDbLocal() {

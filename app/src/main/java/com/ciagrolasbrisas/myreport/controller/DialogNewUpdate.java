@@ -44,12 +44,12 @@ public class DialogNewUpdate {
                 final Button btnNuevo = view.findViewById(R.id.btnNuevo);
                 final Button btnActualizar = view.findViewById(R.id.btnMasOpciones);
                 dialogTipoReporte = new DialogTipoReporte(context);
-                // Accion 0=nuevo y 1=actualizar
+
                 btnNuevo.setOnClickListener(v -> {
-                        dialogTipoReporte.selectTipoReporte(0).show();
+                        dialogTipoReporte.selectTipoReporte(0).show(); // Accion 0 = nuevo
                 });
                 btnActualizar.setOnClickListener(v -> {
-                        dialogTipoReporte.selectTipoReporte(1).show();
+                        dialogTipoReporte.selectTipoReporte(1).show(); // Accion 1= actualizar
                 });
 
                 builder.setView(view).setTitle("Elija una opción!");
