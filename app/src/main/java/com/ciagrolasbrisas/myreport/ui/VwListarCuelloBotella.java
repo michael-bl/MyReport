@@ -117,7 +117,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
                         Request request = new Request.Builder()
-                                .url("https://reportes.ciagrolasbrisas.com/new_cuellobotcos.php")
+                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
                                 .post(requestBody)
                                 .build();
 

@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ApiUtils;
+import com.ciagrolasbrisas.myreport.controller.CheckPermissions;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
@@ -58,7 +59,8 @@ public class VwLogin extends AppCompatActivity {
 
                 logGenerator = new LogGenerator();
 
-                checkAndRequestPermissions();
+                //checkAndRequestPermissions();
+                CheckPermissions permisos = new CheckPermissions(this);
 
                 txtId = findViewById(R.id.txtLoginUser);
                 txtPass = findViewById(R.id.txtLoginPass);
