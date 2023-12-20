@@ -26,6 +26,7 @@ import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
@@ -122,7 +123,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                                         lanzarActividad();
                                 }
                         } else {
-                                saveOnServer(); // guarda el reporte en el servidor remoto
+                                saveOnServer();  // guarda el reporte en el servidor remoto
                                 lanzarActividad();
                         }
                 });
@@ -148,7 +149,6 @@ public class VwCuelloBotella extends AppCompatActivity {
                         Toast.makeText(this, npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
-
 
         private void saveOnServer() {
                 logGenerator = new LogGenerator();
@@ -181,7 +181,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
                                         Request request = new Request.Builder()
-                                                .url("https://reportes.ciagrolasbrisas.com/new_cuellobotcos.php")
+                                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
                                                 .post(requestBody)
                                                 .build();
 

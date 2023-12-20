@@ -24,18 +24,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ciagrolasbrisas.myreport.R;
+import com.ciagrolasbrisas.myreport.controller.ApiUtils;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
+import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.google.gson.Gson;
-
-import org.etsi.uri.x01903.v13.impl.IdentifierTypeImpl;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,9 +48,12 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VwListarCuelloBotella extends AppCompatActivity {
-        private ArrayList<MdCuelloBotella> listMdCuelloBotella;
+        private ArrayList<MdCuelloBotella> listCuelloBotella;
         private DatabaseController dbController;
         private ArrayList<String> stringListCB;
         private MdCuelloBotella mdCuelloBotella;
@@ -69,6 +77,9 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.vw_listar_cuellobotella);
+
+                GetStringDate stringDate = new GetStringDate();
+                date = stringDate.getFecha();
 
                  localMode = VwLogin.localMode;
 
@@ -98,22 +109,84 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         private void getCuellosPendientes() {
 
                 if (!localMode) {
-                        selectCuelloBotellaSinCerrarDbRemota();
+                        //getCBSinCerrarCosDbRemota();
+                        getCuellosPendientesCos();
                 } else  {
                         existDb = new ExistSqliteDatabase();
                         if (existDb.ExistSqliteDatabase()) {
-                                selectCuelloBotellaSinCerrarDbLocal();
+                                getCBSinCerrarCosDbLocal();
                         }
                 }
         }
 
-        private void selectCuelloBotellaSinCerrarDbRemota() {
+        public void getCuellosPendientesCos(){
+                logGenerator = new LogGenerator();
+                ConnectivityService con = new ConnectivityService();
+
+                if (con.stateConnection(this)) {
+                        Map<String, Object> finalJson = new HashMap<>();
+
+                        MdCuelloBotella cb = new MdCuelloBotella();
+                        cb.setAccion(1);
+                        cb.setDniEncargado(VwLogin.dniUser);
+                        //cb.setFecha(date);
+                        cb.setFecha("12/12/2023");
+
+                        listCuelloBotella = new ArrayList<>();
+                        listCuelloBotella.add(cb);
+
+                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+
+                        String json = new Gson().toJson(finalJson);
+
+                                        Call<List<MdCuelloBotella>> requestReport = ApiUtils.getApiServices().getCuellobCosecha(json);
+                                        requestReport.enqueue(new Callback<List<MdCuelloBotella>>() {
+                                                @Override
+                                                public void onResponse(Call<List<MdCuelloBotella>> call, Response<List<MdCuelloBotella>> response) {
+                                                        try {
+                                                                //Verificamos si la transaccion fue exitosa y mostramos mensaje de error
+                                                                if (!response.isSuccessful()) {
+                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
+
+                                                                } else {
+                                                                        Toast.makeText(VwListarCuelloBotella.this, "Reporte guardado!", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                        } catch (java.lang.Error e) {
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " +e.getMessage()); // agregamos el error al archivo Logs.txt
+                                                                Toast.makeText(VwListarCuelloBotella.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<List<MdCuelloBotella>> call, Throwable t) {
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " +  t); // agregamos el error al archivo Logs.txt
+                                                        Toast.makeText(VwListarCuelloBotella.this, "VwResponseMsg, la peticion fallo en:  " + t.toString(), Toast.LENGTH_SHORT).show();
+                                                }
+                                        });
+                                }
+        }
+
+        private void getCBSinCerrarCosDbRemota() {
                 logGenerator = new LogGenerator();
                 OkHttpClient client = new OkHttpClient();
                 ConnectivityService con = new ConnectivityService();
 
                 if (con.stateConnection(this)) {
-                        String json = new Gson().toJson("encargado:" + VwLogin.dniUser);
+                        Map<String, Object> finalJson = new HashMap<>();
+
+                        MdCuelloBotella cb = new MdCuelloBotella();
+                        cb.setAccion(1);
+                        cb.setDniEncargado(VwLogin.dniUser);
+                        //cb.setFecha(date);
+                        cb.setFecha("12/12/2023");
+
+                        listCuelloBotella = new ArrayList<>();
+                        listCuelloBotella.add(cb);
+
+                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+
+                        String json = new Gson().toJson(finalJson);
+
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
                         Request request = new Request.Builder()
@@ -131,8 +204,21 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
                                                 if (response.isSuccessful()) {
                                                         final String responseBody = response.body().string();
+
                                                         // Manejar la respuesta
-                                                        mainHandler.post(() -> Toast.makeText(VwListarCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show());
+                                                        mainHandler.post(() -> {
+                                                                Gson gson = new Gson();
+                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {}.getType();
+                                                                listCuelloBotella = gson.fromJson(responseBody, listType);
+                                                                stringListCB = new ArrayList<>();
+
+                                                                for (MdCuelloBotella cb : listCuelloBotella) {
+                                                                        stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
+                                                                }
+                                                                llenarListViewCuelloBotella(stringListCB);
+
+                                                                Toast.makeText(VwListarCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show();
+                                                        });
                                                 } else {
                                                         // Imprimir error en la respuesta
                                                         mainHandler.post(() -> {
@@ -152,12 +238,12 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 }
         }
 
-        private void selectCuelloBotellaSinCerrarDbLocal() {
+        private void getCBSinCerrarCosDbLocal() {
                 try {
                         dbController = new DatabaseController();
-                        listMdCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
+                        listCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
                         stringListCB = new ArrayList<>();
-                        for (MdCuelloBotella cb : listMdCuelloBotella) {
+                        for (MdCuelloBotella cb : listCuelloBotella) {
                                 stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
                         }
                         llenarListViewCuelloBotella(stringListCB);
@@ -220,7 +306,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
                                 if (checked) {
-                                        mdCuelloBotella = listMdCuelloBotella.get(position);
+                                        mdCuelloBotella = listCuelloBotella.get(position);
                                         myAdapter.setNewSelection(position);
                                 } else {
                                         mdCuelloBotella = new MdCuelloBotella();
