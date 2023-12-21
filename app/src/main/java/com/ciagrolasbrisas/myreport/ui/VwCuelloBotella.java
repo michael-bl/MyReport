@@ -3,8 +3,6 @@ package com.ciagrolasbrisas.myreport.ui;
 import static com.ciagrolasbrisas.myreport.ui.VwLogin.dniUser;
 import static com.ciagrolasbrisas.myreport.ui.VwLogin.localMode;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,8 +13,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.ciagrolasbrisas.myreport.R;
-import com.ciagrolasbrisas.myreport.controller.ApiUtils;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
@@ -25,14 +24,6 @@ import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,9 +38,6 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class VwCuelloBotella extends AppCompatActivity {
         private Button btnHoraInicio, btnHoraFinal, btnGuardarReporte;
@@ -63,7 +51,6 @@ public class VwCuelloBotella extends AppCompatActivity {
         private Spinner spinnerMotivo;
         private LogGenerator logGenerator;
         private String date, time;
-        private boolean responseState = false;
 
         private final Handler mainHandler = new Handler(Looper.getMainLooper());
 

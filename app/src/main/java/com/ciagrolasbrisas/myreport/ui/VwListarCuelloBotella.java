@@ -27,6 +27,7 @@ import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ApiUtils;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
+import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
@@ -79,7 +80,9 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 setContentView(R.layout.vw_listar_cuellobotella);
 
                 GetStringDate stringDate = new GetStringDate();
+                GetStringTime stringTime = new GetStringTime();
                 date = stringDate.getFecha();
+                time = stringTime.getHora();
 
                  localMode = VwLogin.localMode;
 
@@ -109,61 +112,13 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         private void getCuellosPendientes() {
 
                 if (!localMode) {
-                        //getCBSinCerrarCosDbRemota();
-                        getCuellosPendientesCos();
+                        getCBSinCerrarCosDbRemota();
                 } else  {
                         existDb = new ExistSqliteDatabase();
                         if (existDb.ExistSqliteDatabase()) {
                                 getCBSinCerrarCosDbLocal();
                         }
                 }
-        }
-
-        public void getCuellosPendientesCos(){
-                logGenerator = new LogGenerator();
-                ConnectivityService con = new ConnectivityService();
-
-                if (con.stateConnection(this)) {
-                        Map<String, Object> finalJson = new HashMap<>();
-
-                        MdCuelloBotella cb = new MdCuelloBotella();
-                        cb.setAccion(1);
-                        cb.setDniEncargado(VwLogin.dniUser);
-                        //cb.setFecha(date);
-                        cb.setFecha("12/12/2023");
-
-                        listCuelloBotella = new ArrayList<>();
-                        listCuelloBotella.add(cb);
-
-                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
-
-                        String json = new Gson().toJson(finalJson);
-
-                                        Call<List<MdCuelloBotella>> requestReport = ApiUtils.getApiServices().getCuellobCosecha(json);
-                                        requestReport.enqueue(new Callback<List<MdCuelloBotella>>() {
-                                                @Override
-                                                public void onResponse(Call<List<MdCuelloBotella>> call, Response<List<MdCuelloBotella>> response) {
-                                                        try {
-                                                                //Verificamos si la transaccion fue exitosa y mostramos mensaje de error
-                                                                if (!response.isSuccessful()) {
-                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
-
-                                                                } else {
-                                                                        Toast.makeText(VwListarCuelloBotella.this, "Reporte guardado!", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                        } catch (java.lang.Error e) {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " +e.getMessage()); // agregamos el error al archivo Logs.txt
-                                                                Toast.makeText(VwListarCuelloBotella.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                        }
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<List<MdCuelloBotella>> call, Throwable t) {
-                                                        logGenerator.generateLogFile(date + ": " + time + ": " +  t); // agregamos el error al archivo Logs.txt
-                                                        Toast.makeText(VwListarCuelloBotella.this, "VwResponseMsg, la peticion fallo en:  " + t.toString(), Toast.LENGTH_SHORT).show();
-                                                }
-                                        });
-                                }
         }
 
         private void getCBSinCerrarCosDbRemota() {
@@ -216,8 +171,6 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                                                         stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
                                                                 }
                                                                 llenarListViewCuelloBotella(stringListCB);
-
-                                                                Toast.makeText(VwListarCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show();
                                                         });
                                                 } else {
                                                         // Imprimir error en la respuesta
