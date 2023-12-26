@@ -153,6 +153,26 @@ public class DatabaseController {
 
         }
 
+        public void insertDefaultLocalMode(Context context) {
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        long resultado = -1;
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+
+                        ContentValues values = new ContentValues();
+                        values.put("code", 1);
+                        values.put("modo", 0); // indica que se guardaran los datos en remoto
+                        resultado = sqLiteDatabase.insert("localmode", null, values);
+                        if (resultado == -1) {
+                                i("MyReport", "DataBaseController/Error al guardar lista cuellos de botella por defecto.");
+                        }
+                } catch (SQLiteException sqle) {
+                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                } catch (NullPointerException npe) {
+                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                }
+        }
+
         /*---------------------------------------------------Crear Nuevo Registro--------------------------------------------------------------------------------------------------------*/
         public void nuevoMuestreoPremas(Context context, MdMuestra muestreo) {
                 try {
@@ -231,6 +251,7 @@ public class DatabaseController {
                         values.put("password", usuario.getPass());
                         values.put("nombre",usuario.getNombre());
                         values.put("departamento",usuario.getDepartamento());
+                        values.put("rol",usuario.getRol());
 
                         long resultado = sqLiteDatabase.insert("usuario", null, values);
 
@@ -293,6 +314,32 @@ public class DatabaseController {
                         i("MyReport: DataBaseController", e.getMessage());
                         return false;
                 }
+        }
+
+        public boolean existUser(Context context, String id){
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario where dni= ?", new String[]{id});
+                        if(cursor.moveToFirst()){
+                                return !cursor.getString(0).equals("0");
+                        } else {
+                                return  false;
+                        }
+                }  catch (IllegalArgumentException e) {
+                        i("MyReport: DataBaseController", e.getMessage());
+                        return false;
+                }
+        }
+
+        public String selectDniUser(Context context) {
+                dbHelper = new DatabaseHelper(context);
+                sqLiteDatabase = dbHelper.getReadableDatabase();
+                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select dni  from usuario limit 1", null);
+                if (cursor.moveToFirst()) {
+                        return cursor.getString(0);
+                }
+                return null;
         }
 
         /*---------------------------------------------------Verifica existencia de jornada especifica-------------------------------------------------------------------------*/
@@ -498,6 +545,28 @@ public class DatabaseController {
                         Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaPesoCaja;
+        }
+
+        public boolean selectLocalMode(Context context) {
+
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+                        Cursor cursor;
+                        cursor = sqLiteDatabase.rawQuery("select modo from localmode", null);
+                        if (cursor.moveToFirst()) {
+                                if(cursor.getInt(0)==0) {
+                                        return false;
+                                } else {
+                                        if(cursor.getInt(0)==1) return true;
+                                }
+                        } else {
+                                Toast.makeText(context, "DataBaseController/Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
+                        }
+                } catch (SQLiteException sqle) {
+                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                }
+                return false;
         }
 
         /*---------------------------------------------------Actualizar registros-----------------------------------------------------------------------------------------------------------*/

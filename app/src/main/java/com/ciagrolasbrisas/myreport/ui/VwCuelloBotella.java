@@ -1,7 +1,6 @@
 package com.ciagrolasbrisas.myreport.ui;
 
 import static com.ciagrolasbrisas.myreport.ui.VwLogin.dniUser;
-import static com.ciagrolasbrisas.myreport.ui.VwLogin.localMode;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ciagrolasbrisas.myreport.R;
+import com.ciagrolasbrisas.myreport.controller.CacheManager;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
@@ -51,6 +51,7 @@ public class VwCuelloBotella extends AppCompatActivity {
         private Spinner spinnerMotivo;
         private LogGenerator logGenerator;
         private String date, time;
+        private boolean localMode;
 
         private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -83,6 +84,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                 }
 
                 if (txtDniEncargado.getText().equals("")) {
+
                         txtDniEncargado.setText(dniUser);  // dniUsuario = variable estatica llenada en VwLogin
                 }
 
@@ -104,6 +106,11 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 btnGuardarReporte = findViewById(R.id.btnGuardarCB);
                 btnGuardarReporte.setOnClickListener(view -> {
+
+                        CacheManager myCache = new CacheManager();
+                        if(myCache.getIfExist(  "localMode")){
+                                localMode = CacheManager.getFromCache("localMode");
+                        }
 
                         if (localMode) {
                                 if (guardarRptEnDbLocal()) {
@@ -172,7 +179,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                                                 .post(requestBody)
                                                 .build();
 
-                                        // Usar un ExecutorService para ejecutar la tarea en segundo plano
+                                        // ExecutorService ejecuta la tarea en segundo plano
                                         ExecutorService executor = Executors.newSingleThreadExecutor();
                                         executor.execute(new Runnable() {
                                                 @Override

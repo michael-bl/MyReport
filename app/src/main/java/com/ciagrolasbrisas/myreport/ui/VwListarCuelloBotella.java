@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ApiUtils;
+import com.ciagrolasbrisas.myreport.controller.CacheManager;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
@@ -84,7 +85,10 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 date = stringDate.getFecha();
                 time = stringTime.getHora();
 
-                 localMode = VwLogin.localMode;
+                CacheManager myCache = new CacheManager();
+                if(myCache.getIfExist(  "localMode")){
+                        localMode = myCache.getFromCache("localMode");
+                }
 
                 mdCuelloBotella = new MdCuelloBotella();
                 Button btnSiguente = findViewById(R.id.btnSiguienteCB);
@@ -149,7 +153,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 .post(requestBody)
                                 .build();
 
-                        // Usar un ExecutorService para ejecutar la tarea en segundo plano
+                        // ExecutorService ejecuta la tarea en segundo plano
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         executor.execute(new Runnable() {
                                 @Override

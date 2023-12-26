@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ApiUtils;
+import com.ciagrolasbrisas.myreport.controller.CacheManager;
 import com.ciagrolasbrisas.myreport.controller.CheckPermissions;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
@@ -41,26 +42,31 @@ public class VwLogin extends AppCompatActivity {
         private TextInputEditText txtId, txtPass;
         private DatabaseController dbController;
         private Switch stLocalMode;
-        public static String dniUser;
-        public static boolean localMode;
+        public static String dniUser; // Variable global
+        private boolean localMode;
         private String date, time;
         private LogGenerator logGenerator;
+        private CacheManager myCache;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.vw_login);
 
+                myCache = new CacheManager();
+
                 crearDbLocal();
 
                 stLocalMode = findViewById(R.id.switchModoLocal);
 
                 localMode = stLocalMode.isChecked();
+                if(!myCache.getIfExist(  "localMode")){
+                        myCache.saveToCache("localMode", stLocalMode); // Guarda en cache el modo de almacenamiento general de datos
+                }
 
                 logGenerator = new LogGenerator();
 
-                //checkAndRequestPermissions();
-                CheckPermissions permisos = new CheckPermissions(this);
+                CheckPermissions permisos = new CheckPermissions(this);  // Lanza activity para solicitar permisos correspondientes
 
                 txtId = findViewById(R.id.txtLoginUser);
                 txtPass = findViewById(R.id.txtLoginPass);
@@ -108,9 +114,9 @@ public class VwLogin extends AppCompatActivity {
                         String resultadoConsulta = dbController.crearDbLocal(this);
                         if (resultadoConsulta.equals("2")) {
                                 dbController.insertDefaultCuelloBotella(this);
-                                //dbController.insertDefaultUsuario(this);
                                 dbController.insertDefaultCliente(this);
                                 dbController.insertDefaultCalibre(this);
+                                dbController.insertDefaultLocalMode(this);
                                 Toast.makeText(this, "Base datos creada correctamente!", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
@@ -132,7 +138,7 @@ public class VwLogin extends AppCompatActivity {
 
                 if (!usuario.getId().equals("") && !usuario.getPass().equals("")) { // Validando llenado de inputs
 
-                        if (localMode) { // si es verdadero logueamos de manera local, sino remoto
+                        if (localMode) { // Si es verdadero logueamos de manera local, sino remoto
 
                                 if (dbController.existUsersData(this)) { // Verificamos si la tabla usuario local tiene registros
 
@@ -167,7 +173,7 @@ public class VwLogin extends AppCompatActivity {
 
                                                         if (!res.isSuccessful()) {
                                                                 Toast.makeText(VwLogin.this, "No se puede realizar la consulta!", Toast.LENGTH_SHORT).show();
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + res.message()); // agregamos el error al archivo Logs.txt
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + res.message()); // Agregamos el error al archivo Logs.txt
 
                                                         } else {
 
@@ -180,10 +186,11 @@ public class VwLogin extends AppCompatActivity {
 
                                                                                 if (usuario.getId().equals(response.get(i).getId()) && usuario.getPass().equals(response.get(i).getPass())) {
 
+                                                                                        if(!dbController.existUser(VwLogin.this, usuario.getId())) {  // De no existir un usuario guarda los datos en tabla local
+                                                                                                dbController.nuevoUsuario(VwLogin.this, usuario);
+                                                                                        }
+
                                                                                         usuario.setNombre(response.get(i).getNombre());
-
-                                                                                        dbController.nuevoUsuario(VwLogin.this, usuario); // Guardar datos de usuario en tabla local
-
                                                                                         dniUser = usuario.getId(); // Lanzamos actividad principal
                                                                                         Intent intent = new Intent(VwLogin.this, VwMain.class);
                                                                                         startActivity(intent);
@@ -198,7 +205,7 @@ public class VwLogin extends AppCompatActivity {
                                                 @Override
                                                 public void onFailure(@NonNull Call<List<MdUsuario>> call, @NonNull Throwable t) {
                                                         Toast.makeText(VwLogin.this, "Error: la petición falló!", Toast.LENGTH_SHORT).show();
-                                                        logGenerator.generateLogFile(date + ": " + time + ": " + t.getMessage()); // agregamos el error al archivo Logs.txt
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + t.getMessage()); // Agregamos el error al archivo Logs.txt
                                                 }
                                         });
                                 } else {

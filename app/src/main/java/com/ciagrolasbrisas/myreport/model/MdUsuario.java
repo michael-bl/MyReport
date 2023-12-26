@@ -34,6 +34,10 @@ public class MdUsuario implements Serializable {
     @Expose
     private String departamento;
 
+    @SerializedName("rol")
+    @Expose
+    private String rol;
+
     public String getId() {
         return id;
     }
@@ -80,5 +84,13 @@ public class MdUsuario implements Serializable {
 
     public void setDepartamento(String departamento) {
         this.departamento = departamento;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 }

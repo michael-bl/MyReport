@@ -20,6 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "password TEXT(15)," +
                 "nombre TEXT(30)," +
                 "departamento TEXT(30)," +
+                "rol TEXT(10)," +
                 " PRIMARY KEY (dni));";
 
         private final String tblPremas = "CREATE TABLE premaduracion (" +
@@ -101,6 +102,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " calibre VARCHAR(12) NOT NULL UNIQUE," +
                 " PRIMARY KEY (calibre));";
 
+        private final String tblLocalMode = "CREATE TABLE localmode  (" +
+                " code INTEGER NOT NULL UNIQUE," +
+                " modo INTEGER," +
+                " PRIMARY KEY (modo));";
+
         public DatabaseHelper(@Nullable Context context) {
                 super(context, databaseName, null, databaseVersion);
                 myContext = context;
@@ -118,6 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL(tblPesoCaja);
                         sqLiteDb.execSQL(tblCliente);
                         sqLiteDb.execSQL(tblCalibre);
+                        sqLiteDb.execSQL(tblLocalMode);
                 } catch (SQLiteException sqle) {
                         Toast.makeText(myContext, "DataBaseHelper/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
