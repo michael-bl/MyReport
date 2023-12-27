@@ -13,6 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.ciagrolasbrisas.myreport.controller.GetConsecutive;
+import com.ciagrolasbrisas.myreport.controller.GetStringDate;
+import com.ciagrolasbrisas.myreport.controller.GetStringTime;
+import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdLote;
 import com.ciagrolasbrisas.myreport.model.MdMuestra;
@@ -28,8 +31,15 @@ public class DatabaseController {
         private SQLiteDatabase sqLiteDatabase;
         private GetConsecutive getConsecutive;
         public static String nombreUsuario;
+        private LogGenerator logGenerator;
+        private String date, time;
 
         public DatabaseController() {
+                GetStringDate stringDate = new GetStringDate();
+                GetStringTime stringTime = new GetStringTime();
+                date = stringDate.getFecha();
+                time = stringTime.getHora();
+                logGenerator = new LogGenerator();
         }
 
         public String crearDbLocal(Context context2) {
@@ -42,6 +52,7 @@ public class DatabaseController {
                                 return "2";
                         }
                 } catch (IllegalStateException illegalStateException) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + illegalStateException.getMessage()); // Agrega error en Descargas/Logs.txt
                         illegalStateException.printStackTrace();
                 }
                 return "0";
@@ -62,12 +73,14 @@ public class DatabaseController {
                                 resultado = sqLiteDatabase.insert("motivocb", null, values);
                         }
                         if (resultado == -1) {
-                                i("MyReport", "DataBaseController/Error al guardar lista cuellos de botella por defecto.");
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -78,10 +91,10 @@ public class DatabaseController {
                         long resultado = -1;
 
                         HashMap<String, String[]> datosUsuarios = new HashMap<>();
-                        datosUsuarios.put("cedulas", new String[]{"503610263", "37", "38", "39", "40", "41", "503970765", "206200609",  "206040225"});
+                        datosUsuarios.put("cedulas", new String[]{"503610263", "37", "38", "39", "40", "41", "503970765", "206200609", "206040225"});
                         datosUsuarios.put("password", new String[]{"123", "lkjh37", "38lkjh", "39asdf", "asdf40", "zxcv41", "Claudia", "Dayana", "Felix"});
                         datosUsuarios.put("nombre", new String[]{"Michael Busto L", "Cuadrilla 37", "Cuadrilla 38", "Cuadrilla 39", "Cuadrilla 40", "Cuadrilla 41", "Planta", "Planta", "Cosecha"});
-                        datosUsuarios.put("depto", new String[]{"Admin", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Claudia Barrios P", "Dayana Ruiz H",  "Cosecha"});
+                        datosUsuarios.put("depto", new String[]{"Admin", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Cosecha", "Claudia Barrios P", "Dayana Ruiz H", "Cosecha"});
 
                         for (int i = 0; i < datosUsuarios.get("cedulas").length; i++) {
                                 ContentValues values = new ContentValues();
@@ -94,12 +107,14 @@ public class DatabaseController {
                         }
 
                         if (resultado == -1) {
-                                i("MyReport", "DataBaseController/Error al guardar lista de usuarios por defecto.");
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar lista de usuarios por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
 
         }
@@ -119,12 +134,14 @@ public class DatabaseController {
                                 resultado = sqLiteDatabase.insert("cliente", null, values);
                         }
                         if (resultado == -1) {
-                                i("MyReport", "DataBaseController/Error al guardar lista de clientes.");
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar lista de clientes."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
 
         }
@@ -138,17 +155,19 @@ public class DatabaseController {
 
                         for (int i = 0; i <= nombre.length - 1; i++) {
                                 ContentValues values = new ContentValues();
-                               //values.put("code", (i + 1));
+                                //values.put("code", (i + 1));
                                 values.put("calibre", nombre[i]);
                                 resultado = sqLiteDatabase.insert("calibre", null, values);
                         }
                         if (resultado == -1) {
-                                i("MyReport", "DataBaseController/Error al guardar lista de calibres.");
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar lista de calibres."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
 
         }
@@ -164,12 +183,14 @@ public class DatabaseController {
                         values.put("modo", 0); // indica que se guardaran los datos en remoto
                         resultado = sqLiteDatabase.insert("localmode", null, values);
                         if (resultado == -1) {
-                                i("MyReport", "DataBaseController/Error al guardar lista cuellos de botella por defecto.");
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -181,7 +202,7 @@ public class DatabaseController {
                         sqLiteDatabase.beginTransaction();
                         ContentValues values = new ContentValues();
                         MdLote mdLote = muestreo.getLote();
-                        int code = getConsecutive.funGetConsecutive(context,"cuellobotella");
+                        int code = getConsecutive.funGetConsecutive(context, "cuellobotella");
 
                         values.put("id_muestreo", code);
                         values.put("grupo_forza", mdLote.getGrupoForza());
@@ -199,13 +220,14 @@ public class DatabaseController {
                         long resultado = sqLiteDatabase.insert("premaduracion", null, values);
                         sqLiteDatabase.endTransaction();
 
-                        if (resultado != -1)
-                                i("MyReport", "DataBaseController/Error al guardar el muestreo de premaduraciones");
-
+                        if (resultado == -1)
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar el muestreo de premaduraciones."); // Agrega error en Descargas/Logs.txt
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -215,7 +237,7 @@ public class DatabaseController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
                         getConsecutive = new GetConsecutive();
-                        int code = getConsecutive.funGetConsecutive(context,"cuellobotella");
+                        int code = getConsecutive.funGetConsecutive(context, "cuellobotella");
 
                         values.put("code", code);
                         values.put("fecha", muestra.getFecha());
@@ -229,14 +251,17 @@ public class DatabaseController {
                         long resultado = sqLiteDatabase.insert("cuellobotella", null, values);
 
                         if (resultado != -1) {
-                                Toast.makeText(context, "DataBaseController/Reporte guardado exitosamente!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Reporte guardado exitosamente!", Toast.LENGTH_LONG).show();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Error al guardar reporte: " + resultado + " Code " + muestra.getCode(), Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar reporte: " + resultado + " Code " + muestra.getCode()); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Error al guardar reporte: " + resultado + " Code " + muestra.getCode(), Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -249,21 +274,24 @@ public class DatabaseController {
                         values.put("code", code);
                         values.put("dni", usuario.getId());
                         values.put("password", usuario.getPass());
-                        values.put("nombre",usuario.getNombre());
-                        values.put("departamento",usuario.getDepartamento());
-                        values.put("rol",usuario.getRol());
+                        values.put("nombre", usuario.getNombre());
+                        values.put("departamento", usuario.getDepartamento());
+                        values.put("rol", usuario.getRol());
 
                         long resultado = sqLiteDatabase.insert("usuario", null, values);
 
                         if (resultado != -1) {
-                                Toast.makeText(context, "DataBaseController/Usuario guardado exitosamente!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Usuario guardado exitosamente!", Toast.LENGTH_LONG).show();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Error al guardar el usuario: " + resultado + " Code " + usuario.getId(), Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar el usuario: " + resultado + " Code " + usuario.getId()); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Error al guardar el usuario: " + resultado + " Code " + usuario.getId(), Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -273,7 +301,7 @@ public class DatabaseController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         ContentValues values = new ContentValues();
                         getConsecutive = new GetConsecutive();
-                        int code = getConsecutive.funGetConsecutive(context,"pesocaja");
+                        int code = getConsecutive.funGetConsecutive(context, "pesocaja");
 
                         values.put("code", code);
                         values.put("fecha", pesoCaja.getFecha());
@@ -287,47 +315,48 @@ public class DatabaseController {
                         long resultado = sqLiteDatabase.insert("pesocaja", null, values);
 
                         if (resultado != -1) {
-                                Toast.makeText(context, "DataBaseController/Peso guardado exitosamente!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Peso guardado exitosamente!", Toast.LENGTH_LONG).show();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Error al guardar: " + resultado, Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al guardar peso de caja: " + resultado); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        i("MyReport", "DataBaseController/Error: " + npe.getMessage());
-                        Toast.makeText(context, "DataBaseController/Error: " + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
         /*---------------------------------------------------Verifica existencia de usuarios-------------------------------------------------------------------------------------------*/
-        public boolean existUsersData(Context context){
+        public boolean existUsersData(Context context) {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getReadableDatabase();
                         Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario ", null);
-                        if(cursor.moveToFirst()){
+                        if (cursor.moveToFirst()) {
                                 return !cursor.getString(0).equals("0");
                         } else {
-                                return  false;
+                                return false;
                         }
-                }  catch (IllegalArgumentException e) {
-                        i("MyReport: DataBaseController", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agrega error en Descargas/Logs.txt
                         return false;
                 }
         }
 
-        public boolean existUser(Context context, String id){
+        public boolean existUser(Context context, String id) {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getReadableDatabase();
                         Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario where dni= ?", new String[]{id});
-                        if(cursor.moveToFirst()){
+                        if (cursor.moveToFirst()) {
                                 return !cursor.getString(0).equals("0");
                         } else {
-                                return  false;
+                                return false;
                         }
-                }  catch (IllegalArgumentException e) {
-                        i("MyReport: DataBaseController", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agrega error en Descargas/Logs.txt
                         return false;
                 }
         }
@@ -354,7 +383,7 @@ public class DatabaseController {
                                 return false;
                         }
                 } catch (IllegalArgumentException e) {
-                        i("MyReport: DataBaseController", e.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agrega error en Descargas/Logs.txt
                         return false;
                 }
         }
@@ -366,7 +395,7 @@ public class DatabaseController {
                 @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select nombre from usuario where dni = ? and password = ?", new String[]{usuario.getId(), usuario.getPass()});
                 if (cursor.moveToFirst()) {
                         nombreUsuario = cursor.getString(0);
-                        return  true;
+                        return true;
                 }
                 return false;
         }
@@ -396,10 +425,12 @@ public class DatabaseController {
                                 } while (cursor.moveToNext());
                                 cursor.close();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Advertencia: no hay reportes abiertos", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: no hay reportes abiertos."); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Advertencia: no hay reportes abiertos", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaCB;
         }
@@ -438,10 +469,12 @@ public class DatabaseController {
                                 } while (cursor.moveToNext());
                                 cursor.close();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: no hay reportes guardados."); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaCB;
         }
@@ -473,14 +506,16 @@ public class DatabaseController {
 
                         if (cursor.moveToFirst()) {
                                 do {
-                                        listaClientes.add(cursor.getString(0)+ "-" + cursor.getString(1));
+                                        listaClientes.add(cursor.getString(0) + "-" + cursor.getString(1));
                                 } while (cursor.moveToNext());
                                 cursor.close();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: no hay clientes guardados."); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaClientes;
         }
@@ -498,16 +533,18 @@ public class DatabaseController {
                                 } while (cursor.moveToNext());
                                 cursor.close();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: no hay clientes guardados."); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaCalibres;
         }
 
 
-        public ArrayList<MdPesoCaja> selectPesoCaja(Context context,  String fecha_desde, String fecha_hasta, boolean esFechaUnica) {
+        public ArrayList<MdPesoCaja> selectPesoCaja(Context context, String fecha_desde, String fecha_hasta, boolean esFechaUnica) {
                 ArrayList<MdPesoCaja> listaPesoCaja = new ArrayList<>();
                 try {
                         dbHelper = new DatabaseHelper(context);
@@ -539,10 +576,12 @@ public class DatabaseController {
                                 } while (cursor.moveToNext());
                                 cursor.close();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: no hay reportes guardados."); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return listaPesoCaja;
         }
@@ -555,16 +594,18 @@ public class DatabaseController {
                         Cursor cursor;
                         cursor = sqLiteDatabase.rawQuery("select modo from localmode", null);
                         if (cursor.moveToFirst()) {
-                                if(cursor.getInt(0)==0) {
+                                if (cursor.getInt(0) == 0) {
                                         return false;
                                 } else {
-                                        if(cursor.getInt(0)==1) return true;
+                                        if (cursor.getInt(0) == 1) return true;
                                 }
                         } else {
-                                Toast.makeText(context, "DataBaseController/Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: no hay clientes guardados."); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
                 }
                 return false;
         }
@@ -588,14 +629,17 @@ public class DatabaseController {
                         long resultado = sqLiteDatabase.update("cuellobotella", values, String.format("code = %s", muestra.getCode()), null);
 
                         if (resultado != -1) {
-                                Toast.makeText(context, "DataBaseController/Datos actualizados exitosamente!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Datos actualizados exitosamente!", Toast.LENGTH_LONG).show();
                         } else {
-                                Toast.makeText(context, "DataBaseController/Error al actualizar información!", Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + "Error al actualizar información!"); // Agrega error en Descargas/Logs.txt
+                                Toast.makeText(context, "Error al actualizar información!", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(context, "DataBaseController/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        Toast.makeText(context, "DataBaseController/Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
         }
 }

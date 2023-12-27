@@ -108,6 +108,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                         Toast.makeText(this, "Advertencia: debes seleccionar un reporte para poder continuar!", Toast.LENGTH_LONG).show();
                                 }
                         } catch (Exception e){
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                 Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                         }
                 });
@@ -134,7 +135,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         Map<String, Object> finalJson = new HashMap<>();
 
                         MdCuelloBotella cb = new MdCuelloBotella();
-                        cb.setAccion(1);
+                        cb.setAccion(4); // Lista los cuellos pendientes de cierre
                         cb.setDniEncargado(VwLogin.dniUser);
                         //cb.setFecha(date);
                         cb.setFecha("12/12/2023");
@@ -142,7 +143,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         listCuelloBotella = new ArrayList<>();
                         listCuelloBotella.add(cb);
 
-                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
 
                         String json = new Gson().toJson(finalJson);
 
@@ -179,12 +180,12 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                                 } else {
                                                         // Imprimir error en la respuesta
                                                         mainHandler.post(() -> {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
                                                                 Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
                                                         });
                                                 }
                                         } catch (IOException e) {
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + e.getMessage()); // agregamos el error al archivo Logs.txt
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                                 e.printStackTrace();
                                         }
                                 }
@@ -205,6 +206,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         }
                         llenarListViewCuelloBotella(stringListCB);
                 } catch (NullPointerException npe) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }
@@ -217,6 +219,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         onTextChanged();
                         setUpActionBar();
                 } catch (NullPointerException npe) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }

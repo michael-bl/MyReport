@@ -140,6 +140,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                         tvHoraFinal.setText(objCuelloBotella.getHora_final());
                         btnHoraInicio.setEnabled(false);
                 } catch (NullPointerException npe) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
@@ -194,13 +195,12 @@ public class VwCuelloBotella extends AppCompatActivity {
                                                                 } else {
                                                                         // Imprimir error en la respuesta
                                                                         mainHandler.post(() -> {
-                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + response.message()); // agregamos el error al archivo Logs.txt
-                                                                                Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                               Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
                                                                         });
                                                                 }
                                                         } catch (IOException e) {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + e.getMessage()); // agregamos el error al archivo Logs.txt
-                                                                e.printStackTrace();
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                                         }
                                                 }
                                         });
@@ -209,12 +209,14 @@ public class VwCuelloBotella extends AppCompatActivity {
                                         executor.shutdown();
 
                                 } else {
+                                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "El dispositivo no puede accesar a la red en este momento!"); // Agregamos el error al archivo Descargas/Logs.txt
                                         Toast.makeText(this, "El dispositivo no puede accesar a la red en este momento!", Toast.LENGTH_SHORT).show();
                                 }
                         } else {
                                 dbController.updateCuelloBotella(this, objCuelloBotella); // cambiar luego la actualizacion a remoto
                         }
                 } else {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: existen campos vacios!"); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Advertencia: existen campos vacios!", Toast.LENGTH_LONG).show();
                 }
 
@@ -241,6 +243,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                                                 if (!dbController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getDniEncargado(), objCuelloBotella.getMotivo())) {
                                                         dbController.nuevoRptCuelloBotella(this, objCuelloBotella);
                                                 } else {
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "Ya existe un reporte de jornada, verifique!"); // Agregamos el error al archivo Descargas/Logs.txt
                                                         Toast.makeText(this, "Ya existe un reporte de jornada, verifique!", Toast.LENGTH_LONG).show();
                                                 }
                                         } else {
@@ -251,9 +254,11 @@ public class VwCuelloBotella extends AppCompatActivity {
                                 }
                                 return true;
                         } else {
+                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: existen campos vacios!"); // Agregamos el error al archivo Descargas/Logs.txt
                                 Toast.makeText(this, "Advertencia: existen campos vacios!", Toast.LENGTH_LONG).show();
                         }
                 } catch (NullPointerException npe) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
                 return false;
@@ -321,6 +326,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                         }
 
                 } catch (NullPointerException npe) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }

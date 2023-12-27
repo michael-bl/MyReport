@@ -8,8 +8,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.ciagrolasbrisas.myreport.controller.GetStringDate;
+import com.ciagrolasbrisas.myreport.controller.GetStringTime;
+import com.ciagrolasbrisas.myreport.controller.LogGenerator;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+        private LogGenerator logGenerator;
+        private String date, time;
         private final Context myContext;
         private static int databaseVersion = 1;
         private static final String databaseName = "reporte.db";
@@ -115,6 +121,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         @Override
         public void onCreate(SQLiteDatabase sqLiteDb) {
                 try {
+                        GetStringDate stringDate = new GetStringDate();
+                        GetStringTime stringTime = new GetStringTime();
+                        date = stringDate.getFecha();
+                        time = stringTime.getHora();
+                        logGenerator = new LogGenerator();
+
                         sqLiteDb.execSQL(tblUsuario);
                         sqLiteDb.execSQL(tblPremas);
                         sqLiteDb.execSQL(tblForza);
@@ -126,7 +138,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL(tblCalibre);
                         sqLiteDb.execSQL(tblLocalMode);
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(myContext, "DataBaseHelper/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -144,7 +157,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS calibre");
                         onCreate(sqLiteDb);
                 } catch (SQLiteException sqle) {
-                        Toast.makeText(myContext, "DataBaseHelper/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
