@@ -46,7 +46,7 @@ public class ExcelGenerator {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.Q)
-        public <T> void generarExcell(Context context, @NonNull List<T> list) {
+        public <T> void generarExcell(Context context, @NonNull List<T> list, String dniUser) {
 
                 //GetStringDate stringDate = new GetStringDate();
                 //GetStringTime stringTime = new GetStringTime();
@@ -70,7 +70,7 @@ public class ExcelGenerator {
                                 case "MdCuelloBotella":
 
                                         try {
-                                                if (!VwLogin.dniUser.equals( "206040225")){
+                                                if (!dniUser.equals( "206040225")){
 
                                                         listCuelloBotella = (ArrayList<MdCuelloBotella>) list;
                                                         String[] headersCuelloB = {"Encargado", "Fecha", "Motivo", "Lote", "Sección", "Hora Inicio", "Hora Final"};

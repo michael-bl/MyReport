@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
         private DatabaseController dbController;
-        private String jornada, stringFecha, tiempo_efectivo, hora_inicio, hora_final;
+        private String jornada, stringFecha, tiempo_efectivo, hora_inicio, hora_final, dniUser;
         private Button btnFecha;
         private Button btnBuscar;
         private TextView tvFechaHsEfectivas, tvJornadaHsEfectivas, tvHorasEfectivas, tvCuelloBotellaTotal;
@@ -86,8 +86,9 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                 ArrayList listacb = dbController.selectCuelloBotella(this, stringFecha, null, true);
 
                                 totalCuelloBotella(listacb);
+                                dniUser = dbController.selectDniUser(this);
 
-                                jornada = dbController.horasEfectivas(this, stringFecha, VwLogin.dniUser);
+                                jornada = dbController.horasEfectivas(this, stringFecha, dniUser);
 
                                 if (!jornada.equals("")) {
                                         DateTimeFormatter formato_hora = DateTimeFormatter.ofPattern("HH:mm:ss");

@@ -1,7 +1,5 @@
 package com.ciagrolasbrisas.myreport.ui;
 
-import static com.ciagrolasbrisas.myreport.ui.VwLogin.dniUser;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,17 +13,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ciagrolasbrisas.myreport.R;
-import com.ciagrolasbrisas.myreport.controller.CacheManager;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
+import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +50,7 @@ public class VwCuelloBotella extends AppCompatActivity {
         private String horaSeleccionada;
         private Spinner spinnerMotivo;
         private LogGenerator logGenerator;
-        private String date, time;
+        private String date, time, clase, dniUser;
         private boolean localMode;
 
         private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -64,6 +64,9 @@ public class VwCuelloBotella extends AppCompatActivity {
                 GetStringTime stringTime = new GetStringTime();
                 date = stringDate.getFecha();
                 time = stringTime.getHora();
+                clase = this.getClass().getSimpleName();
+
+                logGenerator = new LogGenerator();
 
                 txtDniEncargado = findViewById(R.id.tvDniEncargado);
 
@@ -84,8 +87,9 @@ public class VwCuelloBotella extends AppCompatActivity {
                 }
 
                 if (txtDniEncargado.getText().equals("")) {
-
-                        txtDniEncargado.setText(dniUser);  // dniUsuario = variable estatica llenada en VwLogin
+                        DatabaseController db = new DatabaseController();
+                        dniUser = db.selectDniUser(this);
+                        txtDniEncargado.setText(dniUser);
                 }
 
                 capturarFechaDelSistema();
@@ -103,21 +107,18 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 llenarSpinnerMotivo();
 
-
                 btnGuardarReporte = findViewById(R.id.btnGuardarCB);
                 btnGuardarReporte.setOnClickListener(view -> {
 
-                        CacheManager myCache = new CacheManager();
-                        if(myCache.getIfExist(  "localMode")){
-                                localMode = CacheManager.getFromCache("localMode");
-                        }
+                        dbController = new DatabaseController();
+                        localMode = dbController.selectLocalMode(this);
 
                         if (localMode) {
                                 if (guardarRptEnDbLocal()) {
                                         lanzarActividad();
                                 }
                         } else {
-                                saveOnServer();  // guarda el reporte en el servidor remoto
+                                guardarEnServidor();  // guarda el reporte en el servidor remoto
                                 lanzarActividad();
                         }
                 });
@@ -131,6 +132,7 @@ public class VwCuelloBotella extends AppCompatActivity {
         }
 
         private void mostrarDatosEnInterfaz(MdCuelloBotella objCuelloBotella) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         tvFechaSistema.setText(objCuelloBotella.getFecha());
                         txtDniEncargado.setText(objCuelloBotella.getDniEncargado());
@@ -140,13 +142,13 @@ public class VwCuelloBotella extends AppCompatActivity {
                         tvHoraFinal.setText(objCuelloBotella.getHora_final());
                         btnHoraInicio.setEnabled(false);
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
-        private void saveOnServer() {
-                logGenerator = new LogGenerator();
+        private void guardarEnServidor() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 OkHttpClient client = new OkHttpClient();
                 llenarReporteCb();
 
@@ -161,68 +163,72 @@ public class VwCuelloBotella extends AppCompatActivity {
                                 limpiarCode = limpiarCode.substring(0, 1);
                         objCuelloBotella.setMotivo(limpiarCode);
 
-                        if (objCuelloBotella.getAccion() == 0) {
+                        ConnectivityService con = new ConnectivityService();
+                        if (con.stateConnection(this)) {
 
-                                ConnectivityService con = new ConnectivityService();
-                                if (con.stateConnection(this)) {
+                                listCuelloBotella = new ArrayList<>();
+                                listCuelloBotella.add(objCuelloBotella);
+                                Map<String, Object> finalJson = new HashMap<>();
+                                finalJson.put("reporte", listCuelloBotella);
 
-                                        listCuelloBotella = new ArrayList<>();
-                                        listCuelloBotella.add(objCuelloBotella);
-                                        Map<String, Object> finalJson = new HashMap<>();
-                                        finalJson.put("reporte", listCuelloBotella);
+                                String json = new Gson().toJson(finalJson);
 
-                                        String json = new Gson().toJson(finalJson);
+                                RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
-                                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+                                Request request = new Request.Builder()
+                                        .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
+                                        .post(requestBody)
+                                        .build();
 
-                                        Request request = new Request.Builder()
-                                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
-                                                .post(requestBody)
-                                                .build();
+                                // ExecutorService ejecuta la tarea en segundo plano
+                                ExecutorService executor = Executors.newSingleThreadExecutor();
+                                executor.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                try {
+                                                        okhttp3.Response response = client.newCall(request).execute();
 
-                                        // ExecutorService ejecuta la tarea en segundo plano
-                                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                                        executor.execute(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                        try {
-                                                                okhttp3.Response response = client.newCall(request).execute();
+                                                        if (response.isSuccessful()) {
+                                                                final String responseBody = response.body().string();
+                                                                // Manejar la respuesta
+                                                                mainHandler.post(() -> {
+                                                                        Gson gson = new Gson();
+                                                                        Type listType = new TypeToken<List<MdWarning>>() {
+                                                                        }.getType();
 
-                                                                if (response.isSuccessful()) {
-                                                                        final String responseBody = response.body().string();
-                                                                        // Manejar la respuesta
-                                                                        mainHandler.post(() -> Toast.makeText(VwCuelloBotella.this, responseBody, Toast.LENGTH_SHORT).show());
-                                                                } else {
-                                                                        // Imprimir error en la respuesta
-                                                                        mainHandler.post(() -> {
-                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                               Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
-                                                                        });
-                                                                }
-                                                        } catch (IOException e) {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
+
+                                                                        Toast.makeText(VwCuelloBotella.this, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                });
+                                                        } else {
+                                                                // Imprimir error en la respuesta
+                                                                mainHandler.post(() -> {
+                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                        Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                });
                                                         }
+                                                } catch (IOException e) {
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage());
                                                 }
-                                        });
+                                        }
+                                });
 
-                                        // Apagar el ExecutorService después de su uso
-                                        executor.shutdown();
+                                // Apagar el ExecutorService después de su uso
+                                executor.shutdown();
 
-                                } else {
-                                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "El dispositivo no puede accesar a la red en este momento!"); // Agregamos el error al archivo Descargas/Logs.txt
-                                        Toast.makeText(this, "El dispositivo no puede accesar a la red en este momento!", Toast.LENGTH_SHORT).show();
-                                }
                         } else {
-                                dbController.updateCuelloBotella(this, objCuelloBotella); // cambiar luego la actualizacion a remoto
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "El dispositivo no puede accesar a la red en este momento!"); // Agregamos el error al archivo Descargas/Logs.txt
+                                Toast.makeText(this, "El dispositivo no puede accesar a la red en este momento!", Toast.LENGTH_SHORT).show();
                         }
                 } else {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: existen campos vacios!"); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Advertencia: existen campos vacios!");
                         Toast.makeText(this, "Advertencia: existen campos vacios!", Toast.LENGTH_LONG).show();
                 }
 
         }
 
         private boolean guardarRptEnDbLocal() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
 
                         llenarReporteCb();  // Cargamos la informacion en el objeto
@@ -241,24 +247,24 @@ public class VwCuelloBotella extends AppCompatActivity {
                                 if (objCuelloBotella.getAccion() == 0) {
                                         if (objCuelloBotella.getMotivo().equals("12")) {
                                                 if (!dbController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getDniEncargado(), objCuelloBotella.getMotivo())) {
-                                                        dbController.nuevoRptCuelloBotella(this, objCuelloBotella);
+                                                        dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                                                 } else {
-                                                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "Ya existe un reporte de jornada, verifique!"); // Agregamos el error al archivo Descargas/Logs.txt
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Ya existe un reporte de jornada, verifique!"); // Agregamos el error al archivo Descargas/Logs.txt
                                                         Toast.makeText(this, "Ya existe un reporte de jornada, verifique!", Toast.LENGTH_LONG).show();
                                                 }
                                         } else {
-                                                dbController.nuevoRptCuelloBotella(this, objCuelloBotella);
+                                                dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                                         }
                                 } else {
                                         dbController.updateCuelloBotella(this, objCuelloBotella);
                                 }
                                 return true;
                         } else {
-                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + "Advertencia: existen campos vacios!"); // Agregamos el error al archivo Descargas/Logs.txt
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Advertencia: existen campos vacios!");
                                 Toast.makeText(this, "Advertencia: existen campos vacios!", Toast.LENGTH_LONG).show();
                         }
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
                 return false;
@@ -284,18 +290,19 @@ public class VwCuelloBotella extends AppCompatActivity {
         }
 
         private void llenarSpinnerMotivo() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 ArrayList<String> listaMotivos = new ArrayList<>();
                 ArrayAdapter adapter;
                 try {
-                        listaMotivos.add("1-Acomódo de cosechadora");
-                        listaMotivos.add("2-Almuerzo");
-                        listaMotivos.add("3-Ataque de abejas");
-                        listaMotivos.add("4-Auditoría");
-                        listaMotivos.add("5-Botar cera");
-                        listaMotivos.add("6-Café");
-                        listaMotivos.add("7-Campaña de vacunación");
-                        listaMotivos.add("8-Capacitación");
-                        listaMotivos.add("9-Desayuno");
+                        listaMotivos.add("01-Acomódo de cosechadora");
+                        listaMotivos.add("02-Almuerzo");
+                        listaMotivos.add("03-Ataque de abejas");
+                        listaMotivos.add("04-Auditoría");
+                        listaMotivos.add("05-Botar cera");
+                        listaMotivos.add("06-Café");
+                        listaMotivos.add("07-Campaña de vacunación");
+                        listaMotivos.add("08-Capacitación");
+                        listaMotivos.add("09-Desayuno");
                         listaMotivos.add("10-Esperando carretas");
                         listaMotivos.add("11-Exámen médico");
                         listaMotivos.add("12-Jornada");
@@ -326,7 +333,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                         }
 
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }

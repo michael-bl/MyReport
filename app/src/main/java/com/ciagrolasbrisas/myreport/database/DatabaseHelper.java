@@ -15,7 +15,7 @@ import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
         private LogGenerator logGenerator;
-        private String date, time;
+        private String date, time, clase;
         private final Context myContext;
         private static int databaseVersion = 1;
         private static final String databaseName = "reporte.db";
@@ -27,6 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "nombre TEXT(30)," +
                 "departamento TEXT(30)," +
                 "rol TEXT(10)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (dni));";
 
         private final String tblPremas = "CREATE TABLE premaduracion (" +
@@ -42,6 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " ibd  VARCHAR(1)," +
                 " tipo  VARCHAR(1)," +
                 " muestreo  VARCHAR(1)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (id_muestreo, grupo_forza, fecha_muestreo, ciclo, lote, seccion, tamanio));";
 
         private final String tblForza = "CREATE TABLE forza (" +
@@ -52,10 +54,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " lote VARCHAR(4)," +
                 " seccion VARCHAR(2)," +
                 " area VARCHAR(5)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (id_forza, grupo_forza, fecha_forza, ciclo, lote, seccion));";
 
         // El campo motivo es un FK la base del servidor referente a tabla de cuellos de botella
-        private final String tblCuelloBotella = "CREATE TABLE cuellobotella (" +
+        private final String tblCuelloBotellaCos = "CREATE TABLE cuellobotellacos (" +
                 " code INTEGER NOT NULL UNIQUE," +
                 " fecha VARCHAR(10)," +
                 " dni_encargado VARCHAR(9)," +
@@ -64,11 +67,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " motivo VARCHAR(2)," +
                 " hora_inicio VARCHAR(11)," +
                 " hora_final VARCHAR(11)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (code, fecha, dni_encargado));";
 
-        private final String tblMotivoCuelloBotella = "CREATE TABLE motivocb (" +
+        private final String tblMotivoCuelloBotellaCos = "CREATE TABLE motivocbcos (" +
                 " code INTEGER NOT NULL UNIQUE," +
                 " motivo TEXT," +
+                " sync INTEGER," +
                 " PRIMARY KEY (code));";
 
         // Consecutivo = cantidad de carretas cosechadas del dia
@@ -86,6 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " lote VARCHAR(4)," +
                 " seccion VARCHAR(2)," +
                 " frutas INTEGER(5)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (code));";
 
         private final String tblPesoCaja = "CREATE TABLE pesocaja (" +
@@ -97,15 +103,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " peso VARCHAR(5)," +
                 " observacion VARCHAR(30)," +
                 " hora_captura VARCHAR(8)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (code, fecha, dni_encargado, hora_captura));";
 
         private final String tblCliente = "CREATE TABLE cliente (" +
                 " code INTEGER NOT NULL UNIQUE," +
                 " nombre VARCHAR(22)," +
+                " sync INTEGER," +
                 " PRIMARY KEY (code));";
 
         private final String tblCalibre = "CREATE TABLE calibre  (" +
                 " calibre VARCHAR(12) NOT NULL UNIQUE," +
+                " sync INTEGER," +
                 " PRIMARY KEY (calibre));";
 
         private final String tblLocalMode = "CREATE TABLE localmode  (" +
@@ -126,19 +135,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         date = stringDate.getFecha();
                         time = stringTime.getHora();
                         logGenerator = new LogGenerator();
+                        clase = this.getClass().getSimpleName();
 
                         sqLiteDb.execSQL(tblUsuario);
                         sqLiteDb.execSQL(tblPremas);
                         sqLiteDb.execSQL(tblForza);
-                        sqLiteDb.execSQL(tblCuelloBotella);
-                        sqLiteDb.execSQL(tblMotivoCuelloBotella);
+                        sqLiteDb.execSQL(tblCuelloBotellaCos);
+                        sqLiteDb.execSQL(tblMotivoCuelloBotellaCos);
                         sqLiteDb.execSQL(tblTicketCosecha);
                         sqLiteDb.execSQL(tblPesoCaja);
                         sqLiteDb.execSQL(tblCliente);
                         sqLiteDb.execSQL(tblCalibre);
                         sqLiteDb.execSQL(tblLocalMode);
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
                         Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
@@ -149,15 +159,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS usuario");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS premaduracion");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS forza");
-                        sqLiteDb.execSQL("DROP TABLE IF EXISTS cuellobotella");
-                        sqLiteDb.execSQL("DROP TABLE IF EXISTS motivocb");
+                        sqLiteDb.execSQL("DROP TABLE IF EXISTS cuellobotellacos");
+                        sqLiteDb.execSQL("DROP TABLE IF EXISTS motivocbcos");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS ticketcosecha");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS pesocaja");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS cliente");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS calibre");
                         onCreate(sqLiteDb);
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + ": " + new Throwable().getStackTrace()[0].getMethodName() + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
                         Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }

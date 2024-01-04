@@ -25,6 +25,7 @@ public class VwPesosPlanta extends AppCompatActivity {
         private Spinner spCliente, spCalibre;
         private Button btnGuardar;
         private DatabaseController dbController;
+        private String dniUser;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +90,9 @@ public class VwPesosPlanta extends AppCompatActivity {
                 GetStringDate fecha = new GetStringDate();
                 tvFechaSistema .setText(fecha.getFecha());
 
+                dniUser = dbController.selectDniUser(this);
                 //asignacion del codigo de usuario
-                tvDniUsuario.setText(VwLogin.dniUser);
+                tvDniUsuario.setText(dniUser);
 
                 // llenar spinner Cliente
                 llenarSpinnerCliente();

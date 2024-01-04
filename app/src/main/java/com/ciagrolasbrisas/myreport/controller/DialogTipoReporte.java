@@ -65,6 +65,7 @@ public class DialogTipoReporte {
         });
 
         btnRptCuelloBotella.setOnClickListener(v ->{
+            // 0 = nuevo, 2 = actualizar y 3 = eliminar
             switch (accionCrud){
                 case 0:
                     intent = new Intent(context, VwCuelloBotella.class);
@@ -74,10 +75,10 @@ public class DialogTipoReporte {
                     intent.putExtras(bundle);
                     context.startActivity(intent);
                     break;
-                case 1:
+                case 2:
                     intent = new Intent(context, VwListarCuelloBotella.class);
                     bundle = new Bundle();
-                    mdCuelloBotella.setAccion(1);
+                    mdCuelloBotella.setAccion(2);
                     bundle.putSerializable("cuellobotella", mdCuelloBotella);
                     intent.putExtras(bundle);
                     intent.putExtras(bundle);

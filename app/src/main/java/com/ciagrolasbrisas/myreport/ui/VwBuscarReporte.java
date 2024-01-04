@@ -116,14 +116,14 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 
                 btnShare.setOnClickListener(view -> {
                         ExcelGenerator crearExcel = new ExcelGenerator();
-
+                        String dniUser = "";
                         switch (flagReportType) {
                                 case 1:
-                                        crearExcel.generarExcell(this, listaCuelloBotella);
+                                        crearExcel.generarExcell(this, listaCuelloBotella, dniUser);
                                         break;
 
                                 case 4:
-                                        crearExcel.generarExcell(this, listaPesoCaja);
+                                        crearExcel.generarExcell(this, listaPesoCaja, dniUser);
                                         break;
                         }
 

@@ -1,8 +1,5 @@
 package com.ciagrolasbrisas.myreport.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,9 +20,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.ciagrolasbrisas.myreport.R;
-import com.ciagrolasbrisas.myreport.controller.ApiUtils;
-import com.ciagrolasbrisas.myreport.controller.CacheManager;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
@@ -50,9 +48,6 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class VwListarCuelloBotella extends AppCompatActivity {
         private ArrayList<MdCuelloBotella> listCuelloBotella;
@@ -70,7 +65,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         private Bundle bundle;
         private Intent intent;
         private View view;
-        private String date, time;
+        private String date, time, clase, dniUser;
         private boolean localMode;
         private LogGenerator logGenerator;
         private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -80,15 +75,17 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.vw_listar_cuellobotella);
 
+                clase = this.getClass().getSimpleName();
+
+                logGenerator = new LogGenerator();
+
                 GetStringDate stringDate = new GetStringDate();
                 GetStringTime stringTime = new GetStringTime();
                 date = stringDate.getFecha();
                 time = stringTime.getHora();
 
-                CacheManager myCache = new CacheManager();
-                if(myCache.getIfExist(  "localMode")){
-                        localMode = myCache.getFromCache("localMode");
-                }
+                dbController = new DatabaseController();
+                localMode = dbController.selectLocalMode(this);
 
                 mdCuelloBotella = new MdCuelloBotella();
                 Button btnSiguente = findViewById(R.id.btnSiguienteCB);
@@ -102,13 +99,13 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
                 btnSiguente.setOnClickListener(v -> {
                         try {
-                                if(mdCuelloBotella.getCode()!=null){
+                                if (mdCuelloBotella.getCode() != null) {
                                         dialogDeleteUpdateCuelloBotella().show();
-                                } else{
+                                } else {
                                         Toast.makeText(this, "Advertencia: debes seleccionar un reporte para poder continuar!", Toast.LENGTH_LONG).show();
                                 }
-                        } catch (Exception e){
-                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        } catch (Exception e) {
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                 Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                         }
                 });
@@ -116,13 +113,18 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
         private void getCuellosPendientes() {
 
-                if (!localMode) {
-                        getCBSinCerrarCosDbRemota();
-                } else  {
-                        existDb = new ExistSqliteDatabase();
-                        if (existDb.ExistSqliteDatabase()) {
-                                getCBSinCerrarCosDbLocal();
+                try {
+                        if (!localMode) {
+                                getCBSinCerrarCosDbRemota();
+                        } else {
+                                existDb = new ExistSqliteDatabase();
+                                if (existDb.ExistSqliteDatabase()) {
+                                        getCBSinCerrarCosDbLocal();
+                                }
                         }
+                } catch (Exception e){
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -136,9 +138,10 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
                         MdCuelloBotella cb = new MdCuelloBotella();
                         cb.setAccion(4); // Lista los cuellos pendientes de cierre
-                        cb.setDniEncargado(VwLogin.dniUser);
-                        //cb.setFecha(date);
-                        cb.setFecha("12/12/2023");
+
+                        dniUser = dbController.selectDniUser(this);
+                        cb.setDniEncargado(dniUser);
+                        cb.setFecha(date);
 
                         listCuelloBotella = new ArrayList<>();
                         listCuelloBotella.add(cb);
@@ -168,24 +171,24 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                                         // Manejar la respuesta
                                                         mainHandler.post(() -> {
                                                                 Gson gson = new Gson();
-                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {}.getType();
+                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {
+                                                                }.getType();
                                                                 listCuelloBotella = gson.fromJson(responseBody, listType);
                                                                 stringListCB = new ArrayList<>();
 
                                                                 for (MdCuelloBotella cb : listCuelloBotella) {
                                                                         stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
                                                                 }
-                                                                llenarListViewCuelloBotella(stringListCB);
                                                         });
                                                 } else {
                                                         // Imprimir error en la respuesta
                                                         mainHandler.post(() -> {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
                                                                 Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
                                                         });
                                                 }
                                         } catch (IOException e) {
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                                 e.printStackTrace();
                                         }
                                 }
@@ -206,7 +209,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         }
                         llenarListViewCuelloBotella(stringListCB);
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }
@@ -219,7 +222,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         onTextChanged();
                         setUpActionBar();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + this + new Throwable().getStackTrace()[0].getMethodName() + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }
@@ -310,19 +313,22 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
         private AlertDialog dialogDeleteUpdateCuelloBotella() {
                 view = inflater.inflate(R.layout.dialog_new_update, null);
+
                 final Button btnActualizar = view.findViewById(R.id.btnNuevo);
                 btnActualizar.setText("Actualizar");
+
                 final Button btnEliminar = view.findViewById(R.id.btnMasOpciones);
                 btnEliminar.setText("Eliminar");
+
                 btnActualizar.setOnClickListener(v -> {
-                        //crear metodo para encontrar objeto determinado en un array y asignarlo a mdCuelloBotella (el seleccionado por el usaurio)
-                        mdCuelloBotella.setAccion(1);
+                        //crear metodo para encontrar objeto determinado en un array y asignarlo a mdCuelloBotella (el seleccionado por el usuario)
+                        mdCuelloBotella.setAccion(2);
                         bundle.putSerializable("cuellobotella", mdCuelloBotella);
                         intent.putExtras(bundle);
                         startActivity(intent);
                 });
                 btnEliminar.setOnClickListener(v -> {
-                        mdCuelloBotella.setAccion(2);
+                        mdCuelloBotella.setAccion(3);
                         bundle.putSerializable("cuellobotella", mdCuelloBotella);
                         intent.putExtras(bundle);
                         startActivity(intent);

@@ -24,7 +24,6 @@ public class DialogNewUpdate {
         private Bundle bundle;
         private MdUsuario mdUsuario;
         private View view;
-        private MdMuestra mdMuestra;
         private DialogTipoReporte dialogTipoReporte;
 
         public DialogNewUpdate() {
@@ -45,11 +44,12 @@ public class DialogNewUpdate {
                 final Button btnActualizar = view.findViewById(R.id.btnMasOpciones);
                 dialogTipoReporte = new DialogTipoReporte(context);
 
+                // Accion 0 = nuevo, 2 = actualizar y 3 = eliminar
                 btnNuevo.setOnClickListener(v -> {
-                        dialogTipoReporte.selectTipoReporte(0).show(); // Accion 0 = nuevo
+                        dialogTipoReporte.selectTipoReporte(0).show();
                 });
                 btnActualizar.setOnClickListener(v -> {
-                        dialogTipoReporte.selectTipoReporte(1).show(); // Accion 1= actualizar
+                        dialogTipoReporte.selectTipoReporte(2).show();
                 });
 
                 builder.setView(view).setTitle("Elija una opción!");
