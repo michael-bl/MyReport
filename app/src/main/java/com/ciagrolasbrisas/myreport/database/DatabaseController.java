@@ -72,7 +72,7 @@ public class DatabaseController {
                                 ContentValues values = new ContentValues();
                                 values.put("code", (i + 1));
                                 values.put("motivo", motivosCB[i]);
-                                resultado = sqLiteDatabase.insert("motivocb", null, values);
+                                resultado = sqLiteDatabase.insert("motivocbcos", null, values);
                         }
                         if (resultado == -1) {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + " Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
