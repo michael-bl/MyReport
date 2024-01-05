@@ -75,7 +75,7 @@ public class DatabaseController {
                                 resultado = sqLiteDatabase.insert("motivocb", null, values);
                         }
                         if (resultado == -1) {
-                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + "Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + " Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion);

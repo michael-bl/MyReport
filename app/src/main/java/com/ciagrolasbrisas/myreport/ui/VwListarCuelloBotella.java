@@ -179,6 +179,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                                                 for (MdCuelloBotella cb : listCuelloBotella) {
                                                                         stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
                                                                 }
+                                                                llenarListViewCuelloBotella(stringListCB);
                                                         });
                                                 } else {
                                                         // Imprimir error en la respuesta
