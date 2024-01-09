@@ -494,13 +494,13 @@ public class DatabaseController {
                         if (esFechaUnica) {
                                 cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                         "from cuellobotellacos as cb \n" +
-                                        "inner join motivocb as mt    \n" +
+                                        "inner join motivocbcos as mt    \n" +
                                         "on cb.motivo = mt.code  \n" +
                                         "where cb.fecha = ?", new String[]{fecha_desde});
                         } else {
                                 cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                         "from cuellobotellacos as cb \n" +
-                                        "inner join motivocb as mt    \n" +
+                                        "inner join motivocbcos as mt    \n" +
                                         "on cb.motivo = mt.code  \n" +
                                         "where cb.fecha >= ? and cb.fecha <= ?", new String[]{fecha_desde, fecha_hasta});
                         }
@@ -512,7 +512,7 @@ public class DatabaseController {
                                         mdCuelloBotella.setDniEncargado(cursor.getString(2));
                                         mdCuelloBotella.setLote(cursor.getString(3));
                                         mdCuelloBotella.setSeccion(cursor.getString(4));
-                                        mdCuelloBotella.setMotivo(cursor.getString(8));
+                                        mdCuelloBotella.setMotivo(cursor.getString(5) + "-" + cursor.getString(8));
                                         mdCuelloBotella.setHora_inicio(cursor.getString(6));
                                         mdCuelloBotella.setHora_final(cursor.getString(7));
                                         listaCB.add(mdCuelloBotella);
@@ -529,20 +529,23 @@ public class DatabaseController {
                 return listaCB;
         }
 
-        public String horasEfectivas(Context context, String fecha, String cuadrilla) {
+        public MdCuelloBotella horasEfectivas(Context context, String fecha, String cuadrilla) {
                 String respuesta = null;
+                MdCuelloBotella obj = new MdCuelloBotella();
                 dbHelper = new DatabaseHelper(context);
                 sqLiteDatabase = dbHelper.getReadableDatabase();
                 Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and dni_encargado = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
                 if (cursor.moveToFirst()) {
                         do {
-                                String hora_inicio = cursor.getString(0);
-                                String hora_fin = cursor.getString(1);
-                                respuesta = hora_inicio + "/" + hora_fin;
+                                //String hora_inicio = cursor.getString(0);
+                                //String hora_fin = cursor.getString(1);
+                                //respuesta = hora_inicio + "/" + hora_fin;
+                                obj.setHora_inicio(cursor.getString(0));
+                                obj.setHora_final(cursor.getString(1));
                         } while (cursor.moveToNext());
                         cursor.close();
                 }
-                return respuesta;
+                return obj;
         }
 
         public ArrayList<String> selectClientesCajas(Context context) {

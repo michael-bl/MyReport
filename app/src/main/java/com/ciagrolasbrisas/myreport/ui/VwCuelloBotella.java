@@ -52,7 +52,6 @@ public class VwCuelloBotella extends AppCompatActivity {
     private LogGenerator logGenerator;
     private String date, time, clase, dniUser;
     private boolean localMode;
-
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
