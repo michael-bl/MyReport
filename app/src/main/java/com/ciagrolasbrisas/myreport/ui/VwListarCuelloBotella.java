@@ -29,6 +29,7 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
+import com.ciagrolasbrisas.myreport.controller.cosecha.CbServidorController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
@@ -115,7 +116,33 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
                 try {
                         if (!localMode) {
-                                getCBSinCerrarCosDbRemota();
+                                Map<String, Object> finalJson = new HashMap<>();
+
+                                MdCuelloBotella cb = new MdCuelloBotella();
+                                cb.setAccion(4); // Para listar los cuellos pendientes de cierre
+
+                                dniUser = dbController.selectDniUser(this);
+                                cb.setDniEncargado(dniUser);
+                                cb.setFecha(date);
+
+                                listCuelloBotella = new ArrayList<>();
+                                listCuelloBotella.add(cb);
+
+                                finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+
+                                String json = new Gson().toJson(finalJson); // Enviar por parametro esta variable a CbServidorController.crudCuelloBotella
+
+                                //getCBSinCerrarCosDbRemota();
+                                CbServidorController cbServidorController = new CbServidorController();
+                                listCuelloBotella = cbServidorController.crudCuelloBotella(this, json, 4);
+
+                                if (!listCuelloBotella.isEmpty()){
+                                        for (MdCuelloBotella cbs : listCuelloBotella) {
+                                                stringListCB.add(cbs.getMotivo() + "-" + cbs.getHora_final());
+                                        }
+                                        llenarListViewCuelloBotella(stringListCB);
+                                }
+
                         } else {
                                 existDb = new ExistSqliteDatabase();
                                 if (existDb.ExistSqliteDatabase()) {
@@ -125,78 +152,6 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 } catch (Exception e){
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
-                }
-        }
-
-        private void getCBSinCerrarCosDbRemota() {
-                logGenerator = new LogGenerator();
-                OkHttpClient client = new OkHttpClient();
-                ConnectivityService con = new ConnectivityService();
-
-                if (con.stateConnection(this)) {
-                        Map<String, Object> finalJson = new HashMap<>();
-
-                        MdCuelloBotella cb = new MdCuelloBotella();
-                        cb.setAccion(4); // Lista los cuellos pendientes de cierre
-
-                        dniUser = dbController.selectDniUser(this);
-                        cb.setDniEncargado(dniUser);
-                        cb.setFecha(date);
-
-                        listCuelloBotella = new ArrayList<>();
-                        listCuelloBotella.add(cb);
-
-                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
-
-                        String json = new Gson().toJson(finalJson);
-
-                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-
-                        Request request = new Request.Builder()
-                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
-                                .post(requestBody)
-                                .build();
-
-                        // ExecutorService ejecuta la tarea en segundo plano
-                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                        executor.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                        try {
-                                                okhttp3.Response response = client.newCall(request).execute();
-
-                                                if (response.isSuccessful()) {
-                                                        final String responseBody = response.body().string();
-
-                                                        // Manejar la respuesta
-                                                        mainHandler.post(() -> {
-                                                                Gson gson = new Gson();
-                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {
-                                                                }.getType();
-                                                                listCuelloBotella = gson.fromJson(responseBody, listType);
-                                                                stringListCB = new ArrayList<>();
-
-                                                                for (MdCuelloBotella cb : listCuelloBotella) {
-                                                                        stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
-                                                                }
-                                                                llenarListViewCuelloBotella(stringListCB);
-                                                        });
-                                                } else {
-                                                        // Imprimir error en la respuesta
-                                                        mainHandler.post(() -> {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
-                                                        });
-                                                }
-                                        } catch (IOException e) {
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                e.printStackTrace();
-                                        }
-                                }
-                        });
-
-                        // Apagar el ExecutorService después de su uso
-                        executor.shutdown();
                 }
         }
 

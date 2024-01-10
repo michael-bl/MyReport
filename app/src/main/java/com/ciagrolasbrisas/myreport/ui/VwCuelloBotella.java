@@ -17,6 +17,7 @@ import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
+import com.ciagrolasbrisas.myreport.controller.cosecha.CbServidorController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdWarning;
@@ -172,48 +173,8 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 String json = new Gson().toJson(finalJson);
 
-                RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-
-                Request request = new Request.Builder()
-                        .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
-                        .post(requestBody)
-                        .build();
-
-                // ExecutorService ejecuta la tarea en segundo plano
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            okhttp3.Response response = client.newCall(request).execute();
-
-                            if (response.isSuccessful()) {
-                                final String responseBody = response.body().string();
-                                // Manejar la respuesta
-                                mainHandler.post(() -> {
-                                    Gson gson = new Gson();
-                                    Type listType = new TypeToken<MdWarning>() {
-                                    }.getType();
-
-                                    MdWarning mensaje = gson.fromJson(responseBody, listType);
-
-                                    Toast.makeText(VwCuelloBotella.this, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                            } else {
-                                // Imprimir error en la respuesta
-                                mainHandler.post(() -> {
-                                    logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
-                                    Toast.makeText(VwCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
-                                });
-                            }
-                        } catch (IOException e) {
-                            logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage());
-                        }
-                    }
-                });
-
-                // Apagar el ExecutorService después de su uso
-                executor.shutdown();
+                CbServidorController cbServidorController = new CbServidorController();
+                cbServidorController.crudCuelloBotella(this, json, Objects.requireNonNull(objCuelloBotella).getAccion());
 
             } else {
                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "El dispositivo no puede accesar a la red en este momento!"); // Agregamos el error al archivo Descargas/Logs.txt

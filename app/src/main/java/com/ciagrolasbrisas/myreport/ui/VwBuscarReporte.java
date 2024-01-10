@@ -99,10 +99,10 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                 llenarListViewReporte(1);
                                                 break;
                                         case "2":
-                                                Toast.makeText(this, "VwBuscarReporte.class/Opción en desarrollo!", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(this, "Opción en desarrollo!", Toast.LENGTH_LONG).show();
                                                 break;
                                         case "3":
-                                                Toast.makeText(this, "VwBuscarReporte.class/Opción en desarrollo", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(this, "Opción en desarrollo", Toast.LENGTH_LONG).show();
                                                 break;
                                         case "4":
                                                 flagReportType = 4;
@@ -142,7 +142,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tiposReporte);
                         spTipoReporte.setAdapter(adapter);
                 } catch (Exception e) {
-                        Toast.makeText(this, "VwBuscarReporte.class/Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 

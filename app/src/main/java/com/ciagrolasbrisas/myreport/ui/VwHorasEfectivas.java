@@ -2,6 +2,7 @@ package com.ciagrolasbrisas.myreport.ui;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -99,6 +100,14 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
         }
 
         @Override
+        public void onBackPressed(){
+                Intent intent = new Intent(getApplicationContext(), VwMain.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+        }
+
+        @Override
         public void onDateSet(DatePicker datePicker, int anio, int mes, int dia) {
                 if (dia < 10) {
                         if (mes < 9) {
@@ -166,13 +175,13 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                                                 listCuelloBotella = gson.fromJson(responseBody, listType);
 
                                                                 for (MdCuelloBotella cb : listCuelloBotella) {
-                                                                        if (cb.getMotivo().substring(0, 2) == "12") {
+                                                                        if (cb.getMotivo().substring(0, 2).equals( "12")) {
                                                                                 cuelloBotella.setHora_inicio(cb.getHora_inicio());
                                                                                 cuelloBotella.setHora_final(cb.getHora_final());
                                                                         }
                                                                 }
 
-                                                                totalCuelloBotella(listCuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
+                                                                totalCuelloBotella(listCuelloBotella, cuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
 
                                                         });
                                                 } else {
@@ -206,7 +215,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                 cuelloBotella = dbController.horasEfectivas(this, stringFecha, dniUser);
                                 ArrayList listacb = dbController.selectCuelloBotella(this, stringFecha, null, true);
 
-                                totalCuelloBotella(listacb); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
+                                totalCuelloBotella(listacb, cuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
 
                         } catch (NumberFormatException nfe) {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion);
@@ -214,7 +223,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                 }
         }
 
-        private void totalCuelloBotella(@NonNull ArrayList<MdCuelloBotella> listacb) {
+        private void totalCuelloBotella(@NonNull ArrayList<MdCuelloBotella> listacb, MdCuelloBotella cbcos) {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 logGenerator = new LogGenerator();
                 Duration lapso;
@@ -233,11 +242,11 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                 }
                         }
 
-                        if (!cuelloBotella.getHora_inicio().equals("")) {
+                        if (!cbcos.getHora_inicio().equals("")) {
                                 DateTimeFormatter formato_hora = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-                                hora_inicio = cuelloBotella.getHora_inicio();
-                                hora_final = cuelloBotella.getHora_final();
+                                hora_inicio = cbcos.getHora_inicio();
+                                hora_final = cbcos.getHora_final();
 
                                 LocalTime hora_ini = LocalTime.parse(hora_inicio, formato_hora);
                                 LocalTime hora_fin = LocalTime.parse(hora_final, formato_hora);
@@ -270,6 +279,8 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + nfe.getMessage());
                 } catch (NullPointerException npe) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
+                }catch (Exception e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage());
                 }
         }
 }
