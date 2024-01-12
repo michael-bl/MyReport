@@ -136,11 +136,13 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 CbServidorController cbServidorController = new CbServidorController();
                                 listCuelloBotella = cbServidorController.crudCuelloBotella(this, json, 4);
 
-                                if (!listCuelloBotella.isEmpty()){
+                                if (listCuelloBotella.size()>=0){
                                         for (MdCuelloBotella cbs : listCuelloBotella) {
                                                 stringListCB.add(cbs.getMotivo() + "-" + cbs.getHora_final());
                                         }
                                         llenarListViewCuelloBotella(stringListCB);
+                                } else {
+                                        Toast.makeText(this, "Sin datos, verifique!", Toast.LENGTH_SHORT).show();
                                 }
 
                         } else {

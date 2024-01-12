@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class MdCuelloBotella implements Serializable {
         @SerializedName("code")
@@ -41,6 +42,8 @@ public class MdCuelloBotella implements Serializable {
         @SerializedName("accion")
         @Expose
         private int accion;
+
+        private ArrayList<MdCuelloBotella> arrayList;
 
         public MdCuelloBotella() {
         }
@@ -115,5 +118,13 @@ public class MdCuelloBotella implements Serializable {
 
         public void setAccion(int accion) {
                 this.accion = accion;
+        }
+
+        public void setList(ArrayList<MdCuelloBotella> lista){
+                this.arrayList = lista;
+        }
+
+        public ArrayList<MdCuelloBotella> getArrayList(){
+                return arrayList;
         }
 }

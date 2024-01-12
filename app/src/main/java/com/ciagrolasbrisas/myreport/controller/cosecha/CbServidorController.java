@@ -17,7 +17,9 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,6 +29,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class CbServidorController {
+        private MdCuelloBotella cb;
         private ArrayList<MdCuelloBotella> listCuelloBotella;
         private String date, time, clase;
         private LogGenerator logGenerator;
@@ -36,8 +39,8 @@ public class CbServidorController {
         }
 
         public ArrayList<MdCuelloBotella> crudCuelloBotella(Context context, String json, int opcion) {
-
                 clase = this.getClass().getSimpleName();
+                cb = new MdCuelloBotella();
 
                 GetStringDate stringDate = new GetStringDate();
                 GetStringTime stringTime = new GetStringTime();
@@ -49,7 +52,19 @@ public class CbServidorController {
                 ConnectivityService con = new ConnectivityService();
 
                 if (con.stateConnection(context)) {
-
+//                        MdCuelloBotella cb = new MdCuelloBotella();
+//                        cb.setAccion(4); // Lista los cuellos pendientes de cierre
+//
+//                        cb.setDniEncargado("05-0361-0263");
+//                        cb.setFecha(date);
+//
+//                        listCuelloBotella = new ArrayList<>();
+//                        listCuelloBotella.add(cb);
+//
+//                        Map<String, Object> finalJson = new HashMap<>();
+//                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+//
+//                        String json = new Gson().toJson(finalJson);
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
                         Request request = new Request.Builder()
@@ -59,52 +74,55 @@ public class CbServidorController {
 
                         // ExecutorService ejecuta la tarea en segundo plano
                         ExecutorService executor = Executors.newSingleThreadExecutor();
-                        executor.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                        try {
-                                                okhttp3.Response response = client.newCall(request).execute();
+                        executor.execute(() -> {
+                                try {
+                                        okhttp3.Response response = client.newCall(request).execute();
 
-                                                if (response.isSuccessful()) {
-                                                        final String responseBody = response.body().string();
+                                        if (response.isSuccessful()) {
+                                                final String responseBody = response.body().string();
 
-                                                        // Manejar la respuesta
-                                                        mainHandler.post(() -> {
-                                                                Gson gson = new Gson();
+                                                // Manejar la respuesta
+                                                mainHandler.post(() -> {
+                                                        Gson gson = new Gson();
 
-                                                                if (opcion == 0 || opcion == 2 || opcion == 3) { // Devuelven estado y mesaje de error
+//                                                                if (opcion == 0 || opcion == 2 || opcion == 3) { // Devuelven estado y mesaje de error
+//
+//                                                                        Type listType = new TypeToken<MdWarning>() {
+//                                                                        }.getType();
+//
+//                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
+//                                                                        if (!mensaje.getStatus().equals("1")) {
+//                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+//                                                                        }
+//                                                                        Toast.makeText(context, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
+//
+//                                                                } else {
+                                                                // opciones 1-listar, 4-listarPendientes y 5-horasEfectivas, devuelven lista de reportes
+                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {
+                                                                }.getType();
+                                                                listCuelloBotella = gson.fromJson(responseBody, listType);
+                                                                aux(listCuelloBotella);
+                                                       // }
+                                                });
 
-                                                                        Type listType = new TypeToken<MdWarning>() {
-                                                                        }.getType();
-
-                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
-                                                                        if (!mensaje.getStatus().equals("1")) {
-                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                        }
-                                                                        Toast.makeText(context, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
-
-                                                                } else {
-                                                                        // opciones 1-listar, 4-listarPendientes y 5-horasEfectivas, devuelven lista de reportes
-                                                                        Type listType = new TypeToken<List<MdCuelloBotella>>() {
-                                                                        }.getType();
-                                                                        listCuelloBotella = gson.fromJson(responseBody, listType);
-                                                                }
-                                                        });
-                                                } else {
-                                                        // Imprimir error en la respuesta
-                                                        mainHandler.post(() -> {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                        });
-                                                }
-                                        } catch (IOException e) {
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                        } else {
+                                                // Imprimir error en la respuesta
+                                                mainHandler.post(() -> {
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                });
                                         }
+                                } catch (IOException e) {
+                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                 }
                         });
 
                         // Apagar el ExecutorService después de su uso
                         executor.shutdown();
                 }
-                return listCuelloBotella;
+                return cb.getArrayList();
+        }
+
+        private void aux(ArrayList<MdCuelloBotella> list){
+                cb.setList(list);
         }
 }

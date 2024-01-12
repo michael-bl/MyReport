@@ -86,9 +86,9 @@ public class VwCuelloBotella extends AppCompatActivity {
                 mostrarDatosEnInterfaz(objCuelloBotella);
         }
 
+        dbController = new DatabaseController();
         if (txtDniEncargado.getText().equals("")) {
-            DatabaseController db = new DatabaseController();
-            dniUser = db.selectDniUser(this);
+            dniUser = dbController.selectDniUser(this);
             txtDniEncargado.setText(dniUser);
         }
 
@@ -110,7 +110,7 @@ public class VwCuelloBotella extends AppCompatActivity {
         btnGuardarReporte = findViewById(R.id.btnGuardarCB);
         btnGuardarReporte.setOnClickListener(view -> {
 
-            dbController = new DatabaseController();
+            //dbController = new DatabaseController();
             localMode = dbController.selectLocalMode(this);
 
             if (localMode) {
