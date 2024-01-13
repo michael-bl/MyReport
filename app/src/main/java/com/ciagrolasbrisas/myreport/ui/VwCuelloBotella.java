@@ -174,7 +174,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                 String json = new Gson().toJson(finalJson);
 
                 CbServidorController cbServidorController = new CbServidorController();
-                cbServidorController.crudCuelloBotella(this, json, Objects.requireNonNull(objCuelloBotella).getAccion());
+                cbServidorController.crudCuelloBotella(this, json);
 
             } else {
                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "El dispositivo no puede accesar a la red en este momento!"); // Agregamos el error al archivo Descargas/Logs.txt

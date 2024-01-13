@@ -134,7 +134,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
 
                                 //getCBSinCerrarCosDbRemota();
                                 CbServidorController cbServidorController = new CbServidorController();
-                                listCuelloBotella = cbServidorController.crudCuelloBotella(this, json, 4);
+                                listCuelloBotella = cbServidorController.crudCuelloBotella(this, json);
 
                                 if (listCuelloBotella.size()>=0){
                                         for (MdCuelloBotella cbs : listCuelloBotella) {

@@ -38,7 +38,7 @@ public class CbServidorController {
         public CbServidorController() {
         }
 
-        public ArrayList<MdCuelloBotella> crudCuelloBotella(Context context, String json, int opcion) {
+        public ArrayList<MdCuelloBotella> crudCuelloBotella(Context context, String json) {
                 clase = this.getClass().getSimpleName();
                 cb = new MdCuelloBotella();
 
@@ -52,19 +52,6 @@ public class CbServidorController {
                 ConnectivityService con = new ConnectivityService();
 
                 if (con.stateConnection(context)) {
-//                        MdCuelloBotella cb = new MdCuelloBotella();
-//                        cb.setAccion(4); // Lista los cuellos pendientes de cierre
-//
-//                        cb.setDniEncargado("05-0361-0263");
-//                        cb.setFecha(date);
-//
-//                        listCuelloBotella = new ArrayList<>();
-//                        listCuelloBotella.add(cb);
-//
-//                        Map<String, Object> finalJson = new HashMap<>();
-//                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
-//
-//                        String json = new Gson().toJson(finalJson);
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
                         Request request = new Request.Builder()
@@ -85,24 +72,14 @@ public class CbServidorController {
                                                 mainHandler.post(() -> {
                                                         Gson gson = new Gson();
 
-//                                                                if (opcion == 0 || opcion == 2 || opcion == 3) { // Devuelven estado y mesaje de error
-//
-//                                                                        Type listType = new TypeToken<MdWarning>() {
-//                                                                        }.getType();
-//
-//                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
-//                                                                        if (!mensaje.getStatus().equals("1")) {
-//                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-//                                                                        }
-//                                                                        Toast.makeText(context, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
-//
-//                                                                } else {
-                                                                // opciones 1-listar, 4-listarPendientes y 5-horasEfectivas, devuelven lista de reportes
-                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {
-                                                                }.getType();
-                                                                listCuelloBotella = gson.fromJson(responseBody, listType);
-                                                                aux(listCuelloBotella);
-                                                       // }
+                                                        Type listType = new TypeToken<MdWarning>() {
+                                                        }.getType();
+
+                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
+                                                        if (!mensaje.getStatus().equals("1")) {
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                        }
+                                                        Toast.makeText(context, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
                                                 });
 
                                         } else {
@@ -120,9 +97,5 @@ public class CbServidorController {
                         executor.shutdown();
                 }
                 return cb.getArrayList();
-        }
-
-        private void aux(ArrayList<MdCuelloBotella> list){
-                cb.setList(list);
         }
 }

@@ -125,25 +125,6 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                         listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
                                                 } else {
                                                         getCBSinCerrarCosDbRemota();
-//                                                        Map<String, Object> finalJson = new HashMap<>();
-//
-//                                                        MdCuelloBotella cb = new MdCuelloBotella();
-//                                                        cb.setAccion(1); // Lista los cuellos pendientes de cierre
-//
-//                                                        dniUser = dbController.selectDniUser(this);
-//                                                        cb.setDniEncargado(dniUser);
-//                                                        cb.setFecha(fechaDesde);
-//
-//                                                        listaCuelloBotella = new ArrayList<>();
-//                                                        listaCuelloBotella.add(cb);
-//
-//                                                        finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
-//
-//                                                        String json = new Gson().toJson(finalJson);
-//
-//                                                        CbServidorController controller = new CbServidorController();
-//                                                        listaCuelloBotella = controller.crudCuelloBotella(this, json, 1);
-
                                                 }
 
                                                 break;
@@ -195,7 +176,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                         Map<String, Object> finalJson = new HashMap<>();
 
                         MdCuelloBotella cb = new MdCuelloBotella();
-                        cb.setAccion(1); // Lista los cuellos pendientes de cierre
+                        cb.setAccion(1); // Lista los cuellos cerrados en fecha especifica
 
                         dniUser = dbController.selectDniUser(this);
                         cb.setDniEncargado(dniUser);
