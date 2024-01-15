@@ -78,7 +78,7 @@ public class VwLogin extends AppCompatActivity {
 
         private void loginLocalOremoto() {
                 MdUsuario usuario = new MdUsuario();
-                usuario.setId(Objects.requireNonNull(txtId.getText()).toString().trim());
+                usuario.setCedula(Objects.requireNonNull(txtId.getText()).toString().trim());
                 usuario.setPass(HashPass.convertSHA256(txtPass.getText().toString().trim())); // encriptamos la contraseña
 
                 GetStringDate stringDate = new GetStringDate();
@@ -87,7 +87,7 @@ public class VwLogin extends AppCompatActivity {
                 time = stringTime.getHora();
 
 
-                if (!usuario.getId().equals("") && !usuario.getPass().equals("")) { // Validando llenado de inputs
+                if (!usuario.getCedula().equals("") && !usuario.getPass().equals("")) { // Validando llenado de inputs
                         localMode = stLocalMode.isChecked();
                         if (localMode) { // Si es verdadero logueamos de manera local, sino remoto
 
@@ -114,7 +114,7 @@ public class VwLogin extends AppCompatActivity {
 
                                 if (con.stateConnection(this)) {
 
-                                        Call<List<MdUsuario>> requestActividad = ApiUtils.getApiServices().login(usuario.getId(), usuario.getPass());
+                                        Call<List<MdUsuario>> requestActividad = ApiUtils.getApiServices().login(usuario.getCedula(), usuario.getPass());
 
                                         requestActividad.enqueue(new Callback<List<MdUsuario>>() {
                                                 @Override
@@ -133,12 +133,12 @@ public class VwLogin extends AppCompatActivity {
 
                                                                         for (int i = 0; i < response.size(); i++) {
 
-                                                                                if (usuario.getId().equals(response.get(i).getId()) && usuario.getPass().equals(response.get(i).getPass())) {
+                                                                                if (usuario.getCedula().equals(response.get(i).getCedula()) && usuario.getPass().equals(response.get(i).getPass())) {
                                                                                         usuario.setNombre(response.get(i).getNombre());
                                                                                         usuario.setDepartamento(response.get(i).getDepartamento());
                                                                                         usuario.setRol(response.get(i).getRol());
 
-                                                                                        if(!dbController.existUser(VwLogin.this, usuario.getId())) {  // De no existir un usuario guarda los datos en tabla local
+                                                                                        if(!dbController.existUser(VwLogin.this, usuario.getCedula())) {  // De no existir un usuario guarda los datos en tabla local
                                                                                                 dbController.nuevoUsuario(VwLogin.this, usuario);
                                                                                                 dbController.nuevoLocalMode(VwLogin.this, 0); // 0 = falso = guardar registros en db remota
                                                                                         }

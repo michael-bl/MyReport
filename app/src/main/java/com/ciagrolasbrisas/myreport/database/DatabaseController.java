@@ -396,7 +396,7 @@ public class DatabaseController {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getReadableDatabase();
-                        Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario where dni= ?", new String[]{id});
+                        Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario where cedula= ?", new String[]{id});
                         if (cursor.moveToFirst()) {
                                 return !cursor.getString(0).equals("0");
                         } else {
@@ -440,7 +440,7 @@ public class DatabaseController {
         public boolean loginUser(Context context, @NonNull MdUsuario usuario) {
                 dbHelper = new DatabaseHelper(context);
                 sqLiteDatabase = dbHelper.getReadableDatabase();
-                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select nombre from usuario where dni = ? and password = ?", new String[]{usuario.getId(), usuario.getPass()});
+                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select nombre from usuario where cedula = ? and password = ?", new String[]{usuario.getCedula(), usuario.getPass()});
                 if (cursor.moveToFirst()) {
                         nombreUsuario = cursor.getString(0);
                         return true;

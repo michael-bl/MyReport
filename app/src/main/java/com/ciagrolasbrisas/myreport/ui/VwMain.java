@@ -71,7 +71,8 @@ public class VwMain extends AppCompatActivity {
                 int id = item.getItemId();
                 dialogNewOrUpdate = new DialogNewUpdate(this);
                 if (id == R.id.nav_usuario) {
-                        dialogNewOrUpdate.dialogNewUpdate().show();
+                        //dialogNewOrUpdate.dialogNewUpdate().show();
+
                 }
                 if (id == R.id.nav_reporte) {
                         dialogNewOrUpdate.dialogNewUpdate().show();

@@ -14,6 +14,10 @@ public class MdUsuario implements Serializable {
     @Expose
     private String id;
 
+    @SerializedName("cedula")
+    @Expose
+    private String cedula;
+
     @SerializedName("nombre")
     @Expose
     private String nombre;
@@ -46,6 +50,13 @@ public class MdUsuario implements Serializable {
         this.id = id;
     }
 
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
     public String getNombre() {
         return nombre;
     }
@@ -93,4 +104,5 @@ public class MdUsuario implements Serializable {
     public void setRol(String rol) {
         this.rol = rol;
     }
+
 }
