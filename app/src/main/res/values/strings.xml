@@ -8,6 +8,8 @@
     <string name="action_settings">Settings</string>
     <string name="menu_home">Home</string>
 
+    <string name="id">Id</string>
+    <string name="rol">Rol</string>
     <string name="ibd">IBD</string>
     <string name="brix">Brix</string>
     <string name="tipo">Tipo</string>
@@ -18,21 +20,23 @@
     <string name="hasta">Hasta</string>
     <string name="fecha">Fecha</string>
     <string name="menu">Menú</string>
-    <string name="desde">Desde</string>
     <string name="mdLote">Lote</string>
     <string name="nuevo">Nuevo</string>
+    <string name="desde">Desde</string>
     <string name="calibre">Calibre</string>
     <string name="cedula">Cédula</string>
     <string name="detalle">Detalle</string>
     <string name="cliente">Cliente</string>
-    <string name="buscar"> Buscar</string>
+    <string name="puesto">Puesto</string>
     <string name="motivo">Motivo</string>
+    <string name="buscar"> Buscar</string>
     <string name="usuario">Usuario</string>
     <string name="guardar">Guardar</string>
     <string name="tamano">Tamaño</string>
     <string name="jornada">Jornada</string>
     <string name="reporte">Reporte</string>
     <string name="seccion">Sección</string>
+    <string name="nombre">Nombre</string>
     <string name="eliminar">Eliminar</string>
     <string name="siguiente">Siguiente</string>
     <string name="compartir">Compartir</string>

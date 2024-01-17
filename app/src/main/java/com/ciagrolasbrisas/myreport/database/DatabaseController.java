@@ -53,8 +53,7 @@ public class DatabaseController {
                                 return "2";
                         }
                 } catch (IllegalStateException illegalStateException) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + illegalStateException.getMessage()); // Agrega error en Descargas/Logs.txt
-                        illegalStateException.printStackTrace();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + illegalStateException); // Agrega error en Descargas/Logs.txt
                 }
                 return "0";
         }
@@ -78,11 +77,11 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + " Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion);
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion);
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -113,10 +112,10 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar lista de usuarios por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
                         Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
                 }
 
@@ -140,11 +139,11 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar lista de clientes."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
         }
@@ -167,11 +166,11 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar lista de calibres."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
         }
@@ -191,11 +190,11 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar modo almacenamiento por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -229,11 +228,11 @@ public class DatabaseController {
                         if (resultado == -1)
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar el muestreo de premaduraciones."); // Agrega error en Descargas/Logs.txt
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -265,11 +264,11 @@ public class DatabaseController {
                                 Toast.makeText(context, "Error al guardar reporte: " + resultado + " Code " + muestra.getCode(), Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -283,7 +282,7 @@ public class DatabaseController {
                         int code = getConsecutive.funGetConsecutive(context, "usuario");
 
                         values.put("code", code);
-                        values.put("dni", usuario.getId());
+                        values.put("cedula", usuario.getId());
                         values.put("password", usuario.getPass());
                         values.put("nombre", usuario.getNombre());
                         values.put("departamento", usuario.getDepartamento());
@@ -298,11 +297,11 @@ public class DatabaseController {
                                 Toast.makeText(context, "Error al guardar el usuario: " + resultado + " Code " + usuario.getId(), Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -332,11 +331,11 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar peso de caja: " + resultado); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error: " + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error: " + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -365,11 +364,11 @@ public class DatabaseController {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar modo local: " + resultado); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error: " + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error: " + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -386,7 +385,7 @@ public class DatabaseController {
                                 return false;
                         }
                 } catch (IllegalArgumentException e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
                         return false;
                 }
         }
@@ -396,14 +395,14 @@ public class DatabaseController {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getReadableDatabase();
-                        Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario where cedula= ?", new String[]{id});
+                        Cursor cursor = sqLiteDatabase.rawQuery("select count(*)  from usuario where cedula = ?", new String[]{id});
                         if (cursor.moveToFirst()) {
                                 return !cursor.getString(0).equals("0");
                         } else {
                                 return false;
                         }
                 } catch (IllegalArgumentException e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
                         return false;
                 }
         }
@@ -431,7 +430,7 @@ public class DatabaseController {
                                 return false;
                         }
                 } catch (IllegalArgumentException e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
                         return false;
                 }
         }
@@ -478,8 +477,8 @@ public class DatabaseController {
                                 Toast.makeText(context, "Advertencia: no hay reportes abiertos", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaCB;
         }
@@ -523,8 +522,8 @@ public class DatabaseController {
                                 Toast.makeText(context, "Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaCB;
         }
@@ -568,8 +567,8 @@ public class DatabaseController {
                                 Toast.makeText(context, "Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaClientes;
         }
@@ -592,8 +591,8 @@ public class DatabaseController {
                                 Toast.makeText(context, "Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaCalibres;
         }
@@ -636,8 +635,8 @@ public class DatabaseController {
                                 Toast.makeText(context, "Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaPesoCaja;
         }
@@ -660,8 +659,8 @@ public class DatabaseController {
                                 Toast.makeText(context, "Advertencia: no hay clientes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return false;
         }
@@ -693,11 +692,11 @@ public class DatabaseController {
                                 Toast.makeText(context, "Error al actualizar información!", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 }

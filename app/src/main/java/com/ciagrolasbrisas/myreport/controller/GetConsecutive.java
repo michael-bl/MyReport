@@ -36,8 +36,8 @@ public class GetConsecutive {
                 return 1;
             }
         } catch (SQLiteException sqle) {
-            logGenerator.generateLogFile(date + ": " + time + ": " + this + ": "  + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-            Toast.makeText(context, "GetConsecutive/Error: " + sqle, Toast.LENGTH_LONG).show();
+            logGenerator.generateLogFile(date + ": " + time + ": " + this + ": "  + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agregamos el error al archivo Descargas/Logs.txt
+            Toast.makeText(context, "GetConsecutive/Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
         }
         return code;
     }

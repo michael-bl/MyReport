@@ -44,13 +44,13 @@ public class VwLogin extends AppCompatActivity {
 
                 clase = this.getClass().getSimpleName();
 
-                crearDbLocal();
-
                 stLocalMode = findViewById(R.id.switchModoLocal);
 
                 logGenerator = new LogGenerator();
 
                 CheckPermissions permisos = new CheckPermissions(this);  // Lanza activity para solicitar permisos correspondientes
+
+                crearDbLocal();
 
                 txtId = findViewById(R.id.txtLoginUser);
                 txtPass = findViewById(R.id.txtLoginPass);
@@ -72,7 +72,7 @@ public class VwLogin extends AppCompatActivity {
                         }
                 } catch (SQLiteException sqle) {
                         Toast.makeText(this, "Error en consulta: " + sqle, Toast.LENGTH_LONG).show();
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agregamos el error al archivo Descargas/Logs.txt
                 }
         }
 

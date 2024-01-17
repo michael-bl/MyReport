@@ -27,8 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "nombre TEXT(30)," +
                 "departamento TEXT(30)," +
                 "rol TEXT(10)," +
-                " sync INTEGER," +
-                " PRIMARY KEY (dni));";
+                " PRIMARY KEY (code));";
 
         private final String tblPremas = "CREATE TABLE premaduracion (" +
                 " id_muestreo  INTEGER UNIQUE NOT NULL," +
@@ -148,7 +147,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL(tblCalibre);
                         sqLiteDb.execSQL(tblLocalMode);
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agrega error en Descargas/Logs.txt
                         Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
@@ -167,7 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS calibre");
                         onCreate(sqLiteDb);
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle.getMessage()); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agrega error en Descargas/Logs.txt
                         Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }

@@ -68,11 +68,13 @@ public class VwMain extends AppCompatActivity {
         @Override
         public boolean onOptionsItemSelected(@NonNull MenuItem item) {
                 DatabaseController dbController;
+                Intent intent;
                 int id = item.getItemId();
                 dialogNewOrUpdate = new DialogNewUpdate(this);
                 if (id == R.id.nav_usuario) {
                         //dialogNewOrUpdate.dialogNewUpdate().show();
-
+                        intent = new Intent(this, VwUsuario.class);
+                        startActivity(intent);
                 }
                 if (id == R.id.nav_reporte) {
                         dialogNewOrUpdate.dialogNewUpdate().show();
@@ -81,7 +83,7 @@ public class VwMain extends AppCompatActivity {
                         //dialogNewOrUpdate.dialogNewUpdate().show();
                 }
                 if (id == R.id.nav_compartir) {
-                         Intent intent = new Intent(this, VwBuscarReporte.class);
+                         intent = new Intent(this, VwBuscarReporte.class);
                          startActivity(intent);
                 }
                 if (id == R.id.nav_configuracion) {
