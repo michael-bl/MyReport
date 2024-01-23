@@ -140,8 +140,8 @@ public class VwLogin extends AppCompatActivity {
 
                                                                                         if(!dbController.existUser(VwLogin.this, usuario.getCedula())) {  // De no existir un usuario guarda los datos en tabla local
                                                                                                 dbController.nuevoUsuario(VwLogin.this, usuario);
-                                                                                                dbController.nuevoLocalMode(VwLogin.this, 0); // 0 = falso = guardar registros en db remota
                                                                                         }
+                                                                                        dbController.nuevoLocalMode(VwLogin.this, 0); // 0 = falso = guardar registros en db remota
 
                                                                                         Intent intent = new Intent(VwLogin.this, VwMain.class); // Lanzamos actividad principal
                                                                                         startActivity(intent);

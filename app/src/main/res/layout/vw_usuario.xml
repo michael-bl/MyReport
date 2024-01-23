@@ -8,20 +8,6 @@
     android:orientation="vertical"
     tools:context=".ui.VwUsuario">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.MyReport.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.MyReport.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -47,7 +33,7 @@
             android:inputType="number"
             android:maxLength="5"
             android:maxLines="1"
-            android:layout_marginTop="55dp"/>
+            android:layout_marginTop="12dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 

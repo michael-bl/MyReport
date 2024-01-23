@@ -282,7 +282,7 @@ public class DatabaseController {
                         int code = getConsecutive.funGetConsecutive(context, "usuario");
 
                         values.put("code", code);
-                        values.put("cedula", usuario.getId());
+                        values.put("cedula", usuario.getCedula());
                         values.put("password", usuario.getPass());
                         values.put("nombre", usuario.getNombre());
                         values.put("departamento", usuario.getDepartamento());
