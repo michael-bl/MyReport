@@ -29,10 +29,10 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
-import com.ciagrolasbrisas.myreport.controller.cosecha.CbServidorController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
+import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -51,7 +51,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class VwListarCuelloBotella extends AppCompatActivity {
-        private ArrayList<MdCuelloBotella> listCuelloBotella;
+        private ArrayList<MdCuelloBotella> listaCuelloBotella;
         private DatabaseController dbController;
         private ArrayList<String> stringListCB;
         private MdCuelloBotella mdCuelloBotella;
@@ -113,38 +113,10 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         }
 
         private void getCuellosPendientes() {
-
                 try {
+
                         if (!localMode) {
-                                Map<String, Object> finalJson = new HashMap<>();
-
-                                MdCuelloBotella cb = new MdCuelloBotella();
-                                cb.setAccion(4); // Para listar los cuellos pendientes de cierre
-
-                                dniUser = dbController.selectDniUser(this);
-                                cb.setDniEncargado(dniUser);
-                                cb.setFecha(date);
-
-                                listCuelloBotella = new ArrayList<>();
-                                listCuelloBotella.add(cb);
-
-                                finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
-
-                                String json = new Gson().toJson(finalJson); // Enviar por parametro esta variable a CbServidorController.crudCuelloBotella
-
-                                //getCBSinCerrarCosDbRemota();
-                                CbServidorController cbServidorController = new CbServidorController();
-                                listCuelloBotella = cbServidorController.crudCuelloBotella(this, json);
-
-                                if (listCuelloBotella.size()>=0){
-                                        for (MdCuelloBotella cbs : listCuelloBotella) {
-                                                stringListCB.add(cbs.getMotivo() + "-" + cbs.getHora_final());
-                                        }
-                                        llenarListViewCuelloBotella(stringListCB);
-                                } else {
-                                        Toast.makeText(this, "Sin datos, verifique!", Toast.LENGTH_SHORT).show();
-                                }
-
+                                getCBSinCerrarCosServidor();
                         } else {
                                 existDb = new ExistSqliteDatabase();
                                 if (existDb.ExistSqliteDatabase()) {
@@ -157,12 +129,102 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 }
         }
 
+        private void getCBSinCerrarCosServidor() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                try {
+                        logGenerator = new LogGenerator();
+                        OkHttpClient client = new OkHttpClient();
+                        ConnectivityService con = new ConnectivityService();
+                                if (con.stateConnection(this)) {
+                                        Map<String, Object> finalJson = new HashMap<>();
+
+                                        MdCuelloBotella cb = new MdCuelloBotella();
+                                        cb.setAccion(4); // Para listar los cuellos pendientes de cierre
+
+                                        dniUser = dbController.selectDniUser(this);
+                                        cb.setDniEncargado(dniUser);
+                                        cb.setFecha(date);
+
+                                        listaCuelloBotella = new ArrayList<>();
+                                        listaCuelloBotella.add(cb);
+
+                                        finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+
+                                        String json = new Gson().toJson(finalJson);
+
+                                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+
+                                        Request request = new Request.Builder()
+                                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
+                                                .post(requestBody)
+                                                .build();
+
+                                        // ExecutorService ejecuta la tarea en segundo plano
+                                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                                        executor.execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        try {
+                                                                okhttp3.Response response = client.newCall(request).execute();
+
+                                                                if (response.isSuccessful()) {
+                                                                        final String responseBody = response.body().string();
+
+                                                                        // Manejar la respuesta
+                                                                        mainHandler.post(() -> {
+                                                                                Gson gson = new Gson();
+                                                                                Type listType = new TypeToken<MdWarning>() {
+                                                                                }.getType();
+
+                                                                                if(gson.fromJson(responseBody, listType)){
+                                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
+                                                                                        if (!mensaje.getStatus().equals("1")) {
+                                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                                        }
+                                                                                        Toast.makeText(VwListarCuelloBotella.this, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                                                                } else {
+                                                                                        listType = new TypeToken<List<MdCuelloBotella>>() {
+                                                                                        }.getType();
+                                                                                        listaCuelloBotella = gson.fromJson(responseBody, listType);
+                                                                                        stringListCB = new ArrayList<>();
+
+                                                                                        for (MdCuelloBotella cb : listaCuelloBotella) {
+                                                                                                stringListCB.add(cb.getMotivo());
+                                                                                                cb.setDniEncargado(dniUser);
+                                                                                        }
+                                                                                        llenarListViewCuelloBotella(stringListCB);
+                                                                                }
+                                                                        });
+                                                                } else {
+                                                                        // Imprimir error en la respuesta
+                                                                        mainHandler.post(() -> {
+                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                                Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                        });
+                                                                }
+                                                        } catch (IOException e) {
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                e.printStackTrace();
+                                                        }
+                                                }
+                                        });
+
+                                        // Apagar el ExecutorService después de su uso
+                                        executor.shutdown();
+                                }
+                } catch (Exception e){
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
+                }
+        }
+
         private void getCBSinCerrarCosDbLocal() {
                 try {
                         dbController = new DatabaseController();
-                        listCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
+                        listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
                         stringListCB = new ArrayList<>();
-                        for (MdCuelloBotella cb : listCuelloBotella) {
+                        for (MdCuelloBotella cb : listaCuelloBotella) {
                                 stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
                         }
                         llenarListViewCuelloBotella(stringListCB);
@@ -227,7 +289,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
                                 if (checked) {
-                                        mdCuelloBotella = listCuelloBotella.get(position);
+                                        mdCuelloBotella = listaCuelloBotella.get(position);
                                         myAdapter.setNewSelection(position);
                                 } else {
                                         mdCuelloBotella = new MdCuelloBotella();

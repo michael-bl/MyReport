@@ -10,6 +10,7 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
+import com.ciagrolasbrisas.myreport.model.MdUsuario;
 import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,8 +27,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class UsServidorController {
-        private MdCuelloBotella cb;
-        private ArrayList<MdCuelloBotella> listCuelloBotella;
+        private MdUsuario mdUsuario;
         private String date, time, clase;
         private LogGenerator logGenerator;
         private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -35,9 +35,9 @@ public class UsServidorController {
         public UsServidorController() {
         }
 
-        public ArrayList<MdCuelloBotella> crudCuelloBotella(Context context, String json) {
+        public MdUsuario crudUsuario(Context context, String json) {
                 clase = this.getClass().getSimpleName();
-                cb = new MdCuelloBotella();
+                mdUsuario = new MdUsuario();
 
                 GetStringDate stringDate = new GetStringDate();
                 GetStringTime stringTime = new GetStringTime();
@@ -52,7 +52,7 @@ public class UsServidorController {
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
                         Request request = new Request.Builder()
-                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
+                                .url("https://reportes.ciagrolasbrisas.com/usuario.php")
                                 .post(requestBody)
                                 .build();
 
@@ -93,6 +93,6 @@ public class UsServidorController {
                         // Apagar el ExecutorService después de su uso
                         executor.shutdown();
                 }
-                return cb.getArrayList();
+                return mdUsuario;
         }
 }

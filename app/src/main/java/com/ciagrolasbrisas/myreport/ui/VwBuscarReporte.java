@@ -24,11 +24,11 @@ import com.ciagrolasbrisas.myreport.controller.ExcelGenerator;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.MyDatePicker;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
-import com.ciagrolasbrisas.myreport.controller.cosecha.CbServidorController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdPesoCaja;
+import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -124,7 +123,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                 if (localMode) {
                                                         listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
                                                 } else {
-                                                        getCBSinCerrarCosDbRemota();
+                                                        getCbCosDbRemota();
                                                 }
 
                                                 break;
@@ -149,7 +148,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 
                 btnShare.setOnClickListener(view -> {
                         ExcelGenerator crearExcel = new ExcelGenerator();
-                        String dniUser = "";
+                        dniUser = dbController.selectDniUser(this);
                         switch (flagReportType) {
                                 case 1:
                                         crearExcel.generarExcell(this, listaCuelloBotella, dniUser);
@@ -167,7 +166,8 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                 });
         }
 
-        private void getCBSinCerrarCosDbRemota() {
+        private void getCbCosDbRemota() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 logGenerator = new LogGenerator();
                 OkHttpClient client = new OkHttpClient();
                 ConnectivityService con = new ConnectivityService();
@@ -210,25 +210,38 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                         // Manejar la respuesta
                                                         mainHandler.post(() -> {
                                                                 Gson gson = new Gson();
-                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {
+                                                                Type listType = new TypeToken<MdWarning>() {
                                                                 }.getType();
-                                                                listaCuelloBotella = gson.fromJson(responseBody, listType);
-                                                                stringArrayList = new ArrayList<>();
 
-                                                                for (MdCuelloBotella cb : listaCuelloBotella) {
-                                                                        stringArrayList.add(cb.getMotivo() + "-" + cb.getHora_final());
+                                                                if(gson.fromJson(responseBody, listType)){
+                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
+                                                                        if (!mensaje.getStatus().equals("1")) {
+                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                        }
+                                                                        Toast.makeText(VwBuscarReporte.this, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                                                } else {
+                                                                        listType = new TypeToken<List<MdCuelloBotella>>() {
+                                                                        }.getType();
+                                                                        listaCuelloBotella = gson.fromJson(responseBody, listType);
+                                                                        stringArrayList = new ArrayList<>();
+
+                                                                        for (MdCuelloBotella cb : listaCuelloBotella) {
+                                                                                stringArrayList.add(cb.getMotivo());
+                                                                                cb.setDniEncargado(dniUser);
+                                                                        }
+                                                                        llenarListViewReporte(stringArrayList);
                                                                 }
-                                                                llenarListViewReporte(stringArrayList);
                                                         });
                                                 } else {
                                                         // Imprimir error en la respuesta
                                                         mainHandler.post(() -> {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
                                                                 Toast.makeText(VwBuscarReporte.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
                                                         });
                                                 }
                                         } catch (IOException e) {
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                                 e.printStackTrace();
                                         }
                                 }

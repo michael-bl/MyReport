@@ -30,7 +30,6 @@ import okhttp3.RequestBody;
 
 public class CbServidorController {
         private MdCuelloBotella cb;
-        private ArrayList<MdCuelloBotella> listCuelloBotella;
         private String date, time, clase;
         private LogGenerator logGenerator;
         private final Handler mainHandler = new Handler(Looper.getMainLooper());

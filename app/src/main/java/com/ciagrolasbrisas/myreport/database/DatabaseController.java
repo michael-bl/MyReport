@@ -358,9 +358,7 @@ public class DatabaseController {
                                 resultado = sqLiteDatabase.update("localmode", values, String.format("code = %s", (code-1)), null);
                         }
 
-                        if (resultado != -1) {
-                                Toast.makeText(context, "Modo local actualizado!!", Toast.LENGTH_LONG).show();
-                        } else {
+                        if (resultado == -1) {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar modo local: " + resultado); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
@@ -410,7 +408,7 @@ public class DatabaseController {
         public String selectDniUser(Context context) {
                 dbHelper = new DatabaseHelper(context);
                 sqLiteDatabase = dbHelper.getReadableDatabase();
-                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select dni  from usuario limit 1", null);
+                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select cedula  from usuario limit 1", null);
                 if (cursor.moveToFirst()) {
                         return cursor.getString(0);
                 }

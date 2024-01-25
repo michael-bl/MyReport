@@ -1,5 +1,7 @@
 package com.ciagrolasbrisas.myreport.ui;
 
+import static com.ciagrolasbrisas.myreport.controller.HashPass.convertSHA256;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -11,10 +13,9 @@ import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
-import com.ciagrolasbrisas.myreport.controller.cosecha.CbServidorController;
 import com.ciagrolasbrisas.myreport.controller.usuario.UsServidorController;
-import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -29,12 +30,20 @@ public class VwUsuario extends AppCompatActivity {
     private MdUsuario usuario;
     private ArrayList<MdUsuario> listUsuario;
     private LogGenerator logGenerator;
-    private String date, time, clase, dniUser;
+    private String date, time, clase;
+
+    private TextInputEditText txtCedula, txtNombre, txtContrasena, txtRol, txtPuesto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vw_usuario);
+
+        txtCedula = findViewById(R.id.txtCedulaUsuario);
+        txtNombre =findViewById(R.id.txtNombreUsuario);
+        txtContrasena =findViewById(R.id.txtPassUsuario);
+        txtRol =findViewById(R.id.txtRolUsuario);
+        txtPuesto =findViewById(R.id.txtPuestoUsuario);
 
         GetStringDate stringDate = new GetStringDate();
         GetStringTime stringTime = new GetStringTime();
@@ -67,7 +76,13 @@ public class VwUsuario extends AppCompatActivity {
     public void guardarEnServidor(){
         String funcion = new Throwable().getStackTrace()[0].getMethodName();
         OkHttpClient client = new OkHttpClient();
+
         usuario = new MdUsuario();
+        usuario.setCedula(txtCedula.getText().toString());
+        usuario.setPass(convertSHA256(txtContrasena.getText().toString()));
+        usuario.setNombre(txtNombre.getText().toString());
+        usuario.setRol(txtRol.getText().toString());
+
         ConnectivityService con = new ConnectivityService();
 
         if (con.stateConnection(this)) {
@@ -80,7 +95,7 @@ public class VwUsuario extends AppCompatActivity {
             String json = new Gson().toJson(finalJson);
 
             UsServidorController usServidorController = new UsServidorController();
-            usServidorController.crudCuelloBotella(this, json);
+            usServidorController.crudUsuario(this, json);
 
         } else {
             logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "El dispositivo no puede accesar a la red en este momento!"); // Agregamos el error al archivo Descargas/Logs.txt
