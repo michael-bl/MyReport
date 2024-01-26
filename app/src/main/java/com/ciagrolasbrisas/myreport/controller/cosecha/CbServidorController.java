@@ -37,7 +37,7 @@ public class CbServidorController {
         public CbServidorController() {
         }
 
-        public ArrayList<MdCuelloBotella> crudCuelloBotella(Context context, String json) {
+        public MdCuelloBotella crudCuelloBotella(Context context, String json) {
                 clase = this.getClass().getSimpleName();
                 cb = new MdCuelloBotella();
 
@@ -95,6 +95,6 @@ public class CbServidorController {
                         // Apagar el ExecutorService después de su uso
                         executor.shutdown();
                 }
-                return cb.getArrayList();
+                return cb;
         }
 }

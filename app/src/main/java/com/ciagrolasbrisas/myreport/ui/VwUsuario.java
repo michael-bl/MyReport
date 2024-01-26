@@ -14,7 +14,9 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.usuario.UsServidorController;
+import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
@@ -31,6 +33,7 @@ public class VwUsuario extends AppCompatActivity {
     private ArrayList<MdUsuario> listUsuario;
     private LogGenerator logGenerator;
     private String date, time, clase;
+    private FloatingActionButton btnGuardarUs;
 
     private TextInputEditText txtCedula, txtNombre, txtContrasena, txtRol, txtPuesto;
 
@@ -40,10 +43,11 @@ public class VwUsuario extends AppCompatActivity {
         setContentView(R.layout.vw_usuario);
 
         txtCedula = findViewById(R.id.txtCedulaUsuario);
-        txtNombre =findViewById(R.id.txtNombreUsuario);
-        txtContrasena =findViewById(R.id.txtPassUsuario);
-        txtRol =findViewById(R.id.txtRolUsuario);
-        txtPuesto =findViewById(R.id.txtPuestoUsuario);
+        txtNombre = findViewById(R.id.txtNombreUsuario);
+        txtContrasena = findViewById(R.id.txtPassUsuario);
+        txtRol = findViewById(R.id.txtRolUsuario);
+        txtPuesto = findViewById(R.id.txtPuestoUsuario);
+        btnGuardarUs = findViewById(R.id.btnGuardarUs);
 
         GetStringDate stringDate = new GetStringDate();
         GetStringTime stringTime = new GetStringTime();
@@ -59,6 +63,10 @@ public class VwUsuario extends AppCompatActivity {
             if (Objects.requireNonNull(usuario).getAccion() == 1 || Objects.requireNonNull(usuario).getAccion() == 2) // Actualizar o eliminar reporte
                 mostrarDatosEnInterfaz(usuario);
         }
+
+        btnGuardarUs.setOnClickListener(view -> {
+            guardarEnServidor();
+        });
     }
 
     private void mostrarDatosEnInterfaz(MdUsuario usuario) {
@@ -82,6 +90,7 @@ public class VwUsuario extends AppCompatActivity {
         usuario.setPass(convertSHA256(txtContrasena.getText().toString()));
         usuario.setNombre(txtNombre.getText().toString());
         usuario.setRol(txtRol.getText().toString());
+        usuario.setAccion(0);
 
         ConnectivityService con = new ConnectivityService();
 

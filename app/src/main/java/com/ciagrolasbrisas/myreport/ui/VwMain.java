@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,9 +73,13 @@ public class VwMain extends AppCompatActivity {
                 int id = item.getItemId();
                 dialogNewOrUpdate = new DialogNewUpdate(this);
                 if (id == R.id.nav_usuario) {
-                        //dialogNewOrUpdate.dialogNewUpdate().show();
-                        intent = new Intent(this, VwUsuario.class);
-                        startActivity(intent);
+                        DatabaseController db = new DatabaseController();
+                        String rol = db.selectRolUser(this);
+                        if(rol.equals("admin")){
+                                intent = new Intent(this, VwUsuario.class);
+                                startActivity(intent);
+                        }
+                        Toast.makeText(this, "No tiene permisos para acceder a este formulario!", Toast.LENGTH_LONG);
                 }
                 if (id == R.id.nav_reporte) {
                         dialogNewOrUpdate.dialogNewUpdate().show();

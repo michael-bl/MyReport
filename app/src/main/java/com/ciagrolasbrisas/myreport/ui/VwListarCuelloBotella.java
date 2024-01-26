@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -123,7 +124,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                         getCBSinCerrarCosDbLocal();
                                 }
                         }
-                } catch (Exception e){
+                } catch (Exception e) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
@@ -135,91 +136,85 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         logGenerator = new LogGenerator();
                         OkHttpClient client = new OkHttpClient();
                         ConnectivityService con = new ConnectivityService();
-                                if (con.stateConnection(this)) {
-                                        Map<String, Object> finalJson = new HashMap<>();
+                        if (con.stateConnection(this)) {
+                                Map<String, Object> finalJson = new HashMap<>();
 
-                                        MdCuelloBotella cb = new MdCuelloBotella();
-                                        cb.setAccion(4); // Para listar los cuellos pendientes de cierre
+                                MdCuelloBotella cb = new MdCuelloBotella();
+                                cb.setAccion(4); // Para listar los cuellos pendientes de cierre
 
-                                        dniUser = dbController.selectDniUser(this);
-                                        cb.setDniEncargado(dniUser);
-                                        cb.setFecha(date);
+                                dniUser = dbController.selectDniUser(this);
+                                cb.setDniEncargado(dniUser);
+                                cb.setFecha(date);
 
-                                        listaCuelloBotella = new ArrayList<>();
-                                        listaCuelloBotella.add(cb);
+                                listaCuelloBotella = new ArrayList<>();
+                                listaCuelloBotella.add(cb);
 
-                                        finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+                                finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
 
-                                        String json = new Gson().toJson(finalJson);
+                                String json = new Gson().toJson(finalJson);
 
-                                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+                                RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
 
-                                        Request request = new Request.Builder()
-                                                .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
-                                                .post(requestBody)
-                                                .build();
+                                Request request = new Request.Builder()
+                                        .url("https://reportes.ciagrolasbrisas.com/cuelloBotellaCos.php")
+                                        .post(requestBody)
+                                        .build();
 
-                                        // ExecutorService ejecuta la tarea en segundo plano
-                                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                                        executor.execute(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                        try {
-                                                                okhttp3.Response response = client.newCall(request).execute();
+                                // ExecutorService ejecuta la tarea en segundo plano
+                                ExecutorService executor = Executors.newSingleThreadExecutor();
+                                executor.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                try {
+                                                        okhttp3.Response response = client.newCall(request).execute();
 
-                                                                if (response.isSuccessful()) {
-                                                                        final String responseBody = response.body().string();
+                                                        if (response.isSuccessful()) {
+                                                                final String responseBody = response.body().string();
 
-                                                                        // Manejar la respuesta
-                                                                        mainHandler.post(() -> {
-                                                                                Gson gson = new Gson();
-                                                                                Type listType = new TypeToken<MdWarning>() {
-                                                                                }.getType();
+                                                                // Manejar la respuesta
+                                                                mainHandler.post(() -> {
+                                                                        Gson gson = new Gson();
+                                                                        Type listType = new TypeToken<List<MdCuelloBotella>>() {
+                                                                        }.getType();
+                                                                        listaCuelloBotella = gson.fromJson(responseBody, listType);
+                                                                        stringListCB = new ArrayList<>();
 
-                                                                                if(gson.fromJson(responseBody, listType)){
-                                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
-                                                                                        if (!mensaje.getStatus().equals("1")) {
-                                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                                        }
-                                                                                        Toast.makeText(VwListarCuelloBotella.this, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
-
-                                                                                } else {
-                                                                                        listType = new TypeToken<List<MdCuelloBotella>>() {
-                                                                                        }.getType();
-                                                                                        listaCuelloBotella = gson.fromJson(responseBody, listType);
-                                                                                        stringListCB = new ArrayList<>();
-
-                                                                                        for (MdCuelloBotella cb : listaCuelloBotella) {
-                                                                                                stringListCB.add(cb.getMotivo());
-                                                                                                cb.setDniEncargado(dniUser);
-                                                                                        }
-                                                                                        llenarListViewCuelloBotella(stringListCB);
+                                                                        if(listaCuelloBotella.get(0).getCode().equals("null")){
+                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + listaCuelloBotella.get(0).getMotivo()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                                Toast.makeText(VwListarCuelloBotella.this, listaCuelloBotella.get(0).getMotivo(), Toast.LENGTH_SHORT).show();
+                                                                        } else {
+                                                                                for (MdCuelloBotella cb : listaCuelloBotella) {
+                                                                                        stringListCB.add(cb.getMotivo());
+                                                                                        cb.setDniEncargado(dniUser);
                                                                                 }
-                                                                        });
-                                                                } else {
-                                                                        // Imprimir error en la respuesta
-                                                                        mainHandler.post(() -> {
-                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                                Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
-                                                                        });
-                                                                }
-                                                        } catch (IOException e) {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                e.printStackTrace();
+                                                                                llenarListViewCuelloBotella(stringListCB);
+                                                                        }
+                                                                });
+                                                        } else {
+                                                                // Imprimir error en la respuesta
+                                                                mainHandler.post(() -> {
+                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                        Toast.makeText(VwListarCuelloBotella.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                });
                                                         }
+                                                } catch (IOException e) {
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                        e.printStackTrace();
                                                 }
-                                        });
+                                        }
+                                });
 
-                                        // Apagar el ExecutorService después de su uso
-                                        executor.shutdown();
-                                }
-                } catch (Exception e){
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                // Apagar el ExecutorService después de su uso
+                                executor.shutdown();
+                        }
+                } catch (Exception e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
         }
 
         private void getCBSinCerrarCosDbLocal() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         dbController = new DatabaseController();
                         listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
@@ -229,12 +224,13 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         }
                         llenarListViewCuelloBotella(stringListCB);
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }
 
         private void llenarListViewCuelloBotella(ArrayList<String> listaCB) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         lvListaCuelloBotella = findViewById(R.id.lvCuelloBotella);
                         myAdapter = new SelectionAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, listaCB);
@@ -242,7 +238,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         onTextChanged();
                         setUpActionBar();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
                 }
         }

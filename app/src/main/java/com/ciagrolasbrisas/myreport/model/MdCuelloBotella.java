@@ -43,8 +43,6 @@ public class MdCuelloBotella implements Serializable {
         @Expose
         private int accion;
 
-        private ArrayList<MdCuelloBotella> arrayList;
-
         public MdCuelloBotella() {
         }
 
@@ -118,13 +116,5 @@ public class MdCuelloBotella implements Serializable {
 
         public void setAccion(int accion) {
                 this.accion = accion;
-        }
-
-        public void setList(ArrayList<MdCuelloBotella> lista){
-                this.arrayList = lista;
-        }
-
-        public ArrayList<MdCuelloBotella> getArrayList(){
-                return arrayList;
         }
 }

@@ -415,6 +415,16 @@ public class DatabaseController {
                 return null;
         }
 
+        public String selectRolUser(Context context) {
+                dbHelper = new DatabaseHelper(context);
+                sqLiteDatabase = dbHelper.getReadableDatabase();
+                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select rol  from usuario limit 1", null);
+                if (cursor.moveToFirst()) {
+                        return cursor.getString(0);
+                }
+                return null;
+        }
+
         /*---------------------------------------------------Verifica existencia de jornada especifica-------------------------------------------------------------------------*/
         public boolean existJornada(Context context, String fecha, String dni_encargado, String motivo) {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();

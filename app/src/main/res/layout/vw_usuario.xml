@@ -33,8 +33,7 @@
             android:inputType="number"
             android:maxLength="5"
             android:maxLines="1"
-            android:layout_marginTop="12dp"
-            android:enabled="false"/>
+            android:layout_marginTop="12dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -54,7 +53,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="@string/cedula"
-            android:inputType="number"
+            android:inputType="textAutoComplete"
             android:maxLength="12"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -75,8 +74,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="@string/nombre"
-            android:inputType="text"
-            android:maxLength="12"
+            android:inputType="textAutoComplete"
+            android:maxLength="30"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,7 +96,7 @@
             android:gravity="center"
             android:hint="@string/contrasena"
             android:inputType="text"
-            android:maxLength="12"
+            android:maxLength="15"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,8 +116,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="@string/rol"
-            android:inputType="text"
-            android:maxLength="12"
+            android:inputType="textAutoComplete"
+            android:maxLength="10"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,15 +137,15 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="@string/puesto"
-            android:inputType="text"
-            android:maxLength="12"
+            android:inputType="textAutoComplete"
+            android:maxLength="30"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/btnGuardarUs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

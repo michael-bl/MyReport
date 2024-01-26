@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,7 +54,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         private ArrayList<MdPesoCaja> listaPesoCaja;
         private DatabaseController dbController;
         private ArrayList<String> stringArrayList;
-        private TextView tvtFecha1, tvtFecha2;
+        private TextView tvtFecha1, tvtFecha2, tvDetalleCb;
         private String fechaDesde, fechaHasta, opcion, tipoReporte, date, time, clase, dniUser;
         private LogGenerator logGenerator;
         private FloatingActionButton btnShare;
@@ -76,6 +77,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                 lvReports = findViewById(R.id.lvDatosReporte);
                 tvtFecha1 = findViewById(R.id.tvDesde);
                 tvtFecha2 = findViewById(R.id.tvHasta);
+                tvDetalleCb = findViewById(R.id.tvDetalleCb);
                 spTipoReporte = findViewById(R.id.spTipoReporte);
                 btnBuscar = findViewById(R.id.btnBuscarXfecha);
                 btnFechaDesde = findViewById(R.id.btnFecha1);
@@ -210,22 +212,19 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                                         // Manejar la respuesta
                                                         mainHandler.post(() -> {
                                                                 Gson gson = new Gson();
-                                                                Type listType = new TypeToken<MdWarning>() {
+                                                                Type listType = new TypeToken<List<MdCuelloBotella>>() {
                                                                 }.getType();
+                                                                listaCuelloBotella = gson.fromJson(responseBody, listType);
+                                                                stringArrayList = new ArrayList<>();
 
-                                                                if(gson.fromJson(responseBody, listType)){
-                                                                        MdWarning mensaje = gson.fromJson(responseBody, listType);
-                                                                        if (!mensaje.getStatus().equals("1")) {
-                                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + mensaje.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                                        }
-                                                                        Toast.makeText(VwBuscarReporte.this, mensaje.getMessage(), Toast.LENGTH_SHORT).show();
-
+                                                                if (listaCuelloBotella.get(0).getCode().equals("null")) {
+                                                                        // tvDetalleCb
+                                                                        tvDetalleCb.setText(listaCuelloBotella.get(0).getMotivo());
+                                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + listaCuelloBotella.get(0).getMotivo()); // Agregamos el error al archivo Descargas/Logs.txt
                                                                 } else {
-                                                                        listType = new TypeToken<List<MdCuelloBotella>>() {
-                                                                        }.getType();
-                                                                        listaCuelloBotella = gson.fromJson(responseBody, listType);
-                                                                        stringArrayList = new ArrayList<>();
-
+                                                                        if (tvDetalleCb.getText().equals("No hay informacion para los valores proporcionados!")){
+                                                                                tvDetalleCb.setText("Datos almacenados");
+                                                                        }
                                                                         for (MdCuelloBotella cb : listaCuelloBotella) {
                                                                                 stringArrayList.add(cb.getMotivo());
                                                                                 cb.setDniEncargado(dniUser);

@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         private final String tblUsuario = "CREATE TABLE usuario (" +
                 "code INTEGER NOT NULL UNIQUE," +
-                "cedula VARCHAR(9)," +
+                "cedula VARCHAR(12)," +
                 "password TEXT(15)," +
                 "nombre TEXT(30)," +
                 "departamento TEXT(30)," +
