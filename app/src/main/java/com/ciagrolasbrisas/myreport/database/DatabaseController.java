@@ -44,6 +44,7 @@ public class DatabaseController {
         }
 
         public String crearDbLocal(Context context2) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 dbHelper = new DatabaseHelper(context2);
                 ExistSqliteDatabase existdb = new ExistSqliteDatabase();
                 try {
@@ -53,7 +54,7 @@ public class DatabaseController {
                                 return "2";
                         }
                 } catch (IllegalStateException illegalStateException) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + illegalStateException); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + illegalStateException); // Agrega error en Descargas/Logs.txt
                 }
                 return "0";
         }
@@ -382,6 +383,10 @@ public class DatabaseController {
                         } else {
                                 return false;
                         }
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                        return false;
                 } catch (IllegalArgumentException e) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
                         return false;
@@ -402,27 +407,42 @@ public class DatabaseController {
                 } catch (IllegalArgumentException e) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
                         return false;
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        return false;
                 }
         }
 
         public String selectDniUser(Context context) {
-                dbHelper = new DatabaseHelper(context);
-                sqLiteDatabase = dbHelper.getReadableDatabase();
-                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select cedula  from usuario limit 1", null);
-                if (cursor.moveToFirst()) {
-                        return cursor.getString(0);
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select cedula  from usuario limit 1", null);
+                        if (cursor.moveToFirst()) {
+                                return cursor.getString(0);
+                        }
+                        return null;
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        return null;
                 }
-                return null;
         }
 
         public String selectRolUser(Context context) {
-                dbHelper = new DatabaseHelper(context);
-                sqLiteDatabase = dbHelper.getReadableDatabase();
-                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select rol  from usuario limit 1", null);
-                if (cursor.moveToFirst()) {
-                        return cursor.getString(0);
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select rol  from usuario limit 1", null);
+                        if (cursor.moveToFirst()) {
+                                return cursor.getString(0);
+                        }
+                        return null;
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        return null;
                 }
-                return null;
         }
 
         /*---------------------------------------------------Verifica existencia de jornada especifica-------------------------------------------------------------------------*/
@@ -440,19 +460,31 @@ public class DatabaseController {
                 } catch (IllegalArgumentException e) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
                         return false;
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        return false;
                 }
         }
 
         /*---------------------------------------------------Listar registros-------------------------------------------------------------------------------------------------------------------*/
         public boolean loginUser(Context context, @NonNull MdUsuario usuario) {
-                dbHelper = new DatabaseHelper(context);
-                sqLiteDatabase = dbHelper.getReadableDatabase();
-                @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select nombre from usuario where cedula = ? and password = ?", new String[]{usuario.getCedula(), usuario.getPass()});
-                if (cursor.moveToFirst()) {
-                        nombreUsuario = cursor.getString(0);
-                        return true;
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        @SuppressLint("Recycle") Cursor cursor = sqLiteDatabase.rawQuery("select nombre from usuario where cedula = ? and password = ?", new String[]{usuario.getCedula(), usuario.getPass()});
+                        if (cursor.moveToFirst()) {
+                                nombreUsuario = cursor.getString(0);
+                                return true;
+                        }
+                        return false;
+                } catch (IllegalArgumentException e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
+                        return false;
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        return false;
                 }
-                return false;
         }
 
         public ArrayList<MdCuelloBotella> selectCuelloBotellaIncompleto(Context context) {
@@ -537,20 +569,22 @@ public class DatabaseController {
         }
 
         public MdCuelloBotella horasEfectivas(Context context, String fecha, String cuadrilla) {
-                String respuesta = null;
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 MdCuelloBotella obj = new MdCuelloBotella();
-                dbHelper = new DatabaseHelper(context);
-                sqLiteDatabase = dbHelper.getReadableDatabase();
-                Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and dni_encargado = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
-                if (cursor.moveToFirst()) {
-                        do {
-                                //String hora_inicio = cursor.getString(0);
-                                //String hora_fin = cursor.getString(1);
-                                //respuesta = hora_inicio + "/" + hora_fin;
-                                obj.setHora_inicio(cursor.getString(0));
-                                obj.setHora_final(cursor.getString(1));
-                        } while (cursor.moveToNext());
-                        cursor.close();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and dni_encargado = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
+                        if (cursor.moveToFirst()) {
+                                do {
+                                        obj.setHora_inicio(cursor.getString(0));
+                                        obj.setHora_final(cursor.getString(1));
+                                } while (cursor.moveToNext());
+                                cursor.close();
+                        }
+                }  catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return obj;
         }
