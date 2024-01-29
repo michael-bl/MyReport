@@ -18,27 +18,19 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.cosecha.CbServidorController;
+import com.ciagrolasbrisas.myreport.database.CbCosechaController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
-import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 public class VwCuelloBotella extends AppCompatActivity {
     private Button btnHoraInicio, btnHoraFinal, btnGuardarReporte;
@@ -88,7 +80,7 @@ public class VwCuelloBotella extends AppCompatActivity {
 
         dbController = new DatabaseController();
         if (txtDniEncargado.getText().equals("")) {
-            dniUser = dbController.selectDniUser(this);
+            dniUser = dbController.selectCedulaUser(this);
             txtDniEncargado.setText(dniUser);
         }
 
@@ -192,6 +184,7 @@ public class VwCuelloBotella extends AppCompatActivity {
         try {
 
             llenarReporteCb();  // Cargamos la informacion en el objeto
+            CbCosechaController cbCosController = new CbCosechaController();
 
             if (!objCuelloBotella.getLote().equals("") || !objCuelloBotella.getSeccion().equals("") || !objCuelloBotella.getHora_inicio().equals("")) {
                 if (objCuelloBotella.getAccion() == 0 && tvHoraFinal.getText().length() == 0) {
@@ -207,16 +200,20 @@ public class VwCuelloBotella extends AppCompatActivity {
                 if (objCuelloBotella.getAccion() == 0) {
                     if (objCuelloBotella.getMotivo().equals("12")) {
                         if (!dbController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getDniEncargado(), objCuelloBotella.getMotivo())) {
-                            dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
+
+                            //dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
+                            cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                         } else {
                             logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Ya existe un reporte de jornada, verifique!"); // Agregamos el error al archivo Descargas/Logs.txt
                             Toast.makeText(this, "Ya existe un reporte de jornada, verifique!", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
+                        //dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
+                        cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                     }
                 } else {
-                    dbController.updateCuelloBotella(this, objCuelloBotella);
+                    //dbController.updateCuelloBotella(this, objCuelloBotella);
+                    cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                 }
                 return true;
             } else {
@@ -275,6 +272,7 @@ public class VwCuelloBotella extends AppCompatActivity {
             listaMotivos.add("19-Problemas de tracción");
             listaMotivos.add("20-Atraso por planta");
             listaMotivos.add("21-Otros");
+            listaMotivos.add("22-Averías");
 
             adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listaMotivos);
             int position = 0;

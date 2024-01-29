@@ -1,13 +1,10 @@
 package com.ciagrolasbrisas.myreport.ui;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
@@ -22,6 +19,7 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.MyDatePicker;
+import com.ciagrolasbrisas.myreport.database.CbCosechaController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
@@ -137,7 +135,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                         MdCuelloBotella cb = new MdCuelloBotella();
                         cb.setAccion(1); // Lista los cuellos de botella del día
 
-                        dniUser = dbController.selectDniUser(this);
+                        dniUser = dbController.selectCedulaUser(this);
                         cb.setDniEncargado(dniUser);
                         cb.setFecha(stringFecha); // La fecha seleccionada en el datepicker
 
@@ -210,11 +208,13 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
 
                 if (existdb.ExistSqliteDatabase()) {
                         try {
+                                CbCosechaController cbCosController = new CbCosechaController();
                                 dbController = new DatabaseController();
-                                dniUser = dbController.selectDniUser(this);
-                                cuelloBotella = dbController.horasEfectivas(this, stringFecha, dniUser);
-                                ArrayList listacb = dbController.selectCuelloBotella(this, stringFecha, null, true);
-
+                                dniUser = dbController.selectCedulaUser(this);
+                                //cuelloBotella = dbController.horasEfectivas(this, stringFecha, dniUser);
+                                cuelloBotella = cbCosController.horasEfectivas(this, stringFecha, dniUser);
+                                //ArrayList listacb = dbController.selectCuelloBotella(this, stringFecha, null, true);
+                                ArrayList listacb = cbCosController.getCuelloBotella(this, stringFecha, null, true);
                                 totalCuelloBotella(listacb, cuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
 
                         } catch (NumberFormatException nfe) {

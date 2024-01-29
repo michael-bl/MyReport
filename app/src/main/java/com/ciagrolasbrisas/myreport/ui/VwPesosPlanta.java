@@ -90,7 +90,7 @@ public class VwPesosPlanta extends AppCompatActivity {
                 GetStringDate fecha = new GetStringDate();
                 tvFechaSistema .setText(fecha.getFecha());
 
-                dniUser = dbController.selectDniUser(this);
+                dniUser = dbController.selectCedulaUser(this);
                 //asignacion del codigo de usuario
                 tvDniUsuario.setText(dniUser);
 

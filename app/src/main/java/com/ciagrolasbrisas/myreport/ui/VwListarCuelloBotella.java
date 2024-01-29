@@ -29,10 +29,10 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
+import com.ciagrolasbrisas.myreport.database.CbCosechaController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
-import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -142,7 +141,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 MdCuelloBotella cb = new MdCuelloBotella();
                                 cb.setAccion(4); // Para listar los cuellos pendientes de cierre
 
-                                dniUser = dbController.selectDniUser(this);
+                                dniUser = dbController.selectCedulaUser(this);
                                 cb.setDniEncargado(dniUser);
                                 cb.setFecha(date);
 
@@ -216,8 +215,10 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         private void getCBSinCerrarCosDbLocal() {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
+                        CbCosechaController cbCosController = new CbCosechaController();
                         dbController = new DatabaseController();
-                        listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
+                        //listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
+                        listaCuelloBotella = cbCosController.getCuelloBotellaIncompleto(this);
                         stringListCB = new ArrayList<>();
                         for (MdCuelloBotella cb : listaCuelloBotella) {
                                 stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());

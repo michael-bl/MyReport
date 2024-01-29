@@ -24,11 +24,11 @@ import com.ciagrolasbrisas.myreport.controller.ExcelGenerator;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.MyDatePicker;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
+import com.ciagrolasbrisas.myreport.database.CbCosechaController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.database.ExistSqliteDatabase;
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdPesoCaja;
-import com.ciagrolasbrisas.myreport.model.MdWarning;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -120,10 +119,12 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                         case "1":
                                                 flagReportType = 1;
                                                 dbController = new DatabaseController();
+                                                CbCosechaController cbCosController = new CbCosechaController();
                                                 localMode = dbController.selectLocalMode(this);
 
                                                 if (localMode) {
-                                                        listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
+                                                        //listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
+                                                        listaCuelloBotella = cbCosController.getCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
                                                 } else {
                                                         getCbCosDbRemota();
                                                 }
@@ -150,7 +151,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 
                 btnShare.setOnClickListener(view -> {
                         ExcelGenerator crearExcel = new ExcelGenerator();
-                        dniUser = dbController.selectDniUser(this);
+                        dniUser = dbController.selectCedulaUser(this);
                         switch (flagReportType) {
                                 case 1:
                                         crearExcel.generarExcell(this, listaCuelloBotella, dniUser);
@@ -180,7 +181,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                         MdCuelloBotella cb = new MdCuelloBotella();
                         cb.setAccion(1); // Lista los cuellos cerrados en fecha especifica
 
-                        dniUser = dbController.selectDniUser(this);
+                        dniUser = dbController.selectCedulaUser(this);
                         cb.setDniEncargado(dniUser);
                         cb.setFecha(fechaDesde);
 

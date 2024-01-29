@@ -19,7 +19,6 @@ public class CbCosechaController {
         private DatabaseHelper dbHelper;
         private SQLiteDatabase sqLiteDatabase;
         private GetConsecutive getConsecutive;
-        public static String nombreUsuario;
         private LogGenerator logGenerator;
         private String date, time, clase;
 
@@ -32,7 +31,7 @@ public class CbCosechaController {
                 clase = this.getClass().getSimpleName();
         }
 
-        public void insertDefaultCuelloBotella(Context context) {
+        public void insertDefaultMotivoCb(Context context) {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         dbHelper = new DatabaseHelper(context);
@@ -175,20 +174,25 @@ public class CbCosechaController {
                 return listaCB;
         }
 
-        public String horasEfectivas(Context context, String fecha, String cuadrilla) {
-                String respuesta = null;
-                dbHelper = new DatabaseHelper(context);
-                sqLiteDatabase = dbHelper.getReadableDatabase();
-                Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and dni_encargado = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
-                if (cursor.moveToFirst()) {
-                        do {
-                                String hora_inicio = cursor.getString(0);
-                                String hora_fin = cursor.getString(1);
-                                respuesta = hora_inicio + "/" + hora_fin;
-                        } while (cursor.moveToNext());
-                        cursor.close();
+        public MdCuelloBotella horasEfectivas(Context context, String fecha, String cuadrilla) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                MdCuelloBotella obj = new MdCuelloBotella();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and dni_encargado = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
+                        if (cursor.moveToFirst()) {
+                                do {
+                                        obj.setHora_inicio(cursor.getString(0));
+                                        obj.setHora_final(cursor.getString(1));
+                                } while (cursor.moveToNext());
+                                cursor.close();
+                        }
+                }  catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
-                return respuesta;
+                return obj;
         }
 
 

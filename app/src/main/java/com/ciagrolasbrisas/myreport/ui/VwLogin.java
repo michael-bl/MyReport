@@ -18,6 +18,7 @@ import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.HashPass;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
+import com.ciagrolasbrisas.myreport.database.CbCosechaController;
 import com.ciagrolasbrisas.myreport.database.DatabaseController;
 import com.ciagrolasbrisas.myreport.model.MdUsuario;
 import com.google.android.material.textfield.TextInputEditText;
@@ -61,10 +62,12 @@ public class VwLogin extends AppCompatActivity {
 
         private void crearDbLocal() {
                 dbController = new DatabaseController();
+                CbCosechaController cbCosController = new CbCosechaController();
                 try {
                         String resultadoConsulta = dbController.crearDbLocal(this);
                         if (resultadoConsulta.equals("2")) {
-                                dbController.insertDefaultCuelloBotella(this);
+                                //dbController.insertDefaultCuelloBotella(this);
+                                cbCosController.insertDefaultMotivoCb(this);
                                 dbController.insertDefaultCliente(this);
                                 dbController.insertDefaultCalibre(this);
                                 dbController.insertDefaultLocalMode(this);

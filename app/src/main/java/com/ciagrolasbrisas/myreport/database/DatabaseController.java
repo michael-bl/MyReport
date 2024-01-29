@@ -1,7 +1,5 @@
 package com.ciagrolasbrisas.myreport.database;
 
-import static android.util.Log.i;
-
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -60,7 +58,7 @@ public class DatabaseController {
         }
 
         /*---------------------------------------------------Crear Registros por Default----------------------------------------------------------------------------------------------*/
-        public void insertDefaultCuelloBotella(Context context) {
+        public void insertDefaultMotivoCbCos(Context context) {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         dbHelper = new DatabaseHelper(context);
@@ -413,7 +411,7 @@ public class DatabaseController {
                 }
         }
 
-        public String selectDniUser(Context context) {
+        public String selectCedulaUser(Context context) {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         dbHelper = new DatabaseHelper(context);
