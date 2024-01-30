@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
 import com.ciagrolasbrisas.myreport.controller.ExcelGenerator;
+import com.ciagrolasbrisas.myreport.controller.GetStringDate;
+import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
 import com.ciagrolasbrisas.myreport.controller.MyDatePicker;
 import com.ciagrolasbrisas.myreport.controller.SelectionAdapter;
@@ -72,6 +74,13 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.vw_buscar_reporte);
+
+                GetStringDate stringDate = new GetStringDate();
+                GetStringTime stringTime = new GetStringTime();
+                date = stringDate.getFecha();
+                time = stringTime.getHora();
+
+                clase = this.getClass().getSimpleName();
 
                 lvReports = findViewById(R.id.lvDatosReporte);
                 tvtFecha1 = findViewById(R.id.tvDesde);

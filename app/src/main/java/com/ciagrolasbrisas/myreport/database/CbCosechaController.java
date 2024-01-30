@@ -37,13 +37,13 @@ public class CbCosechaController {
                         dbHelper = new DatabaseHelper(context);
                         long resultado = -1;
                         sqLiteDatabase = dbHelper.getWritableDatabase();
-                        String[] motivosCB = {"Acomódo de cosechadora", "Almuerzo", "Ataque de abejas", "Auditoría", "Botar cera", "Café", "Campaña de vacunación", "Capacitación", "Desayuno", "Esperando carretas", "Exámen médico", "Jornada", "Pegaderos", "Respuesta taller", "Reunión", "Traslado", "Cambio de tractor", "Tormenta eléctrica", "Problemas de tracción", "Atraso por planta", "Otro"};
+                        String[] motivosCB = {"Acomódo de cosechadora", "Almuerzo", "Ataque de abejas", "Auditoría", "Botar cera", "Café", "Campaña de vacunación", "Capacitación", "Desayuno", "Esperando carretas", "Exámen médico", "Jornada", "Pegaderos", "Respuesta taller", "Reunión", "Traslado", "Cambio de tractor", "Tormenta eléctrica", "Problemas de tracción", "Atraso por planta", "Otro", "Averías"};
 
                         for (int i = 0; i <= motivosCB.length - 1; i++) {
                                 ContentValues values = new ContentValues();
                                 values.put("code", (i + 1));
                                 values.put("motivo", motivosCB[i]);
-                                resultado = sqLiteDatabase.insert("motivocb", null, values);
+                                resultado = sqLiteDatabase.insert("motivocbcos", null, values);
                         }
                         if (resultado == -1) {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + "Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
@@ -101,7 +101,7 @@ public class CbCosechaController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                 "from cuellobotellacos as cb \n" +
-                                "inner join motivocb as mt \n" +
+                                "inner join motivocbcos as mt \n" +
                                 "on cb.motivo = mt.code \n" +
                                 "where cb.hora_final='00:00:00' \n", null);
                         if (cursor.moveToFirst()) {
@@ -139,13 +139,13 @@ public class CbCosechaController {
                         if (esFechaUnica) {
                                 cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                         "from cuellobotellacos as cb \n" +
-                                        "inner join motivocb as mt    \n" +
+                                        "inner join motivocbcos as mt    \n" +
                                         "on cb.motivo = mt.code  \n" +
                                         "where cb.fecha = ?", new String[]{fecha_desde});
                         } else {
                                 cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                         "from cuellobotellacos as cb \n" +
-                                        "inner join motivocb as mt    \n" +
+                                        "inner join motivocbcos as mt    \n" +
                                         "on cb.motivo = mt.code  \n" +
                                         "where cb.fecha >= ? and cb.fecha <= ?", new String[]{fecha_desde, fecha_hasta});
                         }
