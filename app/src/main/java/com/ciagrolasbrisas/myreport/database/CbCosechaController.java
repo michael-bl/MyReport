@@ -43,6 +43,7 @@ public class CbCosechaController {
                                 ContentValues values = new ContentValues();
                                 values.put("code", (i + 1));
                                 values.put("motivo", motivosCB[i]);
+                                values.put("sync", 0);
                                 resultado = sqLiteDatabase.insert("motivocbcos", null, values);
                         }
                         if (resultado == -1) {
@@ -101,9 +102,10 @@ public class CbCosechaController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                 "from cuellobotellacos as cb \n" +
-                                "inner join motivocb as mt \n" +
+                                "inner join motivocbcos as mt \n" +
                                 "on cb.motivo = mt.code \n" +
-                                "where cb.hora_final='00:00:00' \n", null);
+                                "where cb.hora_final='00:00:00' \n" +
+                                "and cb.fecha = ?", new String[]{fecha});
                         if (cursor.moveToFirst()) {
                                 do {
                                         MdCuelloBotella mdCuelloBotella = new MdCuelloBotella();

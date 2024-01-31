@@ -81,6 +81,8 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         date = stringDate.getFecha();
         time = stringTime.getHora();
 
+        stringArrayList = new ArrayList<>();
+
         clase = this.getClass().getSimpleName();
 
         lvReports = findViewById(R.id.lvDatosReporte);
@@ -265,7 +267,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                             });
                         }
                     } catch (IOException e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agregamos el error al archivo Descargas/Logs.txt
                     }
                 }
             });
@@ -284,7 +286,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
             adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tiposReporte);
             spTipoReporte.setAdapter(adapter);
         } catch (Exception e) {
-            logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+            logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agregamos el error al archivo Descargas/Logs.txt
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
@@ -315,8 +317,8 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
             myAdapter = new SelectionAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, stringArrayList);
             lvReports.setAdapter(myAdapter);
         } catch (NullPointerException npe) {
-            logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-            Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
+            logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe); // Agregamos el error al archivo Descargas/Logs.txt
+            Toast.makeText(this, "Error: " + npe.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

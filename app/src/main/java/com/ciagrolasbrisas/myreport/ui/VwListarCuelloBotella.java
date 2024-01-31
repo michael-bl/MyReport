@@ -99,6 +99,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 getCuellosPendientes();
 
                 btnSiguente.setOnClickListener(v -> {
+                        String funcion = new Throwable().getStackTrace()[0].getMethodName();
                         try {
                                 if (mdCuelloBotella.getCode() != null) {
                                         dialogDeleteUpdateCuelloBotella().show();
@@ -106,13 +107,14 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                         Toast.makeText(this, "Advertencia: debes seleccionar un reporte para poder continuar!", Toast.LENGTH_LONG).show();
                                 }
                         } catch (Exception e) {
-                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agregamos el error al archivo Descargas/Logs.txt
+                                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                 });
         }
 
         private void getCuellosPendientes() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
 
                         if (!localMode) {
@@ -124,7 +126,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 }
                         }
                 } catch (Exception e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                         Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
         }
@@ -197,8 +199,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                                                 });
                                                         }
                                                 } catch (IOException e) {
-                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                                                        e.printStackTrace();
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agregamos el error al archivo Descargas/Logs.txt
                                                 }
                                         }
                                 });
@@ -207,8 +208,8 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 executor.shutdown();
                         }
                 } catch (Exception e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                        Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agregamos el error al archivo Descargas/Logs.txt
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -219,14 +220,16 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         dbController = new DatabaseController();
                         //listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
                         listaCuelloBotella = cbCosController.getCuelloBotellaIncompleto(this, date);
-                        stringListCB = new ArrayList<>();
-                        for (MdCuelloBotella cb : listaCuelloBotella) {
-                                stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
+                        if(listaCuelloBotella.size()>0){
+                                stringListCB = new ArrayList<>();
+                                for (MdCuelloBotella cb : listaCuelloBotella) {
+                                        stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
+                                }
+                                llenarListViewCuelloBotella(stringListCB);
                         }
-                        llenarListViewCuelloBotella(stringListCB);
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                        Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe); // Agregamos el error al archivo Descargas/Logs.txt
+                        Toast.makeText(this, "Error: " + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -239,8 +242,8 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         onTextChanged();
                         setUpActionBar();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
-                        Toast.makeText(this, "Error: " + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe); // Agregamos el error al archivo Descargas/Logs.txt
+                        Toast.makeText(this, "Error: " + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
