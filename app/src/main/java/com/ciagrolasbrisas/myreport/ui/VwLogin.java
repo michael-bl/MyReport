@@ -66,7 +66,6 @@ public class VwLogin extends AppCompatActivity {
                 try {
                         String resultadoConsulta = dbController.crearDbLocal(this);
                         if (resultadoConsulta.equals("2")) {
-                                //dbController.insertDefaultCuelloBotella(this);
                                 cbCosController.insertDefaultMotivoCb(this);
                                 dbController.insertDefaultCliente(this);
                                 dbController.insertDefaultCalibre(this);

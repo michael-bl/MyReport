@@ -46,14 +46,14 @@ public class CbCosechaController {
                                 resultado = sqLiteDatabase.insert("motivocbcos", null, values);
                         }
                         if (resultado == -1) {
-                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + "Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + " Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion);
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion);
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
@@ -85,15 +85,15 @@ public class CbCosechaController {
                                 Toast.makeText(context, "Error al guardar reporte: " + resultado + " Code " + muestra.getCode(), Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
-        public ArrayList<MdCuelloBotella> getCuelloBotellaIncompleto(Context context) {
+        public ArrayList<MdCuelloBotella> getCuelloBotellaIncompleto(Context context, String fecha) {
                 ArrayList<MdCuelloBotella> listaCB = new ArrayList<>();
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
@@ -101,7 +101,7 @@ public class CbCosechaController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                 "from cuellobotellacos as cb \n" +
-                                "inner join motivocbcos as mt \n" +
+                                "inner join motivocb as mt \n" +
                                 "on cb.motivo = mt.code \n" +
                                 "where cb.hora_final='00:00:00' \n", null);
                         if (cursor.moveToFirst()) {
@@ -123,8 +123,8 @@ public class CbCosechaController {
                                 Toast.makeText(context, "Advertencia: no hay reportes abiertos", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaCB;
         }
@@ -157,7 +157,7 @@ public class CbCosechaController {
                                         mdCuelloBotella.setDniEncargado(cursor.getString(2));
                                         mdCuelloBotella.setLote(cursor.getString(3));
                                         mdCuelloBotella.setSeccion(cursor.getString(4));
-                                        mdCuelloBotella.setMotivo(cursor.getString(8));
+                                        mdCuelloBotella.setMotivo(cursor.getString(5) + "-" + cursor.getString(8));
                                         mdCuelloBotella.setHora_inicio(cursor.getString(6));
                                         mdCuelloBotella.setHora_final(cursor.getString(7));
                                         listaCB.add(mdCuelloBotella);
@@ -168,8 +168,8 @@ public class CbCosechaController {
                                 Toast.makeText(context, "Advertencia: no hay reportes guardados", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
-                        Toast.makeText(context, "Error: " + sqle, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return listaCB;
         }
@@ -222,11 +222,11 @@ public class CbCosechaController {
                                 Toast.makeText(context, "Error al actualizar información!", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
                         Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
-                        Toast.makeText(context, "Error" + npe, Toast.LENGTH_LONG).show();
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 }

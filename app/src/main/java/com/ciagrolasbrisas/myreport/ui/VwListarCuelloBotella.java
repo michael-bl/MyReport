@@ -218,7 +218,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         CbCosechaController cbCosController = new CbCosechaController();
                         dbController = new DatabaseController();
                         //listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
-                        listaCuelloBotella = cbCosController.getCuelloBotellaIncompleto(this);
+                        listaCuelloBotella = cbCosController.getCuelloBotellaIncompleto(this, date);
                         stringListCB = new ArrayList<>();
                         for (MdCuelloBotella cb : listaCuelloBotella) {
                                 stringListCB.add(cb.getMotivo() + "-" + cb.getHora_final());
