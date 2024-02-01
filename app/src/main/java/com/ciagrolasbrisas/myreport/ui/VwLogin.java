@@ -58,6 +58,13 @@ public class VwLogin extends AppCompatActivity {
 
                 Button btnLogin = findViewById(R.id.btnLogin);
                 btnLogin.setOnClickListener(v -> loginLocalOremoto());
+
+                dbController = new DatabaseController();
+                if(dbController.selectLocalMode(this)){
+                        stLocalMode.setChecked(true);  
+                } else{
+                        stLocalMode.setChecked(false);
+                }
         }
 
         private void crearDbLocal() {
