@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
+import com.ciagrolasbrisas.myreport.controller.DateConverter;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
@@ -228,7 +229,9 @@ public class VwCuelloBotella extends AppCompatActivity {
     }
 
     private void llenarReporteCb() {
+        DateConverter dc = new DateConverter();
         dbController = new DatabaseController();
+        //objCuelloBotella.setFecha(dc.dateFormat(tvFechaSistema.getText().toString()));
         objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
         objCuelloBotella.setCedula(txtCedula.getText().toString());
         objCuelloBotella.setLote(txtLote.getText().toString());
