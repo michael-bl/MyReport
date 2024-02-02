@@ -60,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         private final String tblCuelloBotellaCos = "CREATE TABLE cuellobotellacos (" +
                 " code INTEGER NOT NULL UNIQUE," +
                 " fecha VARCHAR(10)," +
-                " dni_encargado VARCHAR(9)," +
+                " cedula VARCHAR(9)," +
                 " lote VARCHAR(4)," +
                 " seccion VARCHAR(2)," +
                 " motivo VARCHAR(2)," +
@@ -79,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Encargado = Nombre del encargado de cuadrilla
         private final String tblTicketCosecha = "CREATE TABLE ticketcosecha (" +
                 " code INTEGER NOT NULL UNIQUE," +
-                " encargado VARCHAR(2)," +
+                " cedula VARCHAR(9)," +
                 " fecha VARCHAR(10)," +
                 " hora VARCHAR(8)," +
                 " consecutivo INTEGER(2)," +
@@ -96,7 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         private final String tblPesoCaja = "CREATE TABLE pesocaja (" +
                 " code INTEGER NOT NULL UNIQUE," +
                 " fecha VARCHAR(10)," +
-                " dni_encargado VARCHAR(9)," +
+                " cedula VARCHAR(9)," +
                 " cliente VARCHAR(2)," +
                 " calibre VARCHAR(2)," +
                 " peso VARCHAR(5)," +

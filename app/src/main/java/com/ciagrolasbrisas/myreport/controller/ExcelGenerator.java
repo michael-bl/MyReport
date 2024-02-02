@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi;
 
 import com.ciagrolasbrisas.myreport.model.MdCuelloBotella;
 import com.ciagrolasbrisas.myreport.model.MdPesoCaja;
-import com.ciagrolasbrisas.myreport.ui.VwLogin;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -46,7 +45,7 @@ public class ExcelGenerator {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.Q)
-        public <T> void generarExcell(Context context, @NonNull List<T> list, String dniUser) {
+        public <T> void generarExcell(Context context, @NonNull List<T> list, String cedula) {
 
                 //GetStringDate stringDate = new GetStringDate();
                 //GetStringTime stringTime = new GetStringTime();
@@ -70,7 +69,7 @@ public class ExcelGenerator {
                                 case "MdCuelloBotella":
 
                                         try {
-                                                if (!dniUser.equals( "206040225")){
+                                                if (!cedula.equals( "206040225")){
 
                                                         listCuelloBotella = (ArrayList<MdCuelloBotella>) list;
                                                         String[] headersCuelloB = {"Encargado", "Fecha", "Motivo", "Lote", "Sección", "Hora Inicio", "Hora Final"};
@@ -93,7 +92,7 @@ public class ExcelGenerator {
                                                         ArrayList<JSONObject> json_array = new ArrayList<>();
                                                         for (MdCuelloBotella cb: listCuelloBotella){
                                                                 JSONObject datos_json = new JSONObject();
-                                                                datos_json.put("Encargado", cb.getDniEncargado());
+                                                                datos_json.put("Encargado", cb.getCedula());
                                                                 datos_json.put("Fecha", cb.getFecha());
                                                                 datos_json.put("Motivo", cb.getMotivo());
                                                                 datos_json.put("Lote", cb.getLote());
@@ -185,7 +184,7 @@ public class ExcelGenerator {
                                 for (int x = 0; x < listCuelloBotella.size(); x++) {
                                         // Creando el objeto con los datos recibidos
                                         data.put(x + 1, new Object[]{
-                                                listCuelloBotella.get(x).getDniEncargado(),
+                                                listCuelloBotella.get(x).getCedula(),
                                                 listCuelloBotella.get(x).getFecha(),
                                                 listCuelloBotella.get(x).getMotivo(),
                                                 listCuelloBotella.get(x).getLote(),
@@ -204,7 +203,7 @@ public class ExcelGenerator {
                                                 listPesoCaja.get(x).getPeso(),
                                                 listPesoCaja.get(x).getCliente(),
                                                 listPesoCaja.get(x).getCalibre(),
-                                                listPesoCaja.get(x).getDni_encargado(),
+                                                listPesoCaja.get(x).getCedula(),
                                                 listPesoCaja.get(x).getObservacion()});
                                 }
                                 break;

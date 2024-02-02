@@ -17,8 +17,8 @@ public interface ApiRoutes {
 
     // Inicio de sesion
     @FormUrlEncoded
-    @POST("conexion.php/{PrmtUser}/{PrmtPass}")
-    Call<List<MdUsuario>> login(@Field("PrmtUser") String a, @Field("PrmtPass") String b);
+    @POST("conexion.php/{user}/{pass}")
+    Call<List<MdUsuario>> login(@Field("user") String a, @Field("pass") String b);
 
     @Headers({"Accept: application/json; Content-Type: application/json; charset=utf-8; deviceplatform:android; Agent:Mozilla/5.0"})
     @POST("cuelloBotellaCos.php")

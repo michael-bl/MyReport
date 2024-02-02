@@ -20,12 +20,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 
 public class VwPesosPlanta extends AppCompatActivity {
-        private TextView txtNombreEncargado, tvFechaSistema, tvDniUsuario;
+        private TextView txtNombreEncargado, tvFechaSistema, tvCedula;
         private TextInputEditText txtPesoCaja, txtDetalle;
         private Spinner spCliente, spCalibre;
         private Button btnGuardar;
         private DatabaseController dbController;
-        private String dniUser;
+        private String cedula;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class VwPesosPlanta extends AppCompatActivity {
                 txtPesoCaja = findViewById(R.id.txtPesoPC);
                 txtDetalle = findViewById(R.id.txtDetallePC);
                 tvFechaSistema = findViewById(R.id.tvFechaSistemaPC);
-                tvDniUsuario = findViewById(R.id.tvUsuarioPC);
+                tvCedula = findViewById(R.id.tvUsuarioPC);
                 btnGuardar = findViewById(R.id.btnGuardarPC);
 
                 spCliente = findViewById(R.id.spClientePC);
@@ -49,7 +49,7 @@ public class VwPesosPlanta extends AppCompatActivity {
                         MdPesoCaja pesoCaja = new MdPesoCaja();
                         pesoCaja.setPeso(txtPesoCaja.getText().toString().replace(".", ","));
                         pesoCaja.setFecha(tvFechaSistema.getText().toString());
-                        pesoCaja.setDni_encargado(tvDniUsuario.getText().toString());
+                        pesoCaja.setCedula(tvCedula.getText().toString());
 
                         String limpiarCode = spCliente.getItemAtPosition(spCliente.getSelectedItemPosition()).toString().substring(0, 2);
                         if (limpiarCode.contains("-"))
@@ -90,9 +90,9 @@ public class VwPesosPlanta extends AppCompatActivity {
                 GetStringDate fecha = new GetStringDate();
                 tvFechaSistema .setText(fecha.getFecha());
 
-                dniUser = dbController.selectCedulaUser(this);
+                cedula = dbController.selectCedulaUser(this);
                 //asignacion del codigo de usuario
-                tvDniUsuario.setText(dniUser);
+                tvCedula.setText(cedula);
 
                 // llenar spinner Cliente
                 llenarSpinnerCliente();

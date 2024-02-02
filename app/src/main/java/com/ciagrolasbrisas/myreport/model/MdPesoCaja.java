@@ -3,7 +3,7 @@ package com.ciagrolasbrisas.myreport.model;
 public class MdPesoCaja {
     private String code;
     private String fecha;
-    private String dni_encargado;
+    private String cedula;
     private String cliente;
     private String calibre;
     private String peso;
@@ -26,12 +26,12 @@ public class MdPesoCaja {
         this.fecha = fecha;
     }
 
-    public String getDni_encargado() {
-        return dni_encargado;
+    public String getCedula() {
+        return cedula;
     }
 
-    public void setDni_encargado(String dni_encargado) {
-        this.dni_encargado = dni_encargado;
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
     }
 
     public String getCliente() {

@@ -34,7 +34,7 @@ import okhttp3.OkHttpClient;
 
 public class VwCuelloBotella extends AppCompatActivity {
     private Button btnHoraInicio, btnHoraFinal, btnGuardarReporte;
-    private TextView tvFechaSistema, txtDniEncargado;
+    private TextView tvFechaSistema, txtCedula;
     private TextInputEditText txtLote, txtSeccion;
     private TextView tvHoraInicial, tvHoraFinal;
     private MdCuelloBotella objCuelloBotella;
@@ -60,7 +60,7 @@ public class VwCuelloBotella extends AppCompatActivity {
 
         logGenerator = new LogGenerator();
 
-        txtDniEncargado = findViewById(R.id.tvDniEncargado);
+        txtCedula = findViewById(R.id.tvDniEncargado);
 
         txtLote = findViewById(R.id.txtLoteCB);
         txtSeccion = findViewById(R.id.txtSeccionCB);
@@ -79,9 +79,9 @@ public class VwCuelloBotella extends AppCompatActivity {
         }
 
         dbController = new DatabaseController();
-        if (txtDniEncargado.getText().equals("")) {
+        if (txtCedula.getText().equals("")) {
             dniUser = dbController.selectCedulaUser(this);
-            txtDniEncargado.setText(dniUser);
+            txtCedula.setText(dniUser);
         }
 
         capturarFechaDelSistema();
@@ -127,7 +127,7 @@ public class VwCuelloBotella extends AppCompatActivity {
         String funcion = new Throwable().getStackTrace()[0].getMethodName();
         try {
             tvFechaSistema.setText(objCuelloBotella.getFecha());
-            txtDniEncargado.setText(objCuelloBotella.getDniEncargado());
+            txtCedula.setText(objCuelloBotella.getCedula());
             txtLote.setText(objCuelloBotella.getLote());
             txtSeccion.setText(objCuelloBotella.getSeccion());
             tvHoraInicial.setText(objCuelloBotella.getHora_inicio());
@@ -199,7 +199,7 @@ public class VwCuelloBotella extends AppCompatActivity {
 
                 if (objCuelloBotella.getAccion() == 0) {
                     if (objCuelloBotella.getMotivo().equals("12")) {
-                        if (!dbController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getDniEncargado(), objCuelloBotella.getMotivo())) {
+                        if (!cbCosController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getCedula(), objCuelloBotella.getMotivo())) {
 
                             //dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                             cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
@@ -213,7 +213,7 @@ public class VwCuelloBotella extends AppCompatActivity {
                     }
                 } else {
                     //dbController.updateCuelloBotella(this, objCuelloBotella);
-                    cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
+                    cbCosController.updateCuelloBotella(this, objCuelloBotella);
                 }
                 return true;
             } else {
@@ -230,7 +230,7 @@ public class VwCuelloBotella extends AppCompatActivity {
     private void llenarReporteCb() {
         dbController = new DatabaseController();
         objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
-        objCuelloBotella.setDniEncargado(txtDniEncargado.getText().toString());
+        objCuelloBotella.setCedula(txtCedula.getText().toString());
         objCuelloBotella.setLote(txtLote.getText().toString());
         objCuelloBotella.setSeccion(txtSeccion.getText().toString());
         objCuelloBotella.setHora_inicio(tvHoraInicial.getText().toString());

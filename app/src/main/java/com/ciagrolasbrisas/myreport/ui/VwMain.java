@@ -68,7 +68,6 @@ public class VwMain extends AppCompatActivity {
 
         @Override
         public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-                DatabaseController dbController;
                 Intent intent;
                 int id = item.getItemId();
                 dialogNewOrUpdate = new DialogNewUpdate(this);

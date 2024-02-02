@@ -47,7 +47,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
 
         private MdCuelloBotella cuelloBotella;
         private DatabaseController dbController;
-        private String stringFecha, tiempo_efectivo, hora_inicio, hora_final, dniUser, date, time, clase;
+        private String stringFecha, tiempo_efectivo, hora_inicio, hora_final, cedula, date, time, clase;
         private Button btnFecha;
         private Button btnBuscar;
         private boolean localMode;
@@ -135,14 +135,14 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                         MdCuelloBotella cb = new MdCuelloBotella();
                         cb.setAccion(1); // Lista los cuellos de botella del día
 
-                        dniUser = dbController.selectCedulaUser(this);
-                        cb.setDniEncargado(dniUser);
+                        cedula = dbController.selectCedulaUser(this);
+                        cb.setCedula(cedula);
                         cb.setFecha(stringFecha); // La fecha seleccionada en el datepicker
 
                         listCuelloBotella = new ArrayList<>();
                         listCuelloBotella.add(cb);
 
-                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+                        finalJson.put("reporte", listCuelloBotella);  // {"reporte":[{"accion":1,"cedula":"05-0361-0263","fecha":"12/12/2023"}]}
 
                         String json = new Gson().toJson(finalJson);
 
@@ -210,9 +210,9 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                         try {
                                 CbCosechaController cbCosController = new CbCosechaController();
                                 dbController = new DatabaseController();
-                                dniUser = dbController.selectCedulaUser(this);
-                                //cuelloBotella = dbController.horasEfectivas(this, stringFecha, dniUser);
-                                cuelloBotella = cbCosController.horasEfectivas(this, stringFecha, dniUser);
+                                cedula = dbController.selectCedulaUser(this);
+                                //cuelloBotella = dbController.horasEfectivas(this, stringFecha, cedula);
+                                cuelloBotella = cbCosController.horasEfectivas(this, stringFecha, cedula);
                                 //ArrayList listacb = dbController.selectCuelloBotella(this, stringFecha, null, true);
                                 ArrayList listacb = cbCosController.getCuelloBotella(this, stringFecha, null, true);
                                 totalCuelloBotella(listacb, cuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada

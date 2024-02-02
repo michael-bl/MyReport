@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class MdCuelloBotella implements Serializable {
         @SerializedName("code")
@@ -15,9 +14,9 @@ public class MdCuelloBotella implements Serializable {
         @Expose
         private String fecha;
 
-        @SerializedName("dniEncargado")
+        @SerializedName("cedula")
         @Expose
-        private String dniEncargado;
+        private String cedula;
 
         @SerializedName("lote")
         @Expose
@@ -62,12 +61,12 @@ public class MdCuelloBotella implements Serializable {
                 this.fecha = fecha;
         }
 
-        public String getDniEncargado() {
-                return dniEncargado;
+        public String getCedula() {
+                return cedula;
         }
 
-        public void setDniEncargado(String dniEncargado) {
-                this.dniEncargado = dniEncargado;
+        public void setCedula(String cedula) {
+                this.cedula = cedula;
         }
 
         public String getLote() {

@@ -57,7 +57,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
     private DatabaseController dbController;
     private ArrayList<String> stringArrayList;
     private TextView tvtFecha1, tvtFecha2, tvDetalleCb;
-    private String fechaDesde, fechaHasta, opcion, tipoReporte, date, time, clase, dniUser;
+    private String fechaDesde, fechaHasta, opcion, tipoReporte, date, time, clase, cedula;
     private LogGenerator logGenerator;
     private FloatingActionButton btnShare;
     private SelectionAdapter myAdapter;
@@ -160,7 +160,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                             dbController = new DatabaseController();
                             listaPesoCaja = dbController.selectPesoCaja(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
                             for (MdPesoCaja pc : listaPesoCaja) {
-                                stringArrayList.add(pc.getFecha() + "   " + pc.getPeso() + "   " + pc.getCliente() + "   " + pc.getCalibre() + "   " + pc.getDni_encargado() + "   " + pc.getObservacion());
+                                stringArrayList.add(pc.getFecha() + "   " + pc.getPeso() + "   " + pc.getCliente() + "   " + pc.getCalibre() + "   " + pc.getCedula() + "   " + pc.getObservacion());
                             }
                             llenarListViewReporte(stringArrayList);
                             break;
@@ -177,14 +177,14 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 
         btnShare.setOnClickListener(view -> {
             ExcelGenerator crearExcel = new ExcelGenerator();
-            dniUser = dbController.selectCedulaUser(this);
+            cedula = dbController.selectCedulaUser(this);
             switch (flagReportType) {
                 case 1:
-                    crearExcel.generarExcell(this, listaCuelloBotella, dniUser);
+                    crearExcel.generarExcell(this, listaCuelloBotella, cedula);
                     break;
 
                 case 4:
-                    crearExcel.generarExcell(this, listaPesoCaja, dniUser);
+                    crearExcel.generarExcell(this, listaPesoCaja, cedula);
                     break;
             }
 
@@ -207,14 +207,14 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
             MdCuelloBotella cb = new MdCuelloBotella();
             cb.setAccion(1); // Lista los cuellos cerrados en fecha especifica
 
-            dniUser = dbController.selectCedulaUser(this);
-            cb.setDniEncargado(dniUser);
+            cedula = dbController.selectCedulaUser(this);
+            cb.setCedula(cedula);
             cb.setFecha(fechaDesde);
 
             listaCuelloBotella = new ArrayList<>();
             listaCuelloBotella.add(cb);
 
-            finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":1,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+            finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":1,"cedula":"05-0361-0263","fecha":"12/12/2023"}]}
 
             String json = new Gson().toJson(finalJson);
 
@@ -254,7 +254,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                                     }
                                     for (MdCuelloBotella cb : listaCuelloBotella) {
                                         stringArrayList.add(cb.getMotivo());
-                                        cb.setDniEncargado(dniUser);
+                                        cb.setCedula(cedula);
                                     }
                                     llenarListViewReporte(stringArrayList);
                                 }
@@ -307,7 +307,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 //
 //                                case 4:
 //                                        for (MdPesoCaja pc : listaPesoCaja) {
-//                                                stringArrayList.add(pc.getFecha() + "   " + pc.getPeso() + "   " + pc.getCliente() + "   " + pc.getCalibre() + "   " + pc.getDni_encargado() + "   " + pc.getObservacion());
+//                                                stringArrayList.add(pc.getFecha() + "   " + pc.getPeso() + "   " + pc.getCliente() + "   " + pc.getCalibre() + "   " + pc.getCedula() + "   " + pc.getObservacion());
 //                                        }
 //                                        break;
 //                        }

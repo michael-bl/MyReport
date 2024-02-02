@@ -69,7 +69,7 @@ public class CbCosechaController {
 
                         values.put("code", code);
                         values.put("fecha", muestra.getFecha());
-                        values.put("dni_encargado", muestra.getDniEncargado());
+                        values.put("cedula", muestra.getCedula());
                         values.put("lote", muestra.getLote());
                         values.put("seccion", muestra.getSeccion());
                         values.put("motivo", muestra.getMotivo());
@@ -100,7 +100,7 @@ public class CbCosechaController {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getWritableDatabase();
-                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
+                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.cedula, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                 "from cuellobotellacos as cb \n" +
                                 "inner join motivocbcos as mt \n" +
                                 "on cb.motivo = mt.code \n" +
@@ -111,7 +111,7 @@ public class CbCosechaController {
                                         MdCuelloBotella mdCuelloBotella = new MdCuelloBotella();
                                         mdCuelloBotella.setCode(cursor.getString(0));
                                         mdCuelloBotella.setFecha(cursor.getString(1));
-                                        mdCuelloBotella.setDniEncargado(cursor.getString(2));
+                                        mdCuelloBotella.setCedula(cursor.getString(2));
                                         mdCuelloBotella.setLote(cursor.getString(3));
                                         mdCuelloBotella.setSeccion(cursor.getString(4));
                                         mdCuelloBotella.setMotivo(cursor.getString(5) + "-" + cursor.getString(8));
@@ -139,13 +139,13 @@ public class CbCosechaController {
                         sqLiteDatabase = dbHelper.getWritableDatabase();
                         Cursor cursor;
                         if (esFechaUnica) {
-                                cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
+                                cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.cedula, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                         "from cuellobotellacos as cb \n" +
                                         "inner join motivocbcos as mt    \n" +
                                         "on cb.motivo = mt.code  \n" +
                                         "where cb.fecha = ?", new String[]{fecha_desde});
                         } else {
-                                cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.dni_encargado, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
+                                cursor = sqLiteDatabase.rawQuery("select cb.code, cb.fecha, cb.cedula, cb.lote, cb.seccion, cb.motivo, cb.hora_inicio, cb.hora_final, mt.motivo \n" +
                                         "from cuellobotellacos as cb \n" +
                                         "inner join motivocbcos as mt    \n" +
                                         "on cb.motivo = mt.code  \n" +
@@ -156,7 +156,7 @@ public class CbCosechaController {
                                         MdCuelloBotella mdCuelloBotella = new MdCuelloBotella();
                                         mdCuelloBotella.setCode(cursor.getString(0));
                                         mdCuelloBotella.setFecha(cursor.getString(1));
-                                        mdCuelloBotella.setDniEncargado(cursor.getString(2));
+                                        mdCuelloBotella.setCedula(cursor.getString(2));
                                         mdCuelloBotella.setLote(cursor.getString(3));
                                         mdCuelloBotella.setSeccion(cursor.getString(4));
                                         mdCuelloBotella.setMotivo(cursor.getString(5) + "-" + cursor.getString(8));
@@ -182,7 +182,7 @@ public class CbCosechaController {
                 try {
                         dbHelper = new DatabaseHelper(context);
                         sqLiteDatabase = dbHelper.getReadableDatabase();
-                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and dni_encargado = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
+                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.hora_inicio, cb.hora_final from cuellobotellacos as cb where fecha = ? and cedula = ? and cb.motivo = 12", new String[]{fecha, cuadrilla});
                         if (cursor.moveToFirst()) {
                                 do {
                                         obj.setHora_inicio(cursor.getString(0));
@@ -207,7 +207,7 @@ public class CbCosechaController {
 
                         values.put("code", muestra.getCode());
                         values.put("fecha", muestra.getFecha());
-                        values.put("dni_encargado", muestra.getDniEncargado());
+                        values.put("cedula", muestra.getCedula());
                         values.put("lote", muestra.getLote());
                         values.put("seccion", muestra.getSeccion());
                         values.put("motivo", muestra.getMotivo());
@@ -229,6 +229,27 @@ public class CbCosechaController {
                 } catch (NullPointerException npe) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
                         Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
+                }
+        }
+
+        /*---------------------------------------------------Verifica existencia de jornada especifica-------------------------------------------------------------------------*/
+        public boolean existJornada(Context context, String fecha, String cedula, String motivo) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        sqLiteDatabase = dbHelper.getReadableDatabase();
+                        Cursor cursor = sqLiteDatabase.rawQuery("select cb.code  from cuellobotellacos  as cb where fecha = ? and cedula = ? and motivo = ?", new String[]{fecha, cedula, motivo});
+                        if (cursor.moveToFirst()) {
+                                return true;
+                        } else {
+                                return false;
+                        }
+                } catch (IllegalArgumentException e) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e); // Agrega error en Descargas/Logs.txt
+                        return false;
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        return false;
                 }
         }
 }

@@ -66,7 +66,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
         private Bundle bundle;
         private Intent intent;
         private View view;
-        private String date, time, clase, dniUser;
+        private String date, time, clase, cedula;
         private boolean localMode;
         private LogGenerator logGenerator;
         private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -143,14 +143,14 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                 MdCuelloBotella cb = new MdCuelloBotella();
                                 cb.setAccion(4); // Para listar los cuellos pendientes de cierre
 
-                                dniUser = dbController.selectCedulaUser(this);
-                                cb.setDniEncargado(dniUser);
+                                cedula = dbController.selectCedulaUser(this);
+                                cb.setCedula(cedula);
                                 cb.setFecha(date);
 
                                 listaCuelloBotella = new ArrayList<>();
                                 listaCuelloBotella.add(cb);
 
-                                finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"dniEncargado":"05-0361-0263","fecha":"12/12/2023"}]}
+                                finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"cedula":"05-0361-0263","fecha":"12/12/2023"}]}
 
                                 String json = new Gson().toJson(finalJson);
 
@@ -186,7 +186,7 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                                                                         } else {
                                                                                 for (MdCuelloBotella cb : listaCuelloBotella) {
                                                                                         stringListCB.add(cb.getMotivo());
-                                                                                        cb.setDniEncargado(dniUser);
+                                                                                        cb.setCedula(cedula);
                                                                                 }
                                                                                 llenarListViewCuelloBotella(stringListCB);
                                                                         }
