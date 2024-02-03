@@ -69,6 +69,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
     private boolean localMode;
     private MdCuelloBotella mdCuelloBotella;
     private int btnFechaSeleccionado, flagReportType;
+    private DateConverter dc;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -81,6 +82,8 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
         GetStringTime stringTime = new GetStringTime();
         date = stringDate.getFecha();
         time = stringTime.getHora();
+
+        dc = new DateConverter();
 
         stringArrayList = new ArrayList<>();
 
@@ -139,7 +142,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                             localMode = dbController.selectLocalMode(this);
 
                             if (localMode) {
-                                listaCuelloBotella = cbCosController.getCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
+                                listaCuelloBotella = cbCosController.getCuelloBotella(this, dc.dateFormat(fechaDesde), dc.dateFormat(fechaHasta), checkRangoFecha.isChecked());
                                 for (MdCuelloBotella cb : listaCuelloBotella) {
                                     stringArrayList.add(cb.getMotivo());
                                 }
@@ -158,7 +161,7 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                         case "4":
                             flagReportType = 4;
                             dbController = new DatabaseController();
-                            listaPesoCaja = dbController.selectPesoCaja(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
+                            listaPesoCaja = dbController.selectPesoCaja(this, dc.dateFormat(fechaDesde), dc.dateFormat(fechaHasta), checkRangoFecha.isChecked());
                             for (MdPesoCaja pc : listaPesoCaja) {
                                 stringArrayList.add(pc.getFecha() + "   " + pc.getPeso() + "   " + pc.getCliente() + "   " + pc.getCalibre() + "   " + pc.getCedula() + "   " + pc.getObservacion());
                             }
@@ -209,12 +212,12 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
 
             cedula = dbController.selectCedulaUser(this);
             cb.setCedula(cedula);
-            cb.setFecha(fechaDesde);
+            cb.setFecha(dc.dateFormat(fechaDesde));
 
             listaCuelloBotella = new ArrayList<>();
             listaCuelloBotella.add(cb);
 
-            finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":1,"cedula":"05-0361-0263","fecha":"12/12/2023"}]}
+            finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":1,"cedula":"05-0361-0263","fecha":"2024-01-01"}]}
 
             String json = new Gson().toJson(finalJson);
 

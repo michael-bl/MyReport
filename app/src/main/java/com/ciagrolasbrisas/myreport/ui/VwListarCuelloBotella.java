@@ -140,18 +140,19 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                         ConnectivityService con = new ConnectivityService();
                         if (con.stateConnection(this)) {
                                 Map<String, Object> finalJson = new HashMap<>();
+                                DateConverter dc = new DateConverter();
 
                                 MdCuelloBotella cb = new MdCuelloBotella();
                                 cb.setAccion(4); // Para listar los cuellos pendientes de cierre
 
                                 cedula = dbController.selectCedulaUser(this);
                                 cb.setCedula(cedula);
-                                cb.setFecha(date);
+                                cb.setFecha(dc.dateFormat(date));
 
                                 listaCuelloBotella = new ArrayList<>();
                                 listaCuelloBotella.add(cb);
 
-                                finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"cedula":"05-0361-0263","fecha":"12/12/2023"}]}
+                                finalJson.put("reporte", listaCuelloBotella);  // {"reporte":[{"accion":4,"cedula":"05-0361-0263","fecha":"2024-01-12"}]}
 
                                 String json = new Gson().toJson(finalJson);
 
@@ -218,9 +219,9 @@ public class VwListarCuelloBotella extends AppCompatActivity {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         CbCosechaController cbCosController = new CbCosechaController();
+                        DateConverter dc = new DateConverter();
                         dbController = new DatabaseController();
-                        //listaCuelloBotella = dbController.selectCuelloBotellaIncompleto(this);
-                        listaCuelloBotella = cbCosController.getCuelloBotellaIncompleto(this, date);
+                        listaCuelloBotella = cbCosController.getCuelloBotellaIncompleto(this, dc.dateFormat(date));
                         if(listaCuelloBotella.size()>0){
                                 stringListCB = new ArrayList<>();
                                 for (MdCuelloBotella cb : listaCuelloBotella) {

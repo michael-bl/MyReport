@@ -12,22 +12,21 @@ public class DateConverter {
 
     public DateConverter(){}
 
-    public String dateFormat(String fecha){
+    public String dateFormat(String data){
+        String funcion = new Throwable().getStackTrace()[0].getMethodName();
         GetStringDate stringDate = new GetStringDate();
         GetStringTime stringTime = new GetStringTime();
         date = stringDate.getFecha();
         time = stringTime.getHora();
 
         logGenerator = new LogGenerator();
-
         clase = this.getClass().getSimpleName();
-        String funcion = new Throwable().getStackTrace()[0].getMethodName();
 
-        //SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            //Date fecha = formatoEntrada.parse(date);
+            Date fecha = formatoEntrada.parse(data);
             String fechaFormateada = formatoSalida.format(fecha);
             return fechaFormateada;
         } catch (Exception e) {

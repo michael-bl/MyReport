@@ -199,7 +199,6 @@ public class VwCuelloBotella extends AppCompatActivity {
                 if (objCuelloBotella.getAccion() == 0) {
                     if (objCuelloBotella.getMotivo().equals("12")) {
                         if (!cbCosController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getCedula(), objCuelloBotella.getMotivo())) {
-
                             cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                         } else {
                             logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Ya existe un reporte de jornada, verifique!"); // Agregamos el error al archivo Descargas/Logs.txt
@@ -224,9 +223,9 @@ public class VwCuelloBotella extends AppCompatActivity {
     }
 
     private void llenarReporteCb() {
+        DateConverter dc = new DateConverter();
         dbController = new DatabaseController();
-        objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
-        objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
+        objCuelloBotella.setFecha(dc.dateFormat(tvFechaSistema.getText().toString()));
         objCuelloBotella.setCedula(txtCedula.getText().toString());
         objCuelloBotella.setLote(txtLote.getText().toString());
         objCuelloBotella.setSeccion(txtSeccion.getText().toString());

@@ -205,6 +205,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
         private void getDesdeDbLocal() {
                 String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 ExistSqliteDatabase existdb = new ExistSqliteDatabase();
+                DateConverter dc = new DateConverter();
                 logGenerator = new LogGenerator();
 
                 if (existdb.ExistSqliteDatabase()) {
@@ -212,8 +213,8 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                 CbCosechaController cbCosController = new CbCosechaController();
                                 dbController = new DatabaseController();
                                 cedula = dbController.selectCedulaUser(this);
-                                cuelloBotella = cbCosController.horasEfectivas(this, stringFecha, cedula);
-                                ArrayList listacb = cbCosController.getCuelloBotella(this, stringFecha, null, true);
+                                cuelloBotella = cbCosController.horasEfectivas(this, dc.dateFormat(stringFecha), cedula);
+                                ArrayList listacb = cbCosController.getCuelloBotella(this, dc.dateFormat(stringFecha), null, true);
                                 totalCuelloBotella(listacb, cuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
 
                         } catch (NumberFormatException nfe) {
