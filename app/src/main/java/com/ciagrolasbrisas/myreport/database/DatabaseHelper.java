@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         private final String tblUsuario = "CREATE TABLE usuario (" +
                 "code INTEGER NOT NULL UNIQUE," +
-                "cedula VARCHAR(12)," +
+                "cedula VARCHAR(13)," +
                 "password TEXT(15)," +
                 "nombre TEXT(30)," +
                 "departamento TEXT(30)," +
@@ -60,14 +60,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         private final String tblCuelloBotellaCos = "CREATE TABLE cuellobotellacos (" +
                 " code INTEGER NOT NULL UNIQUE," +
                 " fecha VARCHAR(10)," +
-                " cedula VARCHAR(9)," +
+                " cedula VARCHAR(13)," +
                 " lote VARCHAR(4)," +
                 " seccion VARCHAR(2)," +
                 " motivo VARCHAR(2)," +
                 " hora_inicio VARCHAR(11)," +
                 " hora_final VARCHAR(11)," +
                 " sync INTEGER," +
-                " PRIMARY KEY (code, fecha, dni_encargado));";
+                " PRIMARY KEY (code, fecha, cedula));";
 
         private final String tblMotivoCuelloBotellaCos = "CREATE TABLE motivocbcos (" +
                 " code INTEGER NOT NULL UNIQUE," +
@@ -103,7 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " observacion VARCHAR(30)," +
                 " hora_captura VARCHAR(8)," +
                 " sync INTEGER," +
-                " PRIMARY KEY (code, fecha, dni_encargado, hora_captura));";
+                " PRIMARY KEY (code, fecha, cedula, hora_captura));";
 
         private final String tblCliente = "CREATE TABLE cliente (" +
                 " code INTEGER NOT NULL UNIQUE," +
@@ -128,6 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         @Override
         public void onCreate(SQLiteDatabase sqLiteDb) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         GetStringDate stringDate = new GetStringDate();
                         GetStringTime stringTime = new GetStringTime();
@@ -147,13 +148,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL(tblCalibre);
                         sqLiteDb.execSQL(tblLocalMode);
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
                         Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase sqLiteDb, int i, int i1) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS usuario");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS premaduracion");
@@ -164,9 +166,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS pesocaja");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS cliente");
                         sqLiteDb.execSQL("DROP TABLE IF EXISTS calibre");
+                        sqLiteDb.execSQL("DROP TABLE IF EXISTS localmode");
                         onCreate(sqLiteDb);
                 } catch (SQLiteException sqle) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agrega error en Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle); // Agrega error en Descargas/Logs.txt
                         Toast.makeText(myContext, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
                 }
         }

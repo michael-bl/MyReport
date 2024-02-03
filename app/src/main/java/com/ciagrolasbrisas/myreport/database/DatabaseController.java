@@ -51,8 +51,8 @@ public class DatabaseController {
                                 dbHelper.getWritableDatabase();
                                 return "2";
                         }
-                } catch (IllegalStateException illegalStateException) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + illegalStateException); // Agrega error en Descargas/Logs.txt
+                } catch (IllegalStateException ise) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + ise); // Agrega error en Descargas/Logs.txt
                 }
                 return "0";
         }
@@ -125,6 +125,33 @@ public class DatabaseController {
                         resultado = sqLiteDatabase.insert("localmode", null, values);
                         if (resultado == -1) {
                                 logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Error al guardar modo almacenamiento por defecto."); // Agrega error en Descargas/Logs.txt
+                        }
+                } catch (SQLiteException sqle) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);
+                        Toast.makeText(context, "Error: " + sqle.getMessage(), Toast.LENGTH_LONG).show();
+                } catch (NullPointerException npe) {
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
+                        Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
+                }
+        }
+
+        public void insertDefaultMotivoCb(Context context) {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+                try {
+                        dbHelper = new DatabaseHelper(context);
+                        long resultado = -1;
+                        sqLiteDatabase = dbHelper.getWritableDatabase();
+                        String[] motivosCB = {"Acomódo de cosechadora", "Almuerzo", "Ataque de abejas", "Auditoría", "Botar cera", "Café", "Campaña de vacunación", "Capacitación", "Desayuno", "Esperando carretas", "Exámen médico", "Jornada", "Pegaderos", "Respuesta taller", "Reunión", "Traslado", "Cambio de tractor", "Tormenta eléctrica", "Problemas de tracción", "Atraso por planta", "Otro", "Averías"};
+
+                        for (int i = 0; i <= motivosCB.length - 1; i++) {
+                                ContentValues values = new ContentValues();
+                                values.put("code", (i + 1));
+                                values.put("motivo", motivosCB[i]);
+                                values.put("sync", 0);
+                                resultado = sqLiteDatabase.insert("motivocbcos", null, values);
+                        }
+                        if (resultado == -1) {
+                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + " Error al guardar lista cuellos de botella por defecto."); // Agrega error en Descargas/Logs.txt
                         }
                 } catch (SQLiteException sqle) {
                         logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + sqle);

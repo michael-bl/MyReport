@@ -103,7 +103,6 @@ public class VwCuelloBotella extends AppCompatActivity {
         btnGuardarReporte = findViewById(R.id.btnGuardarCB);
         btnGuardarReporte.setOnClickListener(view -> {
 
-            //dbController = new DatabaseController();
             localMode = dbController.selectLocalMode(this);
 
             if (localMode) {
@@ -142,12 +141,11 @@ public class VwCuelloBotella extends AppCompatActivity {
 
     private void guardarEnServidor() {
         String funcion = new Throwable().getStackTrace()[0].getMethodName();
-        OkHttpClient client = new OkHttpClient();
         llenarReporteCb();
 
         if (!objCuelloBotella.getLote().equals("") || !objCuelloBotella.getSeccion().equals("") || !objCuelloBotella.getHora_inicio().equals("")) {
             if (objCuelloBotella.getAccion() == 0 && tvHoraFinal.getText().length() == 0) {
-                objCuelloBotella.setHora_final("00:00:00");
+                objCuelloBotella.setHora_final("null");
             } else {
                 objCuelloBotella.setHora_final(tvHoraFinal.getText().toString());
             }
@@ -189,7 +187,7 @@ public class VwCuelloBotella extends AppCompatActivity {
 
             if (!objCuelloBotella.getLote().equals("") || !objCuelloBotella.getSeccion().equals("") || !objCuelloBotella.getHora_inicio().equals("")) {
                 if (objCuelloBotella.getAccion() == 0 && tvHoraFinal.getText().length() == 0) {
-                    objCuelloBotella.setHora_final("00:00:00");
+                    objCuelloBotella.setHora_final("null");
                 } else {
                     objCuelloBotella.setHora_final(tvHoraFinal.getText().toString());
                 }
@@ -202,18 +200,15 @@ public class VwCuelloBotella extends AppCompatActivity {
                     if (objCuelloBotella.getMotivo().equals("12")) {
                         if (!cbCosController.existJornada(this, objCuelloBotella.getFecha(), objCuelloBotella.getCedula(), objCuelloBotella.getMotivo())) {
 
-                            //dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                             cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                         } else {
                             logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + "Ya existe un reporte de jornada, verifique!"); // Agregamos el error al archivo Descargas/Logs.txt
                             Toast.makeText(this, "Ya existe un reporte de jornada, verifique!", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        //dbController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                         cbCosController.nuevoRptCuelloBotellaCos(this, objCuelloBotella);
                     }
                 } else {
-                    //dbController.updateCuelloBotella(this, objCuelloBotella);
                     cbCosController.updateCuelloBotella(this, objCuelloBotella);
                 }
                 return true;
@@ -229,9 +224,8 @@ public class VwCuelloBotella extends AppCompatActivity {
     }
 
     private void llenarReporteCb() {
-        DateConverter dc = new DateConverter();
         dbController = new DatabaseController();
-        //objCuelloBotella.setFecha(dc.dateFormat(tvFechaSistema.getText().toString()));
+        objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
         objCuelloBotella.setFecha(tvFechaSistema.getText().toString());
         objCuelloBotella.setCedula(txtCedula.getText().toString());
         objCuelloBotella.setLote(txtLote.getText().toString());

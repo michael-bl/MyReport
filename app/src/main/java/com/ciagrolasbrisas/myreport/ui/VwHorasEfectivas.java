@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
+import com.ciagrolasbrisas.myreport.controller.DateConverter;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
 import com.ciagrolasbrisas.myreport.controller.LogGenerator;
@@ -137,7 +138,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
 
                         cedula = dbController.selectCedulaUser(this);
                         cb.setCedula(cedula);
-                        cb.setFecha(stringFecha); // La fecha seleccionada en el datepicker
+                        cb.setFecha(stringFecha); // La fecha seleccionada en el datepicker, formateada
 
                         listCuelloBotella = new ArrayList<>();
                         listCuelloBotella.add(cb);
@@ -185,12 +186,12 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                                 } else {
                                                         // Imprimir error en la respuesta
                                                         mainHandler.post(() -> {
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + response.message()); // Agregamos el error al archivo Descargas/Logs.txt
                                                                 Toast.makeText(VwHorasEfectivas.this, "Error en la solicitud: " + response.message(), Toast.LENGTH_SHORT).show();
                                                         });
                                                 }
                                         } catch (IOException e) {
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName() + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage()); // Agregamos el error al archivo Descargas/Logs.txt
                                                 e.printStackTrace();
                                         }
                                 }
@@ -211,9 +212,7 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                                 CbCosechaController cbCosController = new CbCosechaController();
                                 dbController = new DatabaseController();
                                 cedula = dbController.selectCedulaUser(this);
-                                //cuelloBotella = dbController.horasEfectivas(this, stringFecha, cedula);
                                 cuelloBotella = cbCosController.horasEfectivas(this, stringFecha, cedula);
-                                //ArrayList listacb = dbController.selectCuelloBotella(this, stringFecha, null, true);
                                 ArrayList listacb = cbCosController.getCuelloBotella(this, stringFecha, null, true);
                                 totalCuelloBotella(listacb, cuelloBotella); // Suma el total de horas, minutos y segundos de los cbs excepto la jornada
 
@@ -276,11 +275,11 @@ public class VwHorasEfectivas extends AppCompatActivity implements DatePickerDia
                         total_min = 0;
                         total_seg = 0;
                 } catch (NumberFormatException nfe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + nfe.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + nfe);
                 } catch (NullPointerException npe) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + npe);
                 }catch (Exception e) {
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e.getMessage());
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e);
                 }
         }
 }

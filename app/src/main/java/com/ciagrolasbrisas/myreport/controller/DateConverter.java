@@ -12,24 +12,26 @@ public class DateConverter {
 
     public DateConverter(){}
 
-    public String dateFormat(String date){
+    public String dateFormat(String fecha){
         GetStringDate stringDate = new GetStringDate();
         GetStringTime stringTime = new GetStringTime();
         date = stringDate.getFecha();
         time = stringTime.getHora();
+
         logGenerator = new LogGenerator();
+
         clase = this.getClass().getSimpleName();
         String funcion = new Throwable().getStackTrace()[0].getMethodName();
+
         //SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
             //Date fecha = formatoEntrada.parse(date);
-            String fechaFormateada = formatoSalida.format(date);
+            String fechaFormateada = formatoSalida.format(fecha);
             return fechaFormateada;
         } catch (Exception e) {
             logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": " + e);
-            //Toast.makeText(context, "Error" + npe.getMessage(), Toast.LENGTH_LONG).show();
         }
         return null;
     }

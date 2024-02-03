@@ -45,13 +45,15 @@ public class VwLogin extends AppCompatActivity {
 
                 clase = this.getClass().getSimpleName();
 
+                dbController = new DatabaseController();
+
+                crearDbLocal();
+
                 stLocalMode = findViewById(R.id.switchModoLocal);
 
                 logGenerator = new LogGenerator();
 
                 CheckPermissions permisos = new CheckPermissions(this);  // Lanza activity para solicitar permisos correspondientes
-
-                crearDbLocal();
 
                 txtId = findViewById(R.id.txtLoginUser);
                 txtPass = findViewById(R.id.txtLoginPass);
@@ -59,33 +61,30 @@ public class VwLogin extends AppCompatActivity {
                 Button btnLogin = findViewById(R.id.btnLogin);
                 btnLogin.setOnClickListener(v -> loginLocalOremoto());
 
-                dbController = new DatabaseController();
-                if(dbController.selectLocalMode(this)){
-                        stLocalMode.setChecked(true);  
-                } else{
-                        stLocalMode.setChecked(false);
-                }
+                stLocalMode.setChecked(dbController.selectLocalMode(this));
         }
 
         private void crearDbLocal() {
-                dbController = new DatabaseController();
-                CbCosechaController cbCosController = new CbCosechaController();
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
                 try {
+                        //dbController = new DatabaseController();
                         String resultadoConsulta = dbController.crearDbLocal(this);
                         if (resultadoConsulta.equals("2")) {
                                 dbController.insertDefaultCliente(this);
                                 dbController.insertDefaultCalibre(this);
                                 dbController.insertDefaultLocalMode(this);
-                                cbCosController.insertDefaultMotivoCb(this);
+                                dbController.insertDefaultMotivoCb(this);
                                 Toast.makeText(this, "Base datos creada correctamente!", Toast.LENGTH_LONG).show();
                         }
                 } catch (SQLiteException sqle) {
                         Toast.makeText(this, "Error en consulta: " + sqle, Toast.LENGTH_LONG).show();
-                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ new Throwable().getStackTrace()[0].getMethodName() + ": " + sqle); // Agregamos el error al archivo Descargas/Logs.txt
+                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ funcion + ": " + sqle); // Agregamos el error al archivo Descargas/Logs.txt
                 }
         }
 
         private void loginLocalOremoto() {
+                String funcion = new Throwable().getStackTrace()[0].getMethodName();
+
                 MdUsuario usuario = new MdUsuario();
                 usuario.setCedula(Objects.requireNonNull(txtId.getText()).toString().trim());
                 usuario.setPass(HashPass.convertSHA256(txtPass.getText().toString().trim())); // encriptamos la contraseña
@@ -110,7 +109,7 @@ public class VwLogin extends AppCompatActivity {
 
                                         } else {
                                                 Toast.makeText(this, "Error: usuario o contraseña incorrecto!", Toast.LENGTH_LONG).show();
-                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ new Throwable().getStackTrace()[0].getMethodName() +" Usuario: " + usuario.getId() + " Password: " + usuario.getPass()); // agregamos el error al archivo Logs.txt
+                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ funcion +" Usuario: " + usuario.getId() + " Password: " + usuario.getPass()); // agregamos el error al archivo Logs.txt
                                         }
                                 } else {
                                         Toast.makeText(this, "Error: la tabla usuario esta vacía!", Toast.LENGTH_LONG).show();
@@ -131,7 +130,7 @@ public class VwLogin extends AppCompatActivity {
 
                                                         if (!res.isSuccessful()) {
                                                                 Toast.makeText(VwLogin.this, "No se puede realizar la consulta!", Toast.LENGTH_SHORT).show();
-                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ new Throwable().getStackTrace()[0].getMethodName()  + ": "+ res.message()); // Agregamos el error al archivo Logs.txt
+                                                                logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": "+ funcion + ": "+ res.message()); // Agregamos el error al archivo Logs.txt
 
                                                         } else {
 
@@ -165,7 +164,7 @@ public class VwLogin extends AppCompatActivity {
                                                 @Override
                                                 public void onFailure(@NonNull Call<List<MdUsuario>> call, @NonNull Throwable t) {
                                                         Toast.makeText(VwLogin.this, "Error: la petición falló!", Toast.LENGTH_SHORT).show();
-                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + new Throwable().getStackTrace()[0].getMethodName()+ ": "+ t.getMessage()); // Agregamos el error al archivo Logs.txt
+                                                        logGenerator.generateLogFile(date + ": " + time + ": " + clase + ": " + funcion + ": "+ t.getMessage()); // Agregamos el error al archivo Logs.txt
                                                 }
                                         });
                                 } else {

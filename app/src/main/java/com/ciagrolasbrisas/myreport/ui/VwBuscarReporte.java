@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.ciagrolasbrisas.myreport.R;
 import com.ciagrolasbrisas.myreport.controller.ConnectivityService;
+import com.ciagrolasbrisas.myreport.controller.DateConverter;
 import com.ciagrolasbrisas.myreport.controller.ExcelGenerator;
 import com.ciagrolasbrisas.myreport.controller.GetStringDate;
 import com.ciagrolasbrisas.myreport.controller.GetStringTime;
@@ -138,7 +139,6 @@ public class VwBuscarReporte extends AppCompatActivity implements DatePickerDial
                             localMode = dbController.selectLocalMode(this);
 
                             if (localMode) {
-                                //listaCuelloBotella = dbController.selectCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
                                 listaCuelloBotella = cbCosController.getCuelloBotella(this, fechaDesde, fechaHasta, checkRangoFecha.isChecked());
                                 for (MdCuelloBotella cb : listaCuelloBotella) {
                                     stringArrayList.add(cb.getMotivo());
